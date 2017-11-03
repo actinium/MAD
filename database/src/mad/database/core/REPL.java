@@ -2,7 +2,9 @@ package mad.database.core;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import mad.database.Config;
 
 /**
@@ -10,8 +12,14 @@ import mad.database.Config;
  */
 public class REPL {
 
-    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+    BufferedReader in;
+    OutputStream out;
 
+    public REPL(InputStream in, OutputStream out){
+        this.in = new BufferedReader(new InputStreamReader(System.in));
+        this.out = out;
+    }
+    
     private String readline() {
         String line = null;
         try {
@@ -60,7 +68,7 @@ public class REPL {
      */
     public static void main(String[] args) {
         System.out.printf("MAD version %s\n", Config.VERSION);
-        REPL repl = new REPL();
+        REPL repl = new REPL(System.in,System.out);
         repl.run();
     }
     
