@@ -16,7 +16,7 @@ public class REPL {
     OutputStream out;
 
     public REPL(InputStream in, OutputStream out){
-        this.in = new BufferedReader(new InputStreamReader(System.in));
+        this.in = new BufferedReader(new InputStreamReader(in));
         this.out = out;
     }
     
