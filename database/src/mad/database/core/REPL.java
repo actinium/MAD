@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import mad.database.Config;
+import mad.database.sql.Statement;
 
 /**
  *
@@ -62,6 +63,20 @@ public class REPL {
                     case UnrecognizedCommand:
                         System.out.printf("Unrecognized command '%s'. Enter '.help' for help.\n", query);
                 }
+            }
+            
+            Statement statement = new Statement(query);
+            if(statement.statementIsOK()){
+                switch(statement.execute()){
+                    case Success:
+                        continue repl;
+                    case Error:
+                        System.out.printf("Error executing command: '%s'. Error: '%s'\n", query, "some error");
+                        break;
+                }
+            }
+            else{
+                System.out.printf("Unrecognized command '%s'.\n", query);
             }
         }
     }
