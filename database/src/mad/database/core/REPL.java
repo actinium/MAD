@@ -18,6 +18,7 @@ public class REPL {
             line = in.readLine();
         } catch (IOException ex) {
             System.err.printf(ex.getMessage());
+            System.exit(1);
         }
         return line;
     }
@@ -40,7 +41,6 @@ public class REPL {
     }
 
     private void run() {
-        System.out.printf("MAD version %s\n", Config.VERSION);
         while (true) {
             System.out.print("dbname>");
             String query = readline();
@@ -49,7 +49,7 @@ public class REPL {
                     case Success:
                         continue;
                     case UnrecognizedCommand:
-                        System.out.printf("Unrecognized command '%s'\n", query);
+                        System.out.printf("Unrecognized command '%s'. Enter '.help' for help.\n", query);
                 }
             }
         }
@@ -59,6 +59,7 @@ public class REPL {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        System.out.printf("MAD version %s\n", Config.VERSION);
         REPL repl = new REPL();
         repl.run();
     }
