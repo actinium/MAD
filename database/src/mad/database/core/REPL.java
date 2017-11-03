@@ -33,7 +33,7 @@ public class REPL {
 
     private MetaCommandResult runMetaCommand(String query) {
         if (query.equals(".exit")) {
-            System.exit(0);
+            return MetaCommandResult.Exit;
         }
         if (query.equals(".help")){
             System.out.println(".exit    Exit this program.");
@@ -49,13 +49,16 @@ public class REPL {
     }
 
     private void run() {
+        repl:
         while (true) {
             System.out.print("dbname>");
             String query = readline();
             if(query.charAt(0)=='.'){
                 switch(runMetaCommand(query)){
                     case Success:
-                        continue;
+                        continue repl;
+                    case Exit:
+                        break repl;
                     case UnrecognizedCommand:
                         System.out.printf("Unrecognized command '%s'. Enter '.help' for help.\n", query);
                 }
@@ -74,6 +77,7 @@ public class REPL {
     
     private enum MetaCommandResult{
         Success,
+        Exit,
         UnrecognizedCommand
     }
 
