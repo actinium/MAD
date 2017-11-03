@@ -4,23 +4,22 @@ package mad.database.sql;
  *
  */
 public class Statement {
-    private boolean okStatement;
+    private boolean okStatement = false;
     
     public Statement(String query) {
         // tokenize
         // parse
         
         // temp
-        switch(query.substring(0, 6).toLowerCase()) {
-            case "select":
-            case "insert":
-            case "update":
-            case "delete":
-                okStatement = true;
-                break;
-            default:
-                okStatement= false;
-                break;
+        if(query.length() > 5) {
+            switch(query.substring(0, 6).toLowerCase()) {
+                case "select":
+                case "insert":
+                case "update":
+                case "delete":
+                    okStatement = true;
+                    break;
+            }
         }
     }
     
