@@ -7,123 +7,134 @@ import java.util.Iterator;
 /**
  *
  */
-public class Tokenizer implements Iterable<Tokenizer.Token>{
+public class Tokenizer implements Iterable<Tokenizer.Token> {
 
     private ArrayList<Token> tokens;
     private int index;
-    
-    public Tokenizer(String tokenStr){
+    private final String tokenStr;
+
+    public Tokenizer(String tokenStr) {
         tokens = new ArrayList<>();
+        this.tokenStr = tokenStr;
         index = 0;
-        while( index < tokenStr.length() ){
+        while (index < tokenStr.length()) {
             char c = tokenStr.charAt(index);
-            if(c == ' ' || c == '\t' || c == '\n' ){
+            if (c == ' ' || c == '\t' || c == '\n') {
                 index++;
-            }else if("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(c) != -1){
-                if(index+6 <= tokenStr.length() && "select".equalsIgnoreCase(tokenStr.substring(index,index+6))){
-                    tokens.add(new Token(Token.Type.Select, null));
-                    index += 6;
-                }
-                if(index+6 <= tokenStr.length() && "insert".equalsIgnoreCase(tokenStr.substring(index,index+6))){
-                    tokens.add(new Token(Token.Type.Insert, null));
-                    index += 6;
-                }
-                if(index+6 <= tokenStr.length() && "delete".equalsIgnoreCase(tokenStr.substring(index,index+6))){
-                    tokens.add(new Token(Token.Type.Delete, null));
-                    index += 6;
-                }
-                if(index+6 <= tokenStr.length() && "update".equalsIgnoreCase(tokenStr.substring(index,index+6))){
-                    tokens.add(new Token(Token.Type.Update, null));
-                    index += 6;
-                }
-                if(index+4 <= tokenStr.length() && "true".equalsIgnoreCase(tokenStr.substring(index,index+4))){
+            } else if ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(c) != -1) {
+                parseKeyword("select");
+                parseKeyword("insert");
+                parseKeyword("update");
+                parseKeyword("delete");
+                if (index + 4 <= tokenStr.length() && "true".equalsIgnoreCase(tokenStr.substring(index, index + 4))) {
                     tokens.add(new Token(Token.Type.Boolean, "true"));
                     index += 4;
                 }
-                if(index+5 <= tokenStr.length() && "false".equalsIgnoreCase(tokenStr.substring(index,index+5))){
+                if (index + 5 <= tokenStr.length() && "false".equalsIgnoreCase(tokenStr.substring(index, index + 5))) {
                     tokens.add(new Token(Token.Type.Boolean, "false"));
                     index += 5;
                 }
-                parseId();
-            }else if(c == '"'){
+                //parseId();
+            } else if (c == '"') {
                 parseString();
-            }else if("0123456789".indexOf(c) != -1){
+            } else if ("0123456789".indexOf(c) != -1) {
                 parseNumber();
-            }else if(c == ';'){
+            } else if (c == ';') {
                 tokens.add(new Token(Token.Type.Semicolon, null));
                 index++;
             }
-            
+
         }
     }
-    
+
+    private void parseKeyword(String keyword) {
+        int length = keyword.length();
+        if (index + length <= tokenStr.length()
+                && keyword.equalsIgnoreCase(tokenStr.substring(index, index + length))
+                && "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_".indexOf(tokenStr.charAt(index + length)) == -1) {
+            tokens.add(new Token(tokenTypeFromKyeword(keyword), null));
+            index += 6;
+        }
+    }
+
+    private Token.Type tokenTypeFromKyeword(String keyword) {
+        keyword = keyword.toLowerCase();
+        switch (keyword) {
+            case "select":
+                return Token.Type.Select;
+            case "insert":
+                return Token.Type.Insert;
+            case "delete":
+                return Token.Type.Delete;
+            case "update":
+                return Token.Type.Update;
+        }
+        return null;
+    }
+
     private void parseId() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     private void parseString() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
-    private void parseNumber(){
+
+    private void parseNumber() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
-    private void parseFloat(){
+
+    private void parseFloat() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
-    private void parseInteger(){
+
+    private void parseInteger() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     @Override
     public Iterator<Token> iterator() {
         return tokens.iterator();
     }
 
-    
+    public static class Token {
 
-    
-    
-    public static class Token{
-        
         public final Type type;
         public final String value;
-        
-        public Token(Type type){
+
+        public Token(Type type) {
             this.type = type;
             this.value = null;
         }
-        
-        public Token(Type type,String value){
+
+        public Token(Type type, String value) {
             this.type = type;
             this.value = value;
         }
-        
-        
-        public enum Type{
-            Select,  // 'select'
-            Insert,  // 'insert'
-            Delete,  // 'delete'
-            Update,  // 'update'
-            ID,      // [A-Za-z][A-Za-z0-9_]*
+
+        public enum Type {
+
+            Select, // 'select'
+            Insert, // 'insert'
+            Delete, // 'delete'
+            Update, // 'update'
+            ID, // [A-Za-z][A-Za-z0-9_]*
             Integer, // '0' | [1-9][0-9]*
-            Float,   // [0-9][0-9]*.[0-9]*
+            Float, // [0-9][0-9]*.[0-9]*
             Boolean, // 'true'|'false'
-            Text,    // Text surrounded by '"'
+            Text, // Text surrounded by '"'
             Semicolon
         }
-        
+
         @Override
-        public boolean equals(Object obj){
-            if(obj instanceof Token){
-                Token tobj = (Token)obj;
-                if(tobj.type == this.type){
-                    if(tobj.value == null && this.value == null){
+        public boolean equals(Object obj) {
+            if (obj instanceof Token) {
+                Token tobj = (Token) obj;
+                if (tobj.type == this.type) {
+                    if (tobj.value == null && this.value == null) {
                         return true;
                     }
-                    if(tobj.value != null && this.value != null && tobj.value.equals(this.value)){
+                    if (tobj.value != null && this.value != null && tobj.value.equals(this.value)) {
                         return true;
                     }
                 }
