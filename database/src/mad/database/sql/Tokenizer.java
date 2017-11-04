@@ -43,6 +43,12 @@ public class Tokenizer implements Iterable<Tokenizer.Token> {
             } else if (c == ';') {
                 tokens.add(new Token(Token.Type.Semicolon, null));
                 index++;
+            }else if (c == '(') {
+                tokens.add(new Token(Token.Type.LParen, null));
+                index++;
+            }else if (c == ')') {
+                tokens.add(new Token(Token.Type.RParen, null));
+                index++;
             }
 
         }
@@ -130,7 +136,9 @@ public class Tokenizer implements Iterable<Tokenizer.Token> {
             Float, // [0-9][0-9]*.[0-9]*
             Boolean, // 'true'|'false'
             Text, // Text surrounded by '"'
-            Semicolon
+            Semicolon, // ';'
+            LParen, // '('
+            RParen // ')'
         }
 
         @Override
