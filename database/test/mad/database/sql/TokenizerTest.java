@@ -3,8 +3,6 @@ package mad.database.sql;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mad.database.sql.Tokenizer.Token;
 import org.junit.After;
 import org.junit.AfterClass;
