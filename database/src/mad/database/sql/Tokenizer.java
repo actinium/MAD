@@ -1,6 +1,5 @@
 package mad.database.sql;
 
-import com.sun.media.jfxmedia.effects.EqualizerBand;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -21,20 +20,22 @@ public class Tokenizer implements Iterable<Tokenizer.Token> {
             char c = tokenStr.charAt(index);
             if (c == ' ' || c == '\t' || c == '\n') {
                 index++;
-            } else if ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(c) != -1) {
-                parseKeyword("select");
-                parseKeyword("insert");
-                parseKeyword("update");
-                parseKeyword("delete");
+            } else if ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_".indexOf(c) != -1) {
+                if(parseKeyword("select"))continue;
+                if(parseKeyword("insert"))continue;
+                if(parseKeyword("update"))continue;
+                if(parseKeyword("delete"))continue;
                 if (index + 4 <= tokenStr.length() && "true".equalsIgnoreCase(tokenStr.substring(index, index + 4))) {
                     tokens.add(new Token(Token.Type.Boolean, "true"));
                     index += 4;
+                    continue;
                 }
                 if (index + 5 <= tokenStr.length() && "false".equalsIgnoreCase(tokenStr.substring(index, index + 5))) {
                     tokens.add(new Token(Token.Type.Boolean, "false"));
                     index += 5;
+                    continue;
                 }
-                //parseId();
+                parseId();
             } else if (c == '"') {
                 parseString();
             } else if ("0123456789".indexOf(c) != -1) {
@@ -47,14 +48,16 @@ public class Tokenizer implements Iterable<Tokenizer.Token> {
         }
     }
 
-    private void parseKeyword(String keyword) {
+    private boolean parseKeyword(String keyword) {
         int length = keyword.length();
         if (index + length <= tokenStr.length()
                 && keyword.equalsIgnoreCase(tokenStr.substring(index, index + length))
                 && "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_".indexOf(tokenStr.charAt(index + length)) == -1) {
             tokens.add(new Token(tokenTypeFromKyeword(keyword), null));
             index += 6;
+            return true;
         }
+        return false;
     }
 
     private Token.Type tokenTypeFromKyeword(String keyword) {
@@ -73,7 +76,11 @@ public class Tokenizer implements Iterable<Tokenizer.Token> {
     }
 
     private void parseId() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        int start = index;
+        while(index < tokenStr.length() && "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_".indexOf(tokenStr.charAt(index)) != -1){
+            index++;
+        }
+        tokens.add(new Token(Token.Type.ID,tokenStr.substring(start, index)));
     }
 
     private void parseString() {

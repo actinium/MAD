@@ -41,14 +41,16 @@ public class TokenizerTest {
      */
     @Test
     public void testIterator() {
-        System.out.println("iterator");
         Tokenizer instance = new Tokenizer("select;");
         ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(new Token(Token.Type.Select), new Token(Token.Type.Semicolon)));
+        
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = instance.iterator();
+        
         while(result.hasNext() && expResult.hasNext()){
             assertEquals(expResult.next(), result.next());
         }
+        
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
@@ -58,16 +60,36 @@ public class TokenizerTest {
      */
     @Test
     public void testIterator2() {
-        System.out.println("iterator");
         Tokenizer instance = new Tokenizer("select true;");
         ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(new Token(Token.Type.Select), new Token(Token.Type.Boolean,"true"), new Token(Token.Type.Semicolon)));
+        
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = instance.iterator();
+        
         while(result.hasNext() && expResult.hasNext()){
             assertEquals(expResult.next(), result.next());
         }
+        
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
     
+    /**
+     * Test of iterator method, of class Tokenizer.
+     */
+    @Test
+    public void testIterator3() {
+        Tokenizer instance = new Tokenizer("select tableName;");
+        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(new Token(Token.Type.Select), new Token(Token.Type.ID,"tableName"), new Token(Token.Type.Semicolon)));
+        
+        Iterator<Tokenizer.Token> expResult = tokens.iterator();
+        Iterator<Tokenizer.Token> result = instance.iterator();
+        
+        while(result.hasNext() && expResult.hasNext()){
+            assertEquals(expResult.next(), result.next());
+        }
+        
+        assertFalse(result.hasNext());
+        assertFalse(expResult.hasNext());
+    }
 }
