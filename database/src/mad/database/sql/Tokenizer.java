@@ -10,10 +10,15 @@ public class Tokenizer implements Iterable<Tokenizer.Token> {
 
     private ArrayList<Token> tokens;
     private int index;
-    private final String tokenStr;
+    private String tokenStr;
 
-    public Tokenizer(String tokenStr) {
+    public Tokenizer(){
         tokens = new ArrayList<>();
+        this.tokenStr = null;
+        index = 0;
+    }
+        
+    public void tokenize(String tokenStr) throws TokenizeException {
         this.tokenStr = tokenStr;
         index = 0;
         while (index < tokenStr.length()) {
@@ -21,10 +26,18 @@ public class Tokenizer implements Iterable<Tokenizer.Token> {
             if (c == ' ' || c == '\t' || c == '\n') {
                 index++;
             } else if ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_".indexOf(c) != -1) {
-                if(parseKeyword("select"))continue;
-                if(parseKeyword("insert"))continue;
-                if(parseKeyword("update"))continue;
-                if(parseKeyword("delete"))continue;
+                if (parseKeyword("select")) {
+                    continue;
+                }
+                if (parseKeyword("insert")) {
+                    continue;
+                }
+                if (parseKeyword("update")) {
+                    continue;
+                }
+                if (parseKeyword("delete")) {
+                    continue;
+                }
                 if (index + 4 <= tokenStr.length() && "true".equalsIgnoreCase(tokenStr.substring(index, index + 4))) {
                     tokens.add(new Token(Token.Type.Boolean, "true"));
                     index += 4;
@@ -36,17 +49,17 @@ public class Tokenizer implements Iterable<Tokenizer.Token> {
                     continue;
                 }
                 parseId();
-            } else if (c == '"') {
+            } else if (c == '\"' || c == '\'') {
                 parseString();
             } else if ("0123456789".indexOf(c) != -1) {
                 parseNumber();
             } else if (c == ';') {
                 tokens.add(new Token(Token.Type.Semicolon, null));
                 index++;
-            }else if (c == '(') {
+            } else if (c == '(') {
                 tokens.add(new Token(Token.Type.LParen, null));
                 index++;
-            }else if (c == ')') {
+            } else if (c == ')') {
                 tokens.add(new Token(Token.Type.RParen, null));
                 index++;
             }
@@ -83,14 +96,35 @@ public class Tokenizer implements Iterable<Tokenizer.Token> {
 
     private void parseId() {
         int start = index;
-        while(index < tokenStr.length() && "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_".indexOf(tokenStr.charAt(index)) != -1){
+        while (index < tokenStr.length() && "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_".indexOf(tokenStr.charAt(index)) != -1) {
             index++;
         }
-        tokens.add(new Token(Token.Type.ID,tokenStr.substring(start, index)));
+        tokens.add(new Token(Token.Type.ID, tokenStr.substring(start, index)));
     }
 
-    private void parseString() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    private void parseString() throws TokenizeException {
+        char mark = tokenStr.charAt(index);
+        index++;
+        StringBuilder builder = new StringBuilder();
+        while (true) {
+            if (index + 1 < tokenStr.length() && tokenStr.charAt(index) == mark && tokenStr.charAt(index + 1) != mark) {
+                index++;
+                break;
+            } else if (index + 1 == tokenStr.length() && tokenStr.charAt(index) == mark) {
+                index++;
+                break;
+            } else if (index == tokenStr.length()) {
+                throw new TokenizeException("Failed to tokenize string!");
+            }else{
+                if(tokenStr.charAt(index)==mark){
+                    index++;
+                }
+                builder.append(tokenStr.charAt(index));
+                index++;
+            }
+        }
+        tokens.add(new Token(Token.Type.Text,builder.toString()));
+        
     }
 
     private void parseNumber() {
@@ -157,4 +191,12 @@ public class Tokenizer implements Iterable<Tokenizer.Token> {
             return false;
         }
     }
+
+    public static class TokenizeException extends Exception {
+
+        private TokenizeException(String message) {
+            super(message);
+        }
+    }
+
 }
