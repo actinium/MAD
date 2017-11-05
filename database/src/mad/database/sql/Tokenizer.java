@@ -1,19 +1,21 @@
 package mad.database.sql;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Iterator;
+import java.util.Queue;
+import mad.database.sql.Tokenizer.Token;
 
 /**
  *
  */
-public class Tokenizer implements Iterable<Tokenizer.Token> {
+public class Tokenizer implements Iterator<Token>{
 
-    private ArrayList<Token> tokens;
+    private Queue<Token> tokens;
     private int index;
     private String tokenStr;
 
     public Tokenizer(){
-        tokens = new ArrayList<>();
+        tokens = new ArrayDeque<>();
         this.tokenStr = null;
         index = 0;
     }
@@ -140,8 +142,13 @@ public class Tokenizer implements Iterable<Tokenizer.Token> {
     }
 
     @Override
-    public Iterator<Token> iterator() {
-        return tokens.iterator();
+    public boolean hasNext() {
+        return !tokens.isEmpty();
+    }
+
+    @Override
+    public Token next() {
+        return tokens.poll();
     }
 
     public static class Token {

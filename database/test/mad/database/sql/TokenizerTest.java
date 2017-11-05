@@ -52,7 +52,7 @@ public class TokenizerTest {
                 new Token(Token.Type.Semicolon)));
         
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
-        Iterator<Tokenizer.Token> result = tokenizer.iterator();
+        Iterator<Tokenizer.Token> result = tokenizer;
         
         while(result.hasNext() && expResult.hasNext()){
             assertEquals(expResult.next(), result.next());
@@ -79,7 +79,7 @@ public class TokenizerTest {
                 new Token(Token.Type.Semicolon)));
         
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
-        Iterator<Tokenizer.Token> result = tokenizer.iterator();
+        Iterator<Tokenizer.Token> result = tokenizer;
         
         while(result.hasNext() && expResult.hasNext()){
             assertEquals(expResult.next(), result.next());
@@ -106,7 +106,7 @@ public class TokenizerTest {
                 new Token(Token.Type.Semicolon)));
         
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
-        Iterator<Tokenizer.Token> result = tokenizer.iterator();
+        Iterator<Tokenizer.Token> result = tokenizer;
         
         while(result.hasNext() && expResult.hasNext()){
             assertEquals(expResult.next(), result.next());
@@ -139,7 +139,7 @@ public class TokenizerTest {
                 new Token(Token.Type.Semicolon)));
         
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
-        Iterator<Tokenizer.Token> result = tokenizer.iterator();
+        Iterator<Tokenizer.Token> result = tokenizer;
         
         while(result.hasNext() && expResult.hasNext()){
             assertEquals(expResult.next(), result.next());
@@ -168,7 +168,7 @@ public class TokenizerTest {
                 new Token(Token.Type.Semicolon)));
         
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
-        Iterator<Tokenizer.Token> result = tokenizer.iterator();
+        Iterator<Tokenizer.Token> result = tokenizer;
         
         while(result.hasNext() && expResult.hasNext()){
             assertEquals(expResult.next(), result.next());
@@ -195,7 +195,49 @@ public class TokenizerTest {
                 new Token(Token.Type.Semicolon)));
         
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
-        Iterator<Tokenizer.Token> result = tokenizer.iterator();
+        Iterator<Tokenizer.Token> result = tokenizer;
+        
+        while(result.hasNext() && expResult.hasNext()){
+            assertEquals(expResult.next(), result.next());
+        }
+        
+        assertFalse(result.hasNext());
+        assertFalse(expResult.hasNext());
+    }
+    
+    /**
+     * Test of iterator method, of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer7() {
+        Tokenizer tokenizer = new Tokenizer();
+        try {
+            tokenizer.tokenize("select 'Text: \"Hello World!\". Char: ''c'''; ");
+        } catch (Tokenizer.TokenizeException ex) {
+            fail(ex.getMessage());
+        }
+        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.Text,"Text: \"Hello World!\". Char: 'c'"),
+                new Token(Token.Type.Semicolon),
+                new Token(Token.Type.Select),
+                new Token(Token.Type.LParen),
+                new Token(Token.Type.ID,"tableName"),
+                new Token(Token.Type.RParen),
+                new Token(Token.Type.Semicolon)));
+        
+        Iterator<Tokenizer.Token> expResult = tokens.iterator();
+        Iterator<Tokenizer.Token> result = tokenizer;
+        
+        while(result.hasNext() && expResult.hasNext()){
+            assertEquals(expResult.next(), result.next());
+        }
+        
+        try {
+            tokenizer.tokenize("select (tableName);");
+        } catch (Tokenizer.TokenizeException ex) {
+            fail(ex.getMessage());
+        }
         
         while(result.hasNext() && expResult.hasNext()){
             assertEquals(expResult.next(), result.next());
