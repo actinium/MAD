@@ -222,7 +222,7 @@ public class Tokenizer implements Iterator<Token>{
             Integer, // '0' | [1-9][0-9]*
             Float, // [0-9][0-9]*.[0-9]*
             Boolean, // 'true'|'false'
-            Text, // Text surrounded by '"'
+            Text, // Text surrounded by '"' or '''
 
             // Symbols
             Semicolon, // ';'
