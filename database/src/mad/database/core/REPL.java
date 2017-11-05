@@ -5,31 +5,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import mad.database.Config;
 import mad.database.sql.Statement;
 
 /**
  *
  */
-public class REPL {
+public class REPL implements Runnable{
 
     BufferedReader in;
-    OutputStream out;
+    PrintWriter out;
 
     public REPL(InputStream in, OutputStream out){
         this.in = new BufferedReader(new InputStreamReader(in));
-        this.out = out;
+        this.out = new PrintWriter(out,true);
     }
     
     private String readline() {
-        String line = null;
         try {
-            line = in.readLine();
+            return in.readLine();
         } catch (IOException ex) {
             System.err.printf(ex.getMessage());
             System.exit(1);
         }
-        return line;
+        return null;
     }
 
     private MetaCommandResult runMetaCommand(String query) {
@@ -37,22 +37,24 @@ public class REPL {
             return MetaCommandResult.Exit;
         }
         if (query.equals(".help")){
-            System.out.println(".exit    Exit this program.");
-            System.out.println(".help    Show available commands.");
-            System.out.println(".version Show version number.");
+            out.print(".exit    Exit this program.\n");
+            out.print(".help    Show available commands.\n");
+            out.print(".version Show version number.\n");
             return MetaCommandResult.Success;
         }
         if(query.equals(".version")){
-            System.out.printf("MAD version %s\n", Config.VERSION);
+            out.printf("MAD version %s\n", Config.VERSION);
             return MetaCommandResult.Success;
         }
         return MetaCommandResult.UnrecognizedCommand;
     }
 
-    private void run() {
+    @Override
+    public void run() {
         repl:
         while (true) {
-            System.out.print("dbname>");
+            out.print("dbname>");
+            out.flush();
             String query = readline();
             if(query.charAt(0)=='.'){
                 switch(runMetaCommand(query)){
@@ -61,7 +63,8 @@ public class REPL {
                     case Exit:
                         break repl;
                     case UnrecognizedCommand:
-                        System.out.printf("Unrecognized command '%s'. Enter '.help' for help.\n", query);
+                        out.printf("Unrecognized command '%s'. Enter '.help' for help.\n", query);
+                        continue repl;
                 }
             }
             
@@ -71,14 +74,15 @@ public class REPL {
                     case Success:
                         continue repl;
                     case Error:
-                        System.out.printf("Error executing command: '%s'. Error: '%s'\n", query, "some error");
+                        out.printf("Error executing command: '%s'. Error: '%s'\n", query, "some error");
                         break;
                 }
             }
             else{
-                System.out.printf("Unrecognized command '%s'.\n", query);
+                out.printf("Unrecognized command '%s'.\n", query);
             }
         }
+        out.close();
     }
 
     /**
