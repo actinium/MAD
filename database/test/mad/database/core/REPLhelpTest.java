@@ -44,7 +44,7 @@ public class REPLhelpTest {
         Pipe inPipe = initPipe();
         Pipe outPipe = initPipe();
         
-        PrintWriter writer = new PrintWriter(inPipe.out);
+        PrintWriter writer = new PrintWriter(inPipe.out,true);
         BufferedReader reader = new BufferedReader(new InputStreamReader(outPipe.in));
         
         REPL repl = new REPL(inPipe.in, outPipe.out);
@@ -53,7 +53,6 @@ public class REPLhelpTest {
         
         writer.println(".help");
         writer.println(".exit");
-        writer.flush();
         
         join(replThread);
         
