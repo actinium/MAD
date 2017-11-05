@@ -64,6 +64,18 @@ public class Tokenizer implements Iterator<Token>{
             } else if (c == ')') {
                 tokens.add(new Token(Token.Type.RParen, null));
                 index++;
+            } else if (c == '*') {
+                tokens.add(new Token(Token.Type.Star, null));
+                index++;
+            } else if (c == '/') {
+                tokens.add(new Token(Token.Type.Slash, null));
+                index++;
+            } else if (c == '+') {
+                tokens.add(new Token(Token.Type.Plus, null));
+                index++;
+            } else if (c == '-') {
+                tokens.add(new Token(Token.Type.Minus, null));
+                index++;
             }
 
         }
@@ -108,6 +120,7 @@ public class Tokenizer implements Iterator<Token>{
         char mark = tokenStr.charAt(index);
         index++;
         StringBuilder builder = new StringBuilder();
+        
         while (true) {
             if (index + 1 < tokenStr.length() && tokenStr.charAt(index) == mark && tokenStr.charAt(index + 1) != mark) {
                 index++;
@@ -116,7 +129,7 @@ public class Tokenizer implements Iterator<Token>{
                 index++;
                 break;
             } else if (index == tokenStr.length()) {
-                throw new TokenizeException("Failed to tokenize string!");
+                throw new TokenizeException("Failed to tokenize string!",index);
             }else{
                 if(tokenStr.charAt(index)==mark){
                     index++;
@@ -125,20 +138,51 @@ public class Tokenizer implements Iterator<Token>{
                 index++;
             }
         }
-        tokens.add(new Token(Token.Type.Text,builder.toString()));
         
+        tokens.add(new Token(Token.Type.Text,builder.toString()));
     }
 
-    private void parseNumber() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    private void parseFloat() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    private void parseInteger() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    private void parseNumber() throws TokenizeException {
+        StringBuilder builder = new StringBuilder();
+        boolean dotFound = false;
+        
+        if(tokenStr.charAt(index) == '0'){
+            if(index+1 == tokenStr.length() || tokenStr.charAt(index+1) != '.'){
+                tokens.add(new Token(Token.Type.Integer, "0"));
+            }else if(index +2 <tokenStr.length() && tokenStr.charAt(index+1) == '.' && "0123456789".indexOf(tokenStr.charAt(index+2)) != -1){
+                builder.append("0.");
+                dotFound = true;
+                builder.append(tokenStr.charAt(index+2));
+                index+=3;
+            }else{
+                throw new TokenizeException("Could not parse number!",index);
+            }
+        }
+        
+        while(true){
+            if(tokenStr.charAt(index) == '.'){
+                if(dotFound){
+                    throw new TokenizeException("Could not parse number!", index);
+                }else{
+                    builder.append('.');
+                    dotFound = true;
+                    index++;
+                    continue;
+                }
+            }
+            if("0123456789".indexOf(tokenStr.charAt(index)) != -1){
+                builder.append(tokenStr.charAt(index));
+                index++;
+            }else{
+                break;
+            }
+        }
+        
+        if(dotFound){
+            tokens.add(new Token(Token.Type.Float, builder.toString()));
+        }else{
+            tokens.add(new Token(Token.Type.Integer, builder.toString()));
+        }
     }
 
     @Override
@@ -167,19 +211,28 @@ public class Tokenizer implements Iterator<Token>{
         }
 
         public enum Type {
-
+            // Keywords:
             Select, // 'select'
             Insert, // 'insert'
             Delete, // 'delete'
             Update, // 'update'
+
+            // Types
             ID, // [A-Za-z][A-Za-z0-9_]*
             Integer, // '0' | [1-9][0-9]*
             Float, // [0-9][0-9]*.[0-9]*
             Boolean, // 'true'|'false'
             Text, // Text surrounded by '"'
+
+            // Symbols
             Semicolon, // ';'
             LParen, // '('
-            RParen // ')'
+            RParen, // ')'
+            Star, // '*'
+            Slash, // '/'
+            Plus, // '+'
+            Minus, // '-'
+
         }
 
         @Override
@@ -197,12 +250,31 @@ public class Tokenizer implements Iterator<Token>{
             }
             return false;
         }
+        
+        @Override
+        public String toString(){
+            StringBuilder builder = new StringBuilder();
+            builder.append("(");
+            builder.append(type.toString());
+            if(value != null){
+                builder.append(",").append(value);
+            }
+            builder.append(")");
+            return builder.toString();
+        }
     }
 
     public static class TokenizeException extends Exception {
 
-        private TokenizeException(String message) {
+        private final int index;
+        
+        private TokenizeException(String message,int index) {
             super(message);
+            this.index = index;
+        }
+        
+        public int getIndex(){
+            return index;
         }
     }
 

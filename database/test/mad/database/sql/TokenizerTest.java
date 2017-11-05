@@ -246,4 +246,60 @@ public class TokenizerTest {
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
+    
+    /**
+     * Test of iterator method, of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer8() {
+        Tokenizer tokenizer = new Tokenizer();
+        try {
+            tokenizer.tokenize("select 12.34;");
+        } catch (Tokenizer.TokenizeException ex) {
+            fail(ex.getMessage());
+        }
+        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.Float,"12.34"),
+                new Token(Token.Type.Semicolon)));
+        
+        Iterator<Tokenizer.Token> expResult = tokens.iterator();
+        Iterator<Tokenizer.Token> result = tokenizer;
+        
+        while(result.hasNext() && expResult.hasNext()){
+            assertEquals(expResult.next(), result.next());
+        }
+        
+        assertFalse(result.hasNext());
+        assertFalse(expResult.hasNext());
+    }
+    
+    /**
+     * Test of iterator method, of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer9() {
+        Tokenizer tokenizer = new Tokenizer();
+        try {
+            tokenizer.tokenize("select (1234);");
+        } catch (Tokenizer.TokenizeException ex) {
+            fail(ex.getMessage());
+        }
+        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.LParen),
+                new Token(Token.Type.Integer,"1234"),
+                new Token(Token.Type.RParen),
+                new Token(Token.Type.Semicolon)));
+        
+        Iterator<Tokenizer.Token> expResult = tokens.iterator();
+        Iterator<Tokenizer.Token> result = tokenizer;
+        
+        while(result.hasNext() && expResult.hasNext()){
+            assertEquals(expResult.next(), result.next());
+        }
+        
+        assertFalse(result.hasNext());
+        assertFalse(expResult.hasNext());
+    }
 }
