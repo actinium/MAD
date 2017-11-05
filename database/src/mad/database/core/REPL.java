@@ -37,9 +37,9 @@ public class REPL implements Runnable{
             return MetaCommandResult.Exit;
         }
         if (query.equals(".help")){
-            out.println(".exit    Exit this program.");
-            out.println(".help    Show available commands.");
-            out.println(".version Show version number.");
+            out.print(".exit    Exit this program.\n");
+            out.print(".help    Show available commands.\n");
+            out.print(".version Show version number.\n");
             return MetaCommandResult.Success;
         }
         if(query.equals(".version")){
@@ -54,6 +54,7 @@ public class REPL implements Runnable{
         repl:
         while (true) {
             out.print("dbname>");
+            out.flush();
             String query = readline();
             if(query.charAt(0)=='.'){
                 switch(runMetaCommand(query)){
@@ -81,6 +82,7 @@ public class REPL implements Runnable{
                 out.printf("Unrecognized command '%s'.\n", query);
             }
         }
+        out.close();
     }
 
     /**
