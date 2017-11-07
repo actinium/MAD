@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Andreas Cederholm
  */
 public class REPLTestHelpCommand extends REPLTestBase {
 
