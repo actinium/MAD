@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import mad.database.Config;
+import static mad.database.Config.MADVERSION;
 import mad.database.sql.Statement;
 
 /**
@@ -43,7 +43,7 @@ public class REPL implements Runnable{
             return MetaCommandResult.Success;
         }
         if(query.equals(".version")){
-            out.printf("MAD version %s\n", Config.VERSION);
+            out.printf("MAD version %s\n", MADVERSION);
             return MetaCommandResult.Success;
         }
         return MetaCommandResult.UnrecognizedCommand;
@@ -89,7 +89,7 @@ public class REPL implements Runnable{
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.printf("MAD version %s\n", Config.VERSION);
+        System.out.printf("MAD version %s\n", MADVERSION);
         REPL repl = new REPL(System.in,System.out);
         repl.run();
     }
