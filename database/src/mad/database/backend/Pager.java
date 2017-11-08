@@ -68,7 +68,7 @@ public class Pager {
     /**
      * Frees a page when it's no longer needed.
      *
-     * @param starPosition the startPosition of the page.
+     * @param startPosition the startPosition of the page.
      */
     public void freePage(int startPosition) throws IOException {
         int firstFreePage = readInteger(freePagePointerOffset);
