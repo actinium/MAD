@@ -7,12 +7,16 @@ import java.nio.ByteBuffer;
  */
 public class Page {
     
-    private ByteBuffer data;
-    private final int position;
+    private final ByteBuffer data;
+    private final int pageStartPosition;
     
-    public Page(int position,byte[] data){
-        this.position = position;
+    public Page(int pageStartPosition,byte[] data){
+        this.pageStartPosition = pageStartPosition;
         this.data = ByteBuffer.wrap(data);
+    }
+    
+    public int getPageStartPosition(){
+        return pageStartPosition;
     }
     
     public int getInteger(int filePosition){
