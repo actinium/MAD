@@ -17,7 +17,7 @@ public class DB {
         if(file.exists() && (!file.canRead() || !file.canWrite())){
             throw new IOException("Can not access file: " + filename + "!");
         }
-        if(!file.exists()){
+        if(!file.exists() || file.length() == 0){
             initDBFile(file);
         }
         pager = new Pager(file);
@@ -25,6 +25,10 @@ public class DB {
 
     public static DB open(String filename) throws FileNotFoundException, IOException {
         return new DB(filename);
+    }
+    
+    public void close() throws IOException{
+        pager.close();
     }
 
     // - Create Table
@@ -39,9 +43,8 @@ public class DB {
 
     private void initDBFile(File file) throws FileNotFoundException, IOException {
         try(FileOutputStream writer = new FileOutputStream(file)){
-            byte[] initBytes = {0,0,0};
+            byte[] initBytes = {0,0,0,0,0,0,0,0,0,0,0,0};
             writer.write(initBytes);
-            writer.flush();
         }
     }
 
