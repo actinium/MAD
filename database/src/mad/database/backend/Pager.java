@@ -55,7 +55,8 @@ public class Pager {
             firstFreePage = (int) dbFile.length();
             dbFile.setLength(dbFile.length() + PAGESIZE);
         } else {
-            //Todo
+            int secondFreePage = readInteger(firstFreePage);
+            writeInteger(freePagePointerOffset, secondFreePage);
         }
         byte[] data = new byte[PAGESIZE];
         dbFile.seek(firstFreePage);
@@ -69,8 +70,10 @@ public class Pager {
      *
      * @param starPosition the startPosition of the page.
      */
-    public void freePage(int starPosition) {
-        throw new UnsupportedOperationException("Not yet Implemented!");
+    public void freePage(int startPosition) throws IOException {
+        int firstFreePage = readInteger(freePagePointerOffset);
+        writeInteger(freePagePointerOffset, startPosition);
+        writeInteger(startPosition, firstFreePage);
     }
 
     public int readInteger(int filePosition) throws IOException {
