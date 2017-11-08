@@ -54,7 +54,7 @@ public class PageTest {
         Page page0 = new Page(0, new byte[PAGESIZE]);
         ByteBuffer bb0w = ByteBuffer.allocate(4).order(BYTEORDER);
         bb0w.putInt(1234);
-        page0.putBytes(page0.getPageStartPosition() + 100, bb0w.array(), 4);
+        page0.putBytes(page0.getPageStartPosition() + 100, bb0w.array());
         ByteBuffer bb0r = ByteBuffer.wrap(page0.getBytes(page0.getPageStartPosition() + 100, 4)).order(BYTEORDER);
         int i0 = bb0r.getInt();
         assertEquals(1234, i0);
@@ -62,7 +62,7 @@ public class PageTest {
         Page page42 = new Page(PAGESIZE * 42, new byte[PAGESIZE]);
         ByteBuffer bb42w = ByteBuffer.allocate(4).order(BYTEORDER);
         bb42w.putInt(1100110088);
-        page42.putBytes(page42.getPageStartPosition() + 4242, bb42w.array(), 4);
+        page42.putBytes(page42.getPageStartPosition() + 4242, bb42w.array());
         ByteBuffer bb42r = ByteBuffer.wrap(page42.getBytes(page42.getPageStartPosition() + 4242, 4)).order(BYTEORDER);
         int i42 = bb42r.getInt();
         assertEquals(1100110088, i42);
