@@ -96,4 +96,81 @@ public class Pager {
         throw new UnsupportedOperationException("Not yet Implemented!");
     }
 
+    /**
+     *
+     */
+    public static class Page {
+
+        private final byte[] data;
+        private final int pageStartPosition;
+
+        public Page(int pageStartPosition, byte[] data) {
+            super();
+            this.pageStartPosition = pageStartPosition;
+            this.data = data;
+        }
+
+        public int getPageStartPosition() {
+            return pageStartPosition;
+        }
+
+        public byte[] getBytes(int filePosition, int length) {
+            byte[] ret = new byte[length];
+            System.arraycopy(data, filePosition - pageStartPosition, ret, 0, length);
+            return ret;
+        }
+
+        public void putBytes(int filePosition, byte[] bytes, int length) {
+            System.arraycopy(bytes, 0, data, filePosition - pageStartPosition, length);
+        }
+    }
+
+    /**
+     *
+     */
+    public static class PageCache {
+
+        private static final int CACHESIZE = 100;
+        private final Pager.Page[] cache = new Pager.Page[CACHESIZE];
+        private int size = 0;
+
+        /**
+         * Tries finding a page in the cache.
+         *
+         * @param pageStartPosition the start position of the desired page.
+         * @return the desired page if found, otherwise null.
+         */
+        public Pager.Page find(int pageStartPosition) {
+            for (int i = 0; i < CACHESIZE && i < size; i++) {
+                if (cache[i].getPageStartPosition() == pageStartPosition) {
+                    // Every time we access a Page it gets moved one step forward
+                    // in the cache array. This way the most used pages end up
+                    // first in the array and the least used is swaped out when
+                    // reading in a new page.
+                    if (i > 0) {
+                        Pager.Page tmp = cache[i - 1];
+                        cache[i - 1] = cache[i];
+                        cache[i] = tmp;
+                    }
+                    return cache[i - 1];
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Add a new Page to the cache.
+         *
+         * @param page
+         */
+        public void put(Pager.Page page) {
+            if (size < CACHESIZE) {
+                cache[size] = page;
+                size++;
+            } else {
+                cache[CACHESIZE - 1] = page;
+            }
+        }
+    }
+
 }
