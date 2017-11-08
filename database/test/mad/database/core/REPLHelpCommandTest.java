@@ -25,7 +25,7 @@ public class REPLHelpCommandTest extends REPLTestBase {
                 + ".version Show version number.\n"
                 + "dbname>";
 
-        assertEquals(result, expResult);
+        assertEquals(expResult, result);
 
     }
 
