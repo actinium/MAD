@@ -23,8 +23,8 @@ public class Page {
         return ret;
     }
 
-    public void putBytes(int filePosition, byte[] bytes) {
-        System.arraycopy(bytes, 0, data, filePosition - pageStartPosition, bytes.length);
+    public void putBytes(int filePosition, byte[] bytes, int length) {
+        System.arraycopy(bytes, 0, data, filePosition - pageStartPosition, length);
     }
 
 }

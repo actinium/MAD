@@ -51,12 +51,12 @@ public class PageTest {
     @Test
     public void testPageWriteAndRead() {
         Page page0 = new Page(0, new byte[PAGESIZE]);
-        page0.putBytes(page0.getPageStartPosition() + 100, Bytes.fromInt(1234));
+        page0.putBytes(page0.getPageStartPosition() + 100, Bytes.fromInt(1234),4);
         int i0 = Bytes.toInt(page0.getBytes(page0.getPageStartPosition() + 100, 4));
         assertEquals(1234, i0);
 
         Page page42 = new Page(PAGESIZE * 42, new byte[PAGESIZE]);
-        page42.putBytes(page42.getPageStartPosition() + 4242, Bytes.fromInt(1100110088));
+        page42.putBytes(page42.getPageStartPosition() + 4242, Bytes.fromInt(1100110088),4);
         int i42 = Bytes.toInt(page42.getBytes(page42.getPageStartPosition() + 4242, 4));
         assertEquals(1100110088, i42);
     }
