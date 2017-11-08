@@ -10,32 +10,44 @@ public class Bytes {
 
     public static byte[] fromInt(int number) {
         byte[] ret = new byte[4];
-        ByteBuffer.allocate(4).order(BYTEORDER).putInt(number).get(ret);
+        ByteBuffer bb = ByteBuffer.allocate(4).order(BYTEORDER);
+        bb.putInt(number).position(0).mark();
+        bb.get(ret);
         return ret;
     }
 
     public static int toInt(byte[] bytes) {
-        return ByteBuffer.allocate(4).order(BYTEORDER).put(bytes).getInt();
+        ByteBuffer bb = ByteBuffer.allocate(4).order(BYTEORDER);
+        bb.put(bytes).position(0).mark();
+        return bb.getInt();
     }
     
     public static byte[] fromFloat(float number) {
         byte[] ret = new byte[4];
-        ByteBuffer.allocate(4).order(BYTEORDER).putFloat(number).get(ret);
+        ByteBuffer bb = ByteBuffer.allocate(4).order(BYTEORDER);
+        bb.putFloat(number).position(0).mark();
+        bb.get(ret);
         return ret;
     }
 
     public static float toFloat(byte[] bytes) {
-        return ByteBuffer.allocate(4).order(BYTEORDER).put(bytes).getFloat();
+        ByteBuffer bb = ByteBuffer.allocate(4).order(BYTEORDER);
+        bb.put(bytes).position(0).mark();
+        return bb.getFloat();
     }
     
     public static byte[] fromBoolean(boolean bool) {
         byte[] ret = new byte[1];
-        ByteBuffer.allocate(1).order(BYTEORDER).put((byte) (bool ? 1 : 0)).get(ret);
+        ByteBuffer bb = ByteBuffer.allocate(4).order(BYTEORDER);
+        bb.put((byte) (bool ? 1 : 0)).position(0).mark();
+        bb.get(ret);
         return ret;
     }
 
     public static boolean toBoolean(byte[] bytes) {
-        return ByteBuffer.allocate(1).order(BYTEORDER).put(bytes).get() != 0;
+        ByteBuffer bb = ByteBuffer.allocate(1).order(BYTEORDER);
+        bb.put(bytes).position(0).mark();
+        return bb.get() != 0;
     }
     
     public static byte[] fromString(String string) {
