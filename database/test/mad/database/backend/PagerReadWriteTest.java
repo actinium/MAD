@@ -91,8 +91,8 @@ public class PagerReadWriteTest {
         int before1 = 4321;
         int before2 = 789;
         int before3 = 111;
-        int page1 = 0;
-        int page2 = 0;
+        int page1;
+        int page2;
         {
             Pager pager = new Pager(testFile);
             page1 = pager.newPage();
