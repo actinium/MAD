@@ -19,7 +19,7 @@ public class Pager {
     private final int startOffset = 12;
 
     private final RandomAccessFile dbFile;
-    
+
     private final PageCache cache;
     private Page currentPage;
     private int firstTablePointer;
@@ -154,7 +154,7 @@ public class Pager {
         Page page;
         if (currentPage != null && pageStart == currentPage.getPageStartPosition()) {
             page = currentPage;
-        }else if((page = cache.find(pageStart)) == null){
+        } else if ((page = cache.find(pageStart)) == null) {
             byte[] data = new byte[PAGESIZE];
             dbFile.seek(pageStart);
             dbFile.read(data);
@@ -213,7 +213,7 @@ public class Pager {
         private static final int CACHESIZE = 100;
         private final Pager.Page[] cache = new Pager.Page[CACHESIZE];
         private int size = 0;
-        
+
         /**
          * Tries finding a page in the cache.
          *
