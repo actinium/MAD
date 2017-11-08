@@ -1,4 +1,3 @@
-
 package mad.database.backend;
 
 import java.io.File;
@@ -11,7 +10,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 
 /**
  *
@@ -33,7 +31,7 @@ public class PagerNewPageTest {
         testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
         testFile.deleteOnExit();
         int dbHeaderSize = 12;
-        try(FileOutputStream writer = new FileOutputStream(testFile)){
+        try (FileOutputStream writer = new FileOutputStream(testFile)) {
             byte[] initBytes = new byte[dbHeaderSize];
             writer.write(initBytes);
         }
@@ -48,18 +46,11 @@ public class PagerNewPageTest {
      */
     @Test
     public void testNewPage() throws Exception {
-        File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
-        testFile.deleteOnExit();
-        int dbHeaderSize = 12;
-        try(FileOutputStream writer = new FileOutputStream(testFile)){
-            byte[] initBytes = new byte[dbHeaderSize];
-            writer.write(initBytes);
-        }
         Pager pager = new Pager(testFile);
         assertEquals(12, pager.newPage());
-        assertEquals(12+PAGESIZE, testFile.length());
-        assertEquals(12+PAGESIZE, pager.newPage());
-        assertEquals(12+2*PAGESIZE, testFile.length());
+        assertEquals(12 + PAGESIZE, testFile.length());
+        assertEquals(12 + PAGESIZE, pager.newPage());
+        assertEquals(12 + 2 * PAGESIZE, testFile.length());
         pager.close();
     }
 
@@ -67,21 +58,47 @@ public class PagerNewPageTest {
      * Test of newPage & freePage method, of class Pager.
      */
     @Test
-    @Ignore
     public void testFreeNewPage() throws Exception {
-        File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
-        testFile.deleteOnExit();
-        int dbHeaderSize = 12;
-        try(FileOutputStream writer = new FileOutputStream(testFile)){
-            byte[] initBytes = new byte[dbHeaderSize];
-            writer.write(initBytes);
-        }
         Pager pager = new Pager(testFile);
         assertEquals(12, pager.newPage());
-        assertEquals(12+PAGESIZE, testFile.length());
+        assertEquals(12 + PAGESIZE, testFile.length());
         pager.freePage(12);
         assertEquals(12, pager.newPage());
-        assertEquals(12+PAGESIZE, testFile.length());
+        assertEquals(12 + PAGESIZE, testFile.length());
+        pager.close();
+    }
+
+    /**
+     * Test of newPage & freePage method, of class Pager.
+     */
+    @Test
+    public void testFreeNewPage1() throws Exception {
+        Pager pager = new Pager(testFile);
+
+        // Allocate 3 pages
+        assertEquals(12, pager.newPage());
+        assertEquals(12 + PAGESIZE, testFile.length());
+        assertEquals(12 + PAGESIZE, pager.newPage());
+        assertEquals(12 + 2 * PAGESIZE, testFile.length());
+        assertEquals(12 + 2 * PAGESIZE, pager.newPage());
+        assertEquals(12 + 3 * PAGESIZE, testFile.length());
+
+        // Free 2 pages
+        pager.freePage(12 + 2 * PAGESIZE);
+        pager.freePage(12);
+
+        // Get 2 new pages. Shouldn't increase file size.
+        int p1 = pager.newPage();
+        int p2 = pager.newPage();
+        assertTrue((p1 == 12) ^ (p2 == 12));
+        assertTrue((p1 == 12 + 2 * PAGESIZE) ^ (p2 == 12 + 2 * PAGESIZE));
+        assertEquals(12 + 3 * PAGESIZE, testFile.length());
+        assertEquals(12 + 3 * PAGESIZE, testFile.length());
+
+        // Free-list is empty again so we allocate a new page.
+        assertEquals(12 + 3 * PAGESIZE, pager.newPage());
+        assertEquals(12 + 4 * PAGESIZE, testFile.length());
+
         pager.close();
     }
 }
