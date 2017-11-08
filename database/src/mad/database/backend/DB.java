@@ -2,6 +2,8 @@ package mad.database.backend;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  *
@@ -10,12 +12,18 @@ public class DB {
 
     private Pager pager;
 
-    private DB(String filename) throws FileNotFoundException {
+    private DB(String filename) throws FileNotFoundException, IOException {
         File file = new File(filename);
+        if(file.exists() && (!file.canRead() || !file.canWrite())){
+            throw new IOException("Can not access file: " + filename + "!");
+        }
+        if(!file.exists()){
+            initDBFile(file);
+        }
         pager = new Pager(file);
     }
 
-    public static DB open(String filename) throws FileNotFoundException {
+    public static DB open(String filename) throws FileNotFoundException, IOException {
         return new DB(filename);
     }
 
@@ -28,4 +36,13 @@ public class DB {
     // - Delete Row/Rows
     // 
     // - Select
+
+    private void initDBFile(File file) throws FileNotFoundException, IOException {
+        try(FileOutputStream writer = new FileOutputStream(file)){
+            byte[] initBytes = {0,0,0};
+            writer.write(initBytes);
+            writer.flush();
+        }
+    }
+
 }
