@@ -76,7 +76,7 @@ public class BytesTest {
     }
 
     /**
-     * Test of toInt method, of class Bytes.16843009
+     * Test of toInt method, of class Bytes.
      */
     @Test
     public void testToInt20171108() {
@@ -85,7 +85,7 @@ public class BytesTest {
         int result = Bytes.toInt(bytes);
         assertEquals(expResult, result);
     }
-    
+
     /**
      * Test of toInt method, of class Bytes.
      */
@@ -134,52 +134,165 @@ public class BytesTest {
      * Test of fromFloat method, of class Bytes.
      */
     @Test
-    public void testFromFloat() {
+    public void testFromFloat0() {
         float number = 0.0F;
-        byte[] expResult = null;
+        byte[] expResult = {0, 0, 0, 0};
         byte[] result = Bytes.fromFloat(number);
         assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of toFloat method, of class Bytes.
      */
     @Test
-    public void testToFloat() {
-        byte[] bytes = null;
+    public void testToFloat0() {
+        byte[] bytes = {0, 0, 0, 0};
         float expResult = 0.0F;
         float result = Bytes.toFloat(bytes);
-        assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals(expResult, result, 0.01);
+    }
+
+    /**
+     * Test of Float methods with Pi.
+     */
+    @Test
+    public void testFloatPI() {
+        float before = 3.14159265359F;
+        byte[] bytes = Bytes.fromFloat(before);
+        float after = Bytes.toFloat(bytes);
+        assertEquals(before, after, 0.01);
+    }
+
+    /**
+     * Test of Float methods with Float.MAX_VALUE.
+     */
+    @Test
+    public void testFloatMax() {
+        float before = Float.MAX_VALUE;
+        byte[] bytes = Bytes.fromFloat(before);
+        float after = Bytes.toFloat(bytes);
+        assertEquals(before, after, 0.01);
+    }
+
+    /**
+     * Test of Float methods with Float.MIN_VALUE.
+     */
+    @Test
+    public void testFloatMin() {
+        float before = Float.MIN_VALUE;
+        byte[] bytes = Bytes.fromFloat(before);
+        float after = Bytes.toFloat(bytes);
+        assertEquals(before, after, 0.01);
+    }
+
+    /**
+     * Test of Float methods with Float.MIN_NORMAL.
+     */
+    @Test
+    public void testFloatNormal() {
+        float before = Float.MIN_NORMAL;
+        byte[] bytes = Bytes.fromFloat(before);
+        float after = Bytes.toFloat(bytes);
+        assertEquals(before, after, 0.01);
+    }
+
+    /**
+     * Test of Float methods with Float.POSITIVE_INFINITY.
+     */
+    @Test
+    public void testFloatInfinity() {
+        float before = Float.POSITIVE_INFINITY;
+        byte[] bytes = Bytes.fromFloat(before);
+        float after = Bytes.toFloat(bytes);
+        assertEquals(before, after, 0.01);
+    }
+
+    /**
+     * Test of Float methods with Float.NEGATIVE_INFINITY.
+     */
+    @Test
+    public void testFloatNegativeInfinity() {
+        float before = Float.NEGATIVE_INFINITY;
+        byte[] bytes = Bytes.fromFloat(before);
+        float after = Bytes.toFloat(bytes);
+        assertEquals(before, after, 0.01);
+    }
+
+    /**
+     * Test of Float methods with Float.NaN.
+     */
+    @Test
+    public void testFloatNaN() {
+        float before = Float.NaN;
+        byte[] bytes = Bytes.fromFloat(before);
+        float after = Bytes.toFloat(bytes);
+        assertEquals(before, after, 0.01);
     }
 
     /**
      * Test of fromBoolean method, of class Bytes.
      */
     @Test
-    public void testFromBoolean() {
-        boolean bool = false;
-        byte[] expResult = null;
+    public void testFromBooleanTrue() {
+        boolean bool = true;
+        byte[] expResult = {1};
         byte[] result = Bytes.fromBoolean(bool);
         assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of fromBoolean method, of class Bytes.
+     */
+    @Test
+    public void testFromBooleanFalse() {
+        boolean bool = false;
+        byte[] expResult = {0};
+        byte[] result = Bytes.fromBoolean(bool);
+        assertArrayEquals(expResult, result);
     }
 
     /**
      * Test of toBoolean method, of class Bytes.
      */
     @Test
-    public void testToBoolean() {
-        byte[] bytes = null;
+    public void testToBooleanTrue() {
+        byte[] bytes = {1};
+        boolean expResult = true;
+        boolean result = Bytes.toBoolean(bytes);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of toBoolean method, of class Bytes.
+     */
+    @Test
+    public void testToBooleanFalse() {
+        byte[] bytes = {0};
         boolean expResult = false;
         boolean result = Bytes.toBoolean(bytes);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of Boolean methods, of class Bytes.
+     */
+    @Test
+    public void testBooleanTrue() {
+        boolean before = true;
+        byte[] bytes = Bytes.fromBoolean(before);
+        boolean after = Bytes.toBoolean(bytes);
+        assertEquals(before, after);
+    }
+
+    /**
+     * Test of Boolean methods, of class Bytes.
+     */
+    @Test
+    public void testBooleanFalse() {
+        boolean before = false;
+        byte[] bytes = Bytes.fromBoolean(before);
+        boolean after = Bytes.toBoolean(bytes);
+        assertEquals(before, after);
     }
 
     /**
@@ -188,7 +301,7 @@ public class BytesTest {
     @Test
     public void testFromString() {
         String string = "Hello World";
-        byte[] expResult = {'H','e','l','l','o',' ','W','o','r','l','d'};
+        byte[] expResult = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
         byte[] result = Bytes.fromString(string);
         assertArrayEquals(expResult, result);
     }
@@ -199,26 +312,41 @@ public class BytesTest {
     @Test
     public void testToString() {
         byte[] bytes = {
-            (byte)0xC3, (byte)0xA5, // å
-            (byte)0xC3, (byte)0xA4, // ä
-            (byte)0xC3, (byte)0xB6, // ö
-            (byte)0xC3, (byte)0x85, // Å
-            (byte)0xC3, (byte)0x84, // Ä
-            (byte)0xC3, (byte)0x96}; //Ö
+            (byte) 0xC3, (byte) 0xA5, // å
+            (byte) 0xC3, (byte) 0xA4, // ä
+            (byte) 0xC3, (byte) 0xB6, // ö
+            (byte) 0xC3, (byte) 0x85, // Å
+            (byte) 0xC3, (byte) 0x84, // Ä
+            (byte) 0xC3, (byte) 0x96}; //Ö
         String expResult = "åäöÅÄÖ";
         String result = Bytes.toString(bytes);
         assertEquals(expResult, result);
     }
-    
+
     /**
-     * Test of toString method, of class Bytes.
+     * Test of String methods, of class Bytes.
      */
     @Test
     public void testString() {
-        String before = 
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ\n" +
-                "abcdefghijklmnopqrstuvwxyzåäö\n" +
-                "1234567890";
+        String before
+                = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ\n"
+                + "abcdefghijklmnopqrstuvwxyzåäö\n"
+                + "1234567890";
+        byte[] bytes = Bytes.fromString(before);
+        String after = Bytes.toString(bytes);
+        assertEquals(before, after);
+    }
+
+    /**
+     * Test of String methods, of class Bytes.
+     */
+    @Test
+    public void testString2() {
+        String before
+                = "!@#$£%^&*()_+|~\\`\n"
+                + "\t{}[]:;\"'<>,./?\n"
+                + "ÉÈËÊéèëêÁÀÄÃÂáàäãâÓÒÖÕÖóòöõô\n"
+                + "çßñ";
         byte[] bytes = Bytes.fromString(before);
         String after = Bytes.toString(bytes);
         assertEquals(before, after);
