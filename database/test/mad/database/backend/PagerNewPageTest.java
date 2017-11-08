@@ -3,6 +3,7 @@ package mad.database.backend;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import static mad.database.Config.PAGESIZE;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -17,8 +18,7 @@ import org.junit.Ignore;
  */
 public class PagerNewPageTest {
 
-    public PagerNewPageTest() {
-    }
+    private File testFile;
 
     @BeforeClass
     public static void setUpClass() {
@@ -29,7 +29,14 @@ public class PagerNewPageTest {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
+        testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
+        testFile.deleteOnExit();
+        int dbHeaderSize = 12;
+        try(FileOutputStream writer = new FileOutputStream(testFile)){
+            byte[] initBytes = new byte[dbHeaderSize];
+            writer.write(initBytes);
+        }
     }
 
     @After
@@ -53,6 +60,7 @@ public class PagerNewPageTest {
         assertEquals(12+PAGESIZE, testFile.length());
         assertEquals(12+PAGESIZE, pager.newPage());
         assertEquals(12+2*PAGESIZE, testFile.length());
+        pager.close();
     }
 
     /**
@@ -74,5 +82,6 @@ public class PagerNewPageTest {
         pager.freePage(12);
         assertEquals(12, pager.newPage());
         assertEquals(12+PAGESIZE, testFile.length());
+        pager.close();
     }
 }
