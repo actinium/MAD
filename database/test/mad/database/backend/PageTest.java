@@ -3,6 +3,7 @@ package mad.database.backend;
 import java.nio.ByteBuffer;
 import static mad.database.Config.BYTEORDER;
 import static mad.database.Config.PAGESIZE;
+import mad.util.Bytes;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -52,19 +53,13 @@ public class PageTest {
     @Test
     public void testPageWriteAndRead() {
         Page page0 = new Page(0, new byte[PAGESIZE]);
-        ByteBuffer bb0w = ByteBuffer.allocate(4).order(BYTEORDER);
-        bb0w.putInt(1234);
-        page0.putBytes(page0.getPageStartPosition() + 100, bb0w.array());
-        ByteBuffer bb0r = ByteBuffer.wrap(page0.getBytes(page0.getPageStartPosition() + 100, 4)).order(BYTEORDER);
-        int i0 = bb0r.getInt();
+        page0.putBytes(page0.getPageStartPosition() + 100, Bytes.fromInt(1234));
+        int i0 = Bytes.toInt(page0.getBytes(page0.getPageStartPosition() + 100, 4));
         assertEquals(1234, i0);
 
         Page page42 = new Page(PAGESIZE * 42, new byte[PAGESIZE]);
-        ByteBuffer bb42w = ByteBuffer.allocate(4).order(BYTEORDER);
-        bb42w.putInt(1100110088);
-        page42.putBytes(page42.getPageStartPosition() + 4242, bb42w.array());
-        ByteBuffer bb42r = ByteBuffer.wrap(page42.getBytes(page42.getPageStartPosition() + 4242, 4)).order(BYTEORDER);
-        int i42 = bb42r.getInt();
+        page42.putBytes(page42.getPageStartPosition() + 4242, Bytes.fromInt(1100110088));
+        int i42 = Bytes.toInt(page42.getBytes(page42.getPageStartPosition() + 4242, 4));
         assertEquals(1100110088, i42);
     }
 
