@@ -3,8 +3,6 @@ package mad.database.backend;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import static mad.database.Config.BYTEORDER;
 import mad.util.Bytes;
 
 /**
