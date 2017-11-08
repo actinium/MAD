@@ -2,6 +2,7 @@ package mad.database.backend;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import mad.util.Bytes;
 
@@ -18,6 +19,10 @@ public class Pager {
         dbFile = new RandomAccessFile(file, "rwd");
         cache = new PageCache();
         currentPage = null;
+    }
+    
+    public void close() throws IOException{
+        dbFile.close();
     }
 
     /**
