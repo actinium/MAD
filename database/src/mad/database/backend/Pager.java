@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import static mad.database.Config.PAGESIZE;
+import mad.database.backend.Pager.Page;
 import mad.util.Bytes;
 
 /**
@@ -11,62 +13,111 @@ import mad.util.Bytes;
  */
 public class Pager {
 
+    private final int firstTablePointerOffset = 0;
+    private final int lastTablePointerOffset = 4;
+    private final int freePagePointerOffset = 8;
+    private final int startOffset = 12;
+
     private final RandomAccessFile dbFile;
+    
     private final PageCache cache;
     private Page currentPage;
+    private int firstTablePointer;
+    private int lastTablePointer;
+    private int freePagePointer;
 
-    public Pager(File file) throws FileNotFoundException {
+    public Pager(File file) throws FileNotFoundException, IOException {
         dbFile = new RandomAccessFile(file, "rwd");
         cache = new PageCache();
         currentPage = null;
+        byte[] bytes = new byte[4];
+        dbFile.read(bytes);
+        firstTablePointer = Bytes.toInt(bytes);
+        dbFile.read(bytes);
+        lastTablePointer = Bytes.toInt(bytes);
+        dbFile.read(bytes);
+        freePagePointer = Bytes.toInt(bytes);
     }
-    
-    public void close() throws IOException{
+
+    public void close() throws IOException {
         dbFile.close();
     }
 
     /**
-     * Get a new Page.
-     * Returns a page from the free-list or, if the free-list is empty,
-     * allocates a new page.
-     * 
+     * Get a new Page. Returns a page from the free-list or, if the free-list is
+     * empty, allocates a new page.
+     *
      * @return the startPosition of the page
      */
-    public int newPage() {
-        throw new UnsupportedOperationException("Not yet Implemented!");
+    public int newPage() throws IOException {
+        int firstFreePage = readInteger(freePagePointerOffset);
+        if (firstFreePage == 0) {
+            firstFreePage = (int) dbFile.length();
+            dbFile.setLength(dbFile.length() + PAGESIZE);
+        } else {
+            //Todo
+        }
+        byte[] data = new byte[PAGESIZE];
+        dbFile.seek(firstFreePage);
+        dbFile.read(data);
+        cache.put(new Page(firstFreePage, data));
+        return firstFreePage;
     }
 
     /**
      * Frees a page when it's no longer needed.
-     * 
+     *
      * @param starPosition the startPosition of the page.
      */
     public void freePage(int starPosition) {
         throw new UnsupportedOperationException("Not yet Implemented!");
     }
 
-    public int readInteger(int filePosition) {
+    public int readInteger(int filePosition) throws IOException {
+        if (filePosition >= 0 && filePosition < startOffset) { // File Header
+            switch (filePosition) {
+                case firstTablePointerOffset:
+                    return firstTablePointer;
+                case lastTablePointerOffset:
+                    return lastTablePointer;
+                case freePagePointerOffset:
+                    return freePagePointer;
+            }
+        }
         return Bytes.toInt(readBytes(filePosition, 4));
     }
 
-    public void writeInteger(int filePosition, int number) {
-        writeBytes(filePosition, Bytes.fromInt(number),4);
+    public void writeInteger(int filePosition, int number) throws IOException {
+        writeBytes(filePosition, Bytes.fromInt(number), 4);
+        if (filePosition >= 0 && filePosition < startOffset) { // File Header
+            switch (filePosition) {
+                case firstTablePointerOffset:
+                    firstTablePointer = number;
+                    break;
+                case lastTablePointerOffset:
+                    lastTablePointer = number;
+                    break;
+                case freePagePointerOffset:
+                    freePagePointer = number;
+                    break;
+            }
+        }
     }
 
-    public float readFloat(int filePosition) {
+    public float readFloat(int filePosition) throws IOException {
         return Bytes.toFloat(readBytes(filePosition, 4));
     }
 
-    public void writeFloat(int filePosition, float number) {
-        writeBytes(filePosition, Bytes.fromFloat(number),4);
+    public void writeFloat(int filePosition, float number) throws IOException {
+        writeBytes(filePosition, Bytes.fromFloat(number), 4);
     }
 
-    public boolean readBoolean(int filePosition) {
+    public boolean readBoolean(int filePosition) throws IOException {
         return Bytes.toBoolean(readBytes(filePosition, 1));
     }
 
-    public void writeBoolean(int filePosition, boolean bool) {
-        writeBytes(filePosition, Bytes.fromBoolean(bool),1);
+    public void writeBoolean(int filePosition, boolean bool) throws IOException {
+        writeBytes(filePosition, Bytes.fromBoolean(bool), 1);
     }
 
     public String readString(int fileposition, int length) {
@@ -77,18 +128,42 @@ public class Pager {
         throw new UnsupportedOperationException("Not yet Implemented!");
     }
 
-    private byte[] readBytes(int filePosition, int length) {
-        // - is 0 <= filePosition < file-size?
-        // - is page == currentPage?
-        // - is page in PageCache?
-        throw new UnsupportedOperationException("Not yet Implemented!");
+    private byte[] readBytes(int filePosition, int length) throws IOException {
+        int pageStart = positionToPageStart(filePosition);
+        Page page;
+        if (currentPage != null && pageStart == currentPage.getPageStartPosition()) {
+            return currentPage.getBytes(filePosition, length);
+        } else if ((page = cache.find(pageStart)) == null) {
+            byte[] data = new byte[PAGESIZE];
+            dbFile.seek(pageStart);
+            dbFile.read(data);
+            page = new Page(pageStart, data);
+            cache.put(page);
+        }
+        currentPage = page;
+        return page.getBytes(filePosition, length);
     }
 
-    private void writeBytes(int filePosition, byte[] bytes, int length) {
-        // - is 0 <= filePosition < file-size?
-        // - is page == currentPage?
-        // - is page in PageCache?
-        throw new UnsupportedOperationException("Not yet Implemented!");
+    private void writeBytes(int filePosition, byte[] bytes, int length) throws IOException {
+        if (filePosition >= 0 && filePosition < startOffset) { // File Header
+            dbFile.seek(filePosition);
+            dbFile.write(bytes, 0, length);
+            return;
+        }
+        int pageStart = positionToPageStart(filePosition);
+        Page page;
+        if (currentPage != null && pageStart == currentPage.getPageStartPosition()) {
+            page = currentPage;
+        }else if((page = cache.find(pageStart)) == null){
+            byte[] data = new byte[PAGESIZE];
+            dbFile.seek(pageStart);
+            dbFile.read(data);
+            page = new Page(pageStart, data);
+            cache.put(page);
+        }
+        page.putBytes(filePosition, bytes, length);
+        dbFile.seek(filePosition);
+        dbFile.write(bytes, 0, length);
     }
 
     /**
@@ -98,7 +173,7 @@ public class Pager {
      * @return the page containing the position.
      */
     private int positionToPageStart(int position) {
-        throw new UnsupportedOperationException("Not yet Implemented!");
+        return ((position - 12) / PAGESIZE) * PAGESIZE + 12;
     }
 
     /**
@@ -138,7 +213,7 @@ public class Pager {
         private static final int CACHESIZE = 100;
         private final Pager.Page[] cache = new Pager.Page[CACHESIZE];
         private int size = 0;
-
+        
         /**
          * Tries finding a page in the cache.
          *
@@ -156,8 +231,9 @@ public class Pager {
                         Pager.Page tmp = cache[i - 1];
                         cache[i - 1] = cache[i];
                         cache[i] = tmp;
+                        return cache[i - 1];
                     }
-                    return cache[i - 1];
+                    return cache[i];
                 }
             }
             return null;
