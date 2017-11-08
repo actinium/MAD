@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import static mad.database.Config.BYTEORDER;
+import mad.util.Bytes;
 
 /**
  *
@@ -42,28 +43,27 @@ public class Pager {
     }
 
     public int readInteger(int filePosition) {
-        return readBytes(filePosition, 4).getInt();
+        return Bytes.toInt(readBytes(filePosition, 4));
     }
 
     public void writeInteger(int filePosition, int number) {
-        writeBytes(filePosition, ByteBuffer.allocate(4).order(BYTEORDER).putInt(number),4);
+        writeBytes(filePosition, Bytes.fromInt(number),4);
     }
 
     public float readFloat(int filePosition) {
-        return readBytes(filePosition, 4).getFloat();
+        return Bytes.toFloat(readBytes(filePosition, 4));
     }
 
     public void writeFloat(int filePosition, float number) {
-        writeBytes(filePosition, ByteBuffer.allocate(4).order(BYTEORDER).putFloat(number),4);
+        writeBytes(filePosition, Bytes.fromFloat(number),4);
     }
 
     public boolean readBoolean(int filePosition) {
-        byte b = readBytes(filePosition, 1).get();
-        return b != 0;
+        return Bytes.toBoolean(readBytes(filePosition, 1));
     }
 
     public void writeBoolean(int filePosition, boolean bool) {
-        writeBytes(filePosition, ByteBuffer.allocate(1).order(BYTEORDER).put((byte) (bool ? 1 : 0)),1);
+        writeBytes(filePosition, Bytes.fromBoolean(bool),1);
     }
 
     public String readString(int fileposition, int length) {
@@ -74,14 +74,14 @@ public class Pager {
         throw new UnsupportedOperationException("Not yet Implemented!");
     }
 
-    private ByteBuffer readBytes(int filePosition, int length) {
+    private byte[] readBytes(int filePosition, int length) {
         // - is 0 <= filePosition < file-size?
         // - is page == currentPage?
         // - is page in PageCache?
         throw new UnsupportedOperationException("Not yet Implemented!");
     }
 
-    private void writeBytes(int filePosition, ByteBuffer bytes, int size) {
+    private void writeBytes(int filePosition, byte[] bytes, int length) {
         // - is 0 <= filePosition < file-size?
         // - is page == currentPage?
         // - is page in PageCache?
