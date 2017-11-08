@@ -1,4 +1,3 @@
-
 package mad.util;
 
 import org.junit.After;
@@ -39,7 +38,7 @@ public class BytesTest {
     public void testFromInt() {
         System.out.println("fromInt");
         int number = 0;
-        byte[] expResult = {0,0,0,0};
+        byte[] expResult = {0, 0, 0, 0};
         byte[] result = Bytes.fromInt(number);
         assertArrayEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.

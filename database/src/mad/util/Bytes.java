@@ -21,7 +21,7 @@ public class Bytes {
         bb.put(bytes).position(0).mark();
         return bb.getInt();
     }
-    
+
     public static byte[] fromFloat(float number) {
         byte[] ret = new byte[4];
         ByteBuffer bb = ByteBuffer.allocate(4).order(BYTEORDER);
@@ -35,7 +35,7 @@ public class Bytes {
         bb.put(bytes).position(0).mark();
         return bb.getFloat();
     }
-    
+
     public static byte[] fromBoolean(boolean bool) {
         byte[] ret = new byte[1];
         ByteBuffer bb = ByteBuffer.allocate(4).order(BYTEORDER);
@@ -49,7 +49,7 @@ public class Bytes {
         bb.put(bytes).position(0).mark();
         return bb.get() != 0;
     }
-    
+
     public static byte[] fromString(String string) {
         throw new UnsupportedOperationException("Not yet Implemented!");
     }
