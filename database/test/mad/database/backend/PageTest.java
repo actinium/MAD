@@ -1,7 +1,5 @@
 package mad.database.backend;
 
-import java.nio.ByteBuffer;
-import static mad.database.Config.BYTEORDER;
 import static mad.database.Config.PAGESIZE;
 import mad.util.Bytes;
 import org.junit.After;
