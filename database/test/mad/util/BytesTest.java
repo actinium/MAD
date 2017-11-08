@@ -187,12 +187,10 @@ public class BytesTest {
      */
     @Test
     public void testFromString() {
-        String string = "";
-        byte[] expResult = null;
+        String string = "Hello World";
+        byte[] expResult = {'H','e','l','l','o',' ','W','o','r','l','d'};
         byte[] result = Bytes.fromString(string);
         assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -200,12 +198,30 @@ public class BytesTest {
      */
     @Test
     public void testToString() {
-        byte[] bytes = null;
-        boolean expResult = false;
-        boolean result = Bytes.toString(bytes);
+        byte[] bytes = {
+            (byte)0xC3, (byte)0xA5, // å
+            (byte)0xC3, (byte)0xA4, // ä
+            (byte)0xC3, (byte)0xB6, // ö
+            (byte)0xC3, (byte)0x85, // Å
+            (byte)0xC3, (byte)0x84, // Ä
+            (byte)0xC3, (byte)0x96}; //Ö
+        String expResult = "åäöÅÄÖ";
+        String result = Bytes.toString(bytes);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    }
+    
+    /**
+     * Test of toString method, of class Bytes.
+     */
+    @Test
+    public void testString() {
+        String before = 
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ\n" +
+                "abcdefghijklmnopqrstuvwxyzåäö\n" +
+                "1234567890";
+        byte[] bytes = Bytes.fromString(before);
+        String after = Bytes.toString(bytes);
+        assertEquals(before, after);
     }
 
 }

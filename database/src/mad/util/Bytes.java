@@ -2,12 +2,13 @@ package mad.util;
 
 import java.nio.ByteBuffer;
 import static mad.database.Config.BYTEORDER;
+import static mad.database.Config.CHARSET;
 
 /**
  *
  */
 public class Bytes {
-
+    
     public static byte[] fromInt(int number) {
         byte[] ret = new byte[4];
         ByteBuffer bb = ByteBuffer.allocate(4).order(BYTEORDER);
@@ -51,10 +52,10 @@ public class Bytes {
     }
 
     public static byte[] fromString(String string) {
-        throw new UnsupportedOperationException("Not yet Implemented!");
+        return string.getBytes(CHARSET);
     }
 
-    public static boolean toString(byte[] bytes) {
-        throw new UnsupportedOperationException("Not yet Implemented!");
+    public static String toString(byte[] bytes) {
+        return new String(bytes, CHARSET);
     }
 }
