@@ -42,8 +42,9 @@ public class DB {
     // - Select
 
     private void initDBFile(File file) throws FileNotFoundException, IOException {
+        int dbHeaderSize = 12;
         try(FileOutputStream writer = new FileOutputStream(file)){
-            byte[] initBytes = {0,0,0,0,0,0,0,0,0,0,0,0};
+            byte[] initBytes = new byte[dbHeaderSize];
             writer.write(initBytes);
         }
     }
