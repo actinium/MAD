@@ -1,1 +1,1 @@
-![Object Diagram](docs/img/objdiagram.png "Object Diagram")
+![Object Diagram](img/objdiagram.png "Object Diagram")
