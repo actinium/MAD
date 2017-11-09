@@ -89,4 +89,4 @@ Reads `length` bytes from `filePosition` and converts them to a string.
 ```Java
 public void writeString(int filePosition, String string, int length) throws IOException {
 ```
-Converts a string to bytes and writes at most `length` bytes of it to `fileposition`.
+Converts a string to bytes and writes at most `length` bytes of it to `filePosition`.
