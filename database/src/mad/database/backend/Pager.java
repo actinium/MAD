@@ -175,7 +175,7 @@ public class Pager {
      * @param position a position in the file.
      * @return the page containing the position.
      */
-    private int positionToPageStart(int position) {
+    public int positionToPageStart(int position) {
         return ((position - 12) / PAGESIZE) * PAGESIZE + 12;
     }
 
