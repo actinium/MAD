@@ -44,17 +44,49 @@ public int positionToPageStart(int position) {
 Takes a positon and returns the position of the first byte of the page it's in.
 
 ## readInteger(...)
+```Java
+public int readInteger(int filePosition) throws IOException {
+```
+Reads 4 bytes from `filePosition` and converts them to an integer.
 
 ## writeInteger(...)
+```Java
+public void writeInteger(int filePosition, int number) throws IOException {
+```
+Writes an integer to `filePosition`.
 
 ## readFloat(...)
+```Java
+public float readFloat(int filePosition) throws IOException {
+```
+Reads 4 bytes from `filePosition` and converts them to a float.
 
 ## writeFloat(...)
+```Java
+public void writeFloat(int filePosition, float number) throws IOException {
+```
+Writes a float to `filePosition`.
 
 ## readBoolean(...)
+```Java
+public boolean readBoolean(int filePosition) throws IOException {
+```
+Reads 1 byte from `filePosition` and converts it to a boolean.
 
 ## writeBoolean(...)
+```Java
+public void writeBoolean(int filePosition, boolean bool) throws IOException {
+```
+Writes a boolean to `filePosition`.
 
 ## readString(...)
+```Java
+public String readString(int filePosition, int length) throws IOException {
+```
+Reads `length` bytes from `filePosition` and converts them to a string.
 
 ## writeString(...)
+```Java
+public void writeString(int filePosition, String string, int length) throws IOException {
+```
+Converts a string to bytes and writes at most `length` bytes of it to `fileposition`.
