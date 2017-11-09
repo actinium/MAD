@@ -88,6 +88,9 @@ public class Tokenizer implements Iterator<Token> {
             } else if (c == ',') {
                 tokens.add(new Token(Token.Type.Comma, null));
                 index++;
+            } else if (c == '.') {
+                tokens.add(new Token(Token.Type.Dot, null));
+                index++;
             } else if (c == '*') {
                 tokens.add(new Token(Token.Type.Star, null));
                 index++;
@@ -298,6 +301,7 @@ public class Tokenizer implements Iterator<Token> {
             LParen, // '('
             RParen, // ')'
             Comma, // ','
+            Dot, // '.'
             Equals, // '='
             Star, // '*'
             Slash, // '/'

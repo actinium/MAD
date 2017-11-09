@@ -16,22 +16,22 @@ import static org.junit.Assert.*;
  * @author Andreas Cederholm
  */
 public class TokenizerTest {
-    
+
     public TokenizerTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -47,21 +47,21 @@ public class TokenizerTest {
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
-        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
                 new Token(Token.Type.Semicolon)));
-        
+
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = tokenizer;
-        
-        while(result.hasNext() && expResult.hasNext()){
+
+        while (result.hasNext() && expResult.hasNext()) {
             assertEquals(expResult.next(), result.next());
         }
-        
+
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
-    
+
     /**
      * Test of iterator method, of class Tokenizer.
      */
@@ -73,22 +73,22 @@ public class TokenizerTest {
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
-        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
-                new Token(Token.Type.Boolean,"true"),
+                new Token(Token.Type.Boolean, "true"),
                 new Token(Token.Type.Semicolon)));
-        
+
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = tokenizer;
-        
-        while(result.hasNext() && expResult.hasNext()){
+
+        while (result.hasNext() && expResult.hasNext()) {
             assertEquals(expResult.next(), result.next());
         }
-        
+
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
-    
+
     /**
      * Test of iterator method, of class Tokenizer.
      */
@@ -100,22 +100,22 @@ public class TokenizerTest {
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
-        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
-                new Token(Token.Type.ID,"tableName"),
+                new Token(Token.Type.ID, "tableName"),
                 new Token(Token.Type.Semicolon)));
-        
+
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = tokenizer;
-        
-        while(result.hasNext() && expResult.hasNext()){
+
+        while (result.hasNext() && expResult.hasNext()) {
             assertEquals(expResult.next(), result.next());
         }
-        
+
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
-    
+
     /**
      * Test of iterator method, of class Tokenizer.
      */
@@ -128,27 +128,27 @@ public class TokenizerTest {
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
-        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
                 new Token(Token.Type.LParen),
-                new Token(Token.Type.ID,"tableName"),
+                new Token(Token.Type.ID, "tableName"),
                 new Token(Token.Type.RParen),
                 new Token(Token.Type.Semicolon),
                 new Token(Token.Type.Select),
-                new Token(Token.Type.Text,"TextText"),
+                new Token(Token.Type.Text, "TextText"),
                 new Token(Token.Type.Semicolon)));
-        
+
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = tokenizer;
-        
-        while(result.hasNext() && expResult.hasNext()){
+
+        while (result.hasNext() && expResult.hasNext()) {
             assertEquals(expResult.next(), result.next());
         }
-        
+
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
-    
+
     /**
      * Test of iterator method, of class Tokenizer.
      */
@@ -160,24 +160,24 @@ public class TokenizerTest {
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
-        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
                 new Token(Token.Type.LParen),
-                new Token(Token.Type.Text,"Text with a char: 'c' and a string: \"str\". Hello World!"),
+                new Token(Token.Type.Text, "Text with a char: 'c' and a string: \"str\". Hello World!"),
                 new Token(Token.Type.RParen),
                 new Token(Token.Type.Semicolon)));
-        
+
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = tokenizer;
-        
-        while(result.hasNext() && expResult.hasNext()){
+
+        while (result.hasNext() && expResult.hasNext()) {
             assertEquals(expResult.next(), result.next());
         }
-        
+
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
-    
+
     /**
      * Test of iterator method, of class Tokenizer.
      */
@@ -189,22 +189,22 @@ public class TokenizerTest {
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
-        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
-                new Token(Token.Type.Text,"Text: \"Hello World!\". Char: 'c'"),
+                new Token(Token.Type.Text, "Text: \"Hello World!\". Char: 'c'"),
                 new Token(Token.Type.Semicolon)));
-        
+
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = tokenizer;
-        
-        while(result.hasNext() && expResult.hasNext()){
+
+        while (result.hasNext() && expResult.hasNext()) {
             assertEquals(expResult.next(), result.next());
         }
-        
+
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
-    
+
     /**
      * Test of iterator method, of class Tokenizer.
      */
@@ -216,37 +216,37 @@ public class TokenizerTest {
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
-        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
-                new Token(Token.Type.Text,"Text: \"Hello World!\". Char: 'c'"),
+                new Token(Token.Type.Text, "Text: \"Hello World!\". Char: 'c'"),
                 new Token(Token.Type.Semicolon),
                 new Token(Token.Type.Select),
                 new Token(Token.Type.LParen),
-                new Token(Token.Type.ID,"tableName"),
+                new Token(Token.Type.ID, "tableName"),
                 new Token(Token.Type.RParen),
                 new Token(Token.Type.Semicolon)));
-        
+
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = tokenizer;
-        
-        while(result.hasNext() && expResult.hasNext()){
+
+        while (result.hasNext() && expResult.hasNext()) {
             assertEquals(expResult.next(), result.next());
         }
-        
+
         try {
             tokenizer.tokenize("select (tableName);");
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
-        
-        while(result.hasNext() && expResult.hasNext()){
+
+        while (result.hasNext() && expResult.hasNext()) {
             assertEquals(expResult.next(), result.next());
         }
-        
+
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
-    
+
     /**
      * Test of iterator method, of class Tokenizer.
      */
@@ -258,22 +258,22 @@ public class TokenizerTest {
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
-        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
-                new Token(Token.Type.Float,"12.34"),
+                new Token(Token.Type.Float, "12.34"),
                 new Token(Token.Type.Semicolon)));
-        
+
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = tokenizer;
-        
-        while(result.hasNext() && expResult.hasNext()){
+
+        while (result.hasNext() && expResult.hasNext()) {
             assertEquals(expResult.next(), result.next());
         }
-        
+
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
-    
+
     /**
      * Test of iterator method, of class Tokenizer.
      */
@@ -285,24 +285,24 @@ public class TokenizerTest {
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
-        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
                 new Token(Token.Type.LParen),
-                new Token(Token.Type.Integer,"1234"),
+                new Token(Token.Type.Integer, "1234"),
                 new Token(Token.Type.RParen),
                 new Token(Token.Type.Semicolon)));
-        
+
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = tokenizer;
-        
-        while(result.hasNext() && expResult.hasNext()){
+
+        while (result.hasNext() && expResult.hasNext()) {
             assertEquals(expResult.next(), result.next());
         }
-        
+
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
-    
+
     /**
      * Test of iterator method, of class Tokenizer.
      */
@@ -314,27 +314,67 @@ public class TokenizerTest {
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
-        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
-                new Token(Token.Type.ID,"col1"),
+                new Token(Token.Type.ID, "col1"),
                 new Token(Token.Type.Comma),
-                new Token(Token.Type.ID,"col2"),
+                new Token(Token.Type.ID, "col2"),
                 new Token(Token.Type.From),
-                new Token(Token.Type.ID,"tablename"),
+                new Token(Token.Type.ID, "tablename"),
                 new Token(Token.Type.Where),
-                new Token(Token.Type.ID,"col1"),
+                new Token(Token.Type.ID, "col1"),
                 new Token(Token.Type.Equals),
-                new Token(Token.Type.Integer,"12"),
+                new Token(Token.Type.Integer, "12"),
                 new Token(Token.Type.Semicolon)));
-        
+
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = tokenizer;
-        
-        while(result.hasNext() && expResult.hasNext()){
+
+        while (result.hasNext() && expResult.hasNext()) {
             assertEquals(expResult.next(), result.next());
         }
-        
+
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
+
+    /**
+     * Test of iterator method, of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer11() {
+        Tokenizer tokenizer = new Tokenizer();
+        try {
+            tokenizer.tokenize("select * from table1,table2 where table1.col2 = table2.col1;");
+        } catch (Tokenizer.TokenizeException ex) {
+            fail(ex.getMessage());
+        }
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.Star),
+                new Token(Token.Type.From),
+                new Token(Token.Type.ID, "table1"),
+                new Token(Token.Type.Comma),
+                new Token(Token.Type.ID, "table2"),
+                new Token(Token.Type.Where),
+                new Token(Token.Type.ID, "table1"),
+                new Token(Token.Type.Dot),
+                new Token(Token.Type.ID, "col2"),
+                new Token(Token.Type.Equals),
+                new Token(Token.Type.ID, "table2"),
+                new Token(Token.Type.Dot),
+                new Token(Token.Type.ID, "col1"),
+                new Token(Token.Type.Semicolon)));
+
+        Iterator<Tokenizer.Token> expResult = tokens.iterator();
+        Iterator<Tokenizer.Token> result = tokenizer;
+
+        while (result.hasNext() && expResult.hasNext()) {
+            assertEquals(expResult.next(), result.next());
+        }
+
+        assertFalse(result.hasNext());
+        assertFalse(expResult.hasNext());
+    }
+
 }
