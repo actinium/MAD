@@ -10,10 +10,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
  *
- * @author Andreas Cederholm
  */
 public class TokenizerTest {
 
@@ -124,7 +124,7 @@ public class TokenizerTest {
         Tokenizer tokenizer = new Tokenizer();
         try {
             tokenizer.tokenize("select (tableName);");
-            tokenizer.tokenize("select \"TextText\";");
+            tokenizer.tokenize("select \"TextID\";");
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
@@ -135,7 +135,7 @@ public class TokenizerTest {
                 new Token(Token.Type.RParen),
                 new Token(Token.Type.Semicolon),
                 new Token(Token.Type.Select),
-                new Token(Token.Type.Text, "TextText"),
+                new Token(Token.Type.StringID, "TextID"),
                 new Token(Token.Type.Semicolon)));
 
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
@@ -156,9 +156,9 @@ public class TokenizerTest {
     public void testTokenizer5() {
         Tokenizer tokenizer = new Tokenizer();
         try {
-            tokenizer.tokenize("select ( \"Text with a char: 'c' and a string: \"\"str\"\". Hello World!\" ); ");
+            tokenizer.tokenize("select ( 'Text with a char: ''c'' and a string: \"str\". Hello World!' ); ");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage());
+            fail(ex.getMessage() + " " + ex.getIndex());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
@@ -185,13 +185,13 @@ public class TokenizerTest {
     public void testTokenizer6() {
         Tokenizer tokenizer = new Tokenizer();
         try {
-            tokenizer.tokenize("select 'Text: \"Hello World!\". Char: ''c'''; ");
+            tokenizer.tokenize("select 'Text: ''Hello World!'',  Char: ''c'''; ");
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
-                new Token(Token.Type.Text, "Text: \"Hello World!\". Char: 'c'"),
+                new Token(Token.Type.Text, "Text: 'Hello World!',  Char: 'c'"),
                 new Token(Token.Type.Semicolon)));
 
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
@@ -211,40 +211,47 @@ public class TokenizerTest {
     @Test
     public void testTokenizer7() {
         Tokenizer tokenizer = new Tokenizer();
+
         try {
-            tokenizer.tokenize("select 'Text: \"Hello World!\". Char: ''c'''; ");
+            tokenizer.tokenize("select (\"select\"); ");
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
-                new Token(Token.Type.Text, "Text: \"Hello World!\". Char: 'c'"),
-                new Token(Token.Type.Semicolon),
-                new Token(Token.Type.Select),
                 new Token(Token.Type.LParen),
-                new Token(Token.Type.ID, "tableName"),
+                new Token(Token.Type.StringID, "select"),
                 new Token(Token.Type.RParen),
                 new Token(Token.Type.Semicolon)));
 
         Iterator<Tokenizer.Token> expResult = tokens.iterator();
         Iterator<Tokenizer.Token> result = tokenizer;
-
         while (result.hasNext() && expResult.hasNext()) {
             assertEquals(expResult.next(), result.next());
         }
+        assertFalse(result.hasNext());
+        assertFalse(expResult.hasNext());
 
         try {
             tokenizer.tokenize("select (tableName);");
         } catch (Tokenizer.TokenizeException ex) {
             fail(ex.getMessage());
         }
+        ArrayList<Token> tokens2 = new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.LParen),
+                new Token(Token.Type.ID, "tableName"),
+                new Token(Token.Type.RParen),
+                new Token(Token.Type.Semicolon)));
 
-        while (result.hasNext() && expResult.hasNext()) {
-            assertEquals(expResult.next(), result.next());
+        Iterator<Tokenizer.Token> expResult2 = tokens2.iterator();
+        Iterator<Tokenizer.Token> result2 = tokenizer;
+        while (result2.hasNext() && expResult2.hasNext()) {
+            assertEquals(expResult2.next(), result2.next());
         }
+        assertFalse(result2.hasNext());
+        assertFalse(expResult2.hasNext());
 
-        assertFalse(result.hasNext());
-        assertFalse(expResult.hasNext());
     }
 
     /**

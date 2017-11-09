@@ -103,6 +103,8 @@ public class Tokenizer implements Iterator<Token> {
             } else if (c == '-') {
                 tokens.add(new Token(Token.Type.Minus, null));
                 index++;
+            } else{
+                throw new TokenizeException("Unknow character '" + charAt(index) + "'.", index);
             }
 
         }
@@ -177,8 +179,11 @@ public class Tokenizer implements Iterator<Token> {
                 index++;
             }
         }
-
-        tokens.add(new Token(Token.Type.Text, builder.toString()));
+        if(mark == '"'){
+            tokens.add(new Token(Token.Type.StringID, builder.toString()));
+        }else{
+            tokens.add(new Token(Token.Type.Text, builder.toString()));
+        }
     }
 
     private void parseNumber() throws TokenizeException {
@@ -291,10 +296,11 @@ public class Tokenizer implements Iterator<Token> {
 
             // Types
             ID, // [A-Za-z][A-Za-z0-9_]*
+            StringID, // Text surrounded or '"'
             Integer, // '0' | [1-9][0-9]*
             Float, // [0-9][0-9]*.[0-9]*
             Boolean, // 'true'|'false'
-            Text, // Text surrounded by '"' or '''
+            Text, // Text surrounded or '''
 
             // Symbols
             Semicolon, // ';'
