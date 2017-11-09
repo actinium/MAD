@@ -3,13 +3,13 @@ Pager handles all reads and writes to the database file.
 
 | Functions| |
 |----------|-|
-| [Pager(...)](#Pager-1)|
+| [Pager(...)](#pager-1)|
 | [close()](#close)|
-| [newPage()](#newPage)|[freePage(...)](#freePage)|
-| [readInteger(...)](#readInteger)|[writeInteger(...)](#writeInteger)|
-| [readFloat(...)](#readFloat)|[writeFloat(...)](#writeFloat)|
-| [readBoolean(...)](#readBoolean)|[writeBoolean(...)](#writeBoolean)|
-| [readString(...)](#readString)|[writeString(...)](#writeString)
+| [newPage()](#newpage)|[freePage(...)](#freepage)|
+| [readInteger(...)](#readinteger)|[writeInteger(...)](#writeinteger)|
+| [readFloat(...)](#readfloat)|[writeFloat(...)](#writefloat)|
+| [readBoolean(...)](#readboolean)|[writeBoolean(...)](#writeboolean)|
+| [readString(...)](#readstring)|[writeString(...)](#writestring)
 
 ## Pager(...)
 
