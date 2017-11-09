@@ -31,6 +31,24 @@ public class Tokenizer implements Iterator<Token> {
                 if (parseKeyword("select")) {
                     continue;
                 }
+                if (parseKeyword("from")) {
+                    continue;
+                }
+                if (parseKeyword("where")) {
+                    continue;
+                }
+                if (parseKeyword("group")) {
+                    continue;
+                }
+                if (parseKeyword("having")) {
+                    continue;
+                }
+                if (parseKeyword("order")) {
+                    continue;
+                }
+                if (parseKeyword("by")) {
+                    continue;
+                }
                 if (parseKeyword("insert")) {
                     continue;
                 }
@@ -64,6 +82,12 @@ public class Tokenizer implements Iterator<Token> {
             } else if (c == ')') {
                 tokens.add(new Token(Token.Type.RParen, null));
                 index++;
+            } else if (c == '=') {
+                tokens.add(new Token(Token.Type.Equals, null));
+                index++;
+            } else if (c == ',') {
+                tokens.add(new Token(Token.Type.Comma, null));
+                index++;
             } else if (c == '*') {
                 tokens.add(new Token(Token.Type.Star, null));
                 index++;
@@ -86,18 +110,30 @@ public class Tokenizer implements Iterator<Token> {
         if (index + length <= length()
                 && keyword.equalsIgnoreCase(tokenStr.substring(index, index + length))
                 && !isAZazDigitUnderscore(charAt(index + length))) {
-            tokens.add(new Token(tokenTypeFromKyeword(keyword), null));
-            index += 6;
+            tokens.add(new Token(tokenTypeFromKeyword(keyword), null));
+            index += keyword.length();
             return true;
         }
         return false;
     }
 
-    private Token.Type tokenTypeFromKyeword(String keyword) {
+    private Token.Type tokenTypeFromKeyword(String keyword) {
         keyword = keyword.toLowerCase();
         switch (keyword) {
             case "select":
                 return Token.Type.Select;
+            case "from":
+                return Token.Type.From;
+            case "where":
+                return Token.Type.Where;
+            case "group":
+                return Token.Type.Group;
+            case "having":
+                return Token.Type.Having;
+            case "order":
+                return Token.Type.Order;
+            case "by":
+                return Token.Type.By;
             case "insert":
                 return Token.Type.Insert;
             case "delete":
@@ -240,6 +276,12 @@ public class Tokenizer implements Iterator<Token> {
 
             // Keywords:
             Select, // 'select'
+            From,
+            Where,
+            Group,
+            Having,
+            Order,
+            By,
             Insert, // 'insert'
             Delete, // 'delete'
             Update, // 'update'
@@ -255,6 +297,8 @@ public class Tokenizer implements Iterator<Token> {
             Semicolon, // ';'
             LParen, // '('
             RParen, // ')'
+            Comma, // ','
+            Equals, // '='
             Star, // '*'
             Slash, // '/'
             Plus, // '+'

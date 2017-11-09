@@ -302,4 +302,39 @@ public class TokenizerTest {
         assertFalse(result.hasNext());
         assertFalse(expResult.hasNext());
     }
+    
+    /**
+     * Test of iterator method, of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer10() {
+        Tokenizer tokenizer = new Tokenizer();
+        try {
+            tokenizer.tokenize("select col1,col2 from tablename where col1 = 12;");
+        } catch (Tokenizer.TokenizeException ex) {
+            fail(ex.getMessage());
+        }
+        ArrayList<Token> tokens= new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.ID,"col1"),
+                new Token(Token.Type.Comma),
+                new Token(Token.Type.ID,"col2"),
+                new Token(Token.Type.From),
+                new Token(Token.Type.ID,"tablename"),
+                new Token(Token.Type.Where),
+                new Token(Token.Type.ID,"col1"),
+                new Token(Token.Type.Equals),
+                new Token(Token.Type.Integer,"12"),
+                new Token(Token.Type.Semicolon)));
+        
+        Iterator<Tokenizer.Token> expResult = tokens.iterator();
+        Iterator<Tokenizer.Token> result = tokenizer;
+        
+        while(result.hasNext() && expResult.hasNext()){
+            assertEquals(expResult.next(), result.next());
+        }
+        
+        assertFalse(result.hasNext());
+        assertFalse(expResult.hasNext());
+    }
 }
