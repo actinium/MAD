@@ -351,5 +351,40 @@ public class BytesTest {
         String after = Bytes.toString(bytes);
         assertEquals(before, after);
     }
+    
+    /**
+     * Test of fromString method, of class Bytes.
+     */
+    @Test
+    public void testSizedFromString() {
+        String string = "Hello World";
+        byte[] expResult = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd',0,0,0,0,0,0,0,0,0};
+        byte[] result = Bytes.fromString(string, 20);
+        assertArrayEquals(expResult, result);
+    }
+    
+    /**
+     * Test of fromString method, of class Bytes.
+     */
+    @Test
+    public void testSizedFromString1() {
+        String string = "Hello World";
+        byte[] expResult = {'H', 'e', 'l', 'l', 'o'};
+        byte[] result = Bytes.fromString(string, 5);
+        assertArrayEquals(expResult, result);
+    }
+    
+    /**
+     * Test of fromString method, of class Bytes.
+     */
+    @Test
+    public void testSizedString() {
+        String string = "Hello World";
+        byte[] expResult = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd',0,0,0,0,0,0,0,0,0};
+        byte[] result = Bytes.fromString(string, 20);
+        assertArrayEquals(expResult, result);
+        String after = Bytes.toString(result);
+        assertEquals(string, after);
+    }
 
 }
