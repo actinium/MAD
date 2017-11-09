@@ -47,10 +47,13 @@ public class PagerNewPageTest {
     @Test
     public void testNewPage() throws Exception {
         Pager pager = new Pager(testFile);
+        
+        // Allocate 2 Pages.
         assertEquals(12, pager.newPage());
         assertEquals(12 + PAGESIZE, testFile.length());
         assertEquals(12 + PAGESIZE, pager.newPage());
         assertEquals(12 + 2 * PAGESIZE, testFile.length());
+        
         pager.close();
     }
 
@@ -60,11 +63,18 @@ public class PagerNewPageTest {
     @Test
     public void testFreeNewPage() throws Exception {
         Pager pager = new Pager(testFile);
+        
+        // Allocate 1 Page.
         assertEquals(12, pager.newPage());
         assertEquals(12 + PAGESIZE, testFile.length());
+        
+        // Free 1 Page.
         pager.freePage(12);
+        
+        // Allocate 1 Page.
         assertEquals(12, pager.newPage());
         assertEquals(12 + PAGESIZE, testFile.length());
+        
         pager.close();
     }
 
