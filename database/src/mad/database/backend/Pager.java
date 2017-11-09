@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import static mad.database.Config.PAGESIZE;
-import mad.database.backend.Pager.Page;
 import mad.util.Bytes;
 
 /**
@@ -182,7 +181,7 @@ public class Pager {
     /**
      *
      */
-    public static class Page {
+    private static class Page {
 
         private final byte[] data;
         private final int pageStartPosition;
@@ -211,7 +210,7 @@ public class Pager {
     /**
      *
      */
-    public static class PageCache {
+    private static class PageCache {
 
         private static final int CACHESIZE = 100;
         private final Pager.Page[] cache = new Pager.Page[CACHESIZE];
