@@ -123,11 +123,11 @@ public class Pager {
     }
 
     public String readString(int filePosition, int length) throws IOException {
-        throw new UnsupportedOperationException("Not yet Implemented!");
+        return Bytes.toString(readBytes(filePosition, length));
     }
 
     public void writeString(int filePosition, String string, int length) throws IOException {
-        throw new UnsupportedOperationException("Not yet Implemented!");
+        writeBytes(filePosition,Bytes.fromString(string, length), length);
     }
 
     private byte[] readBytes(int filePosition, int length) throws IOException {

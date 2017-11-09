@@ -156,23 +156,134 @@ public class PagerReadWriteTest {
             pager.writeBoolean(page1 + 124, before);
             boolean after = pager.readBoolean(page1 + 124);
             assertEquals(before, after);
-            pager.writeBoolean(page1 + 8848, false);
-            pager.writeBoolean(page1 + 8849, true);
+            pager.writeBoolean(page1 + 848, false);
+            pager.writeBoolean(page1 + 849, true);
         }
         {
             boolean before = true;
-            pager.writeBoolean(page2 + 8848, before);
-            boolean after = pager.readBoolean(page2 + 8848);
+            pager.writeBoolean(page2 + 848, before);
+            boolean after = pager.readBoolean(page2 + 848);
             assertEquals(before, after);
         }
         {
-            boolean after1 = pager.readBoolean(page1+8848);
-            boolean after2 = pager.readBoolean(page1+8849);
+            boolean after1 = pager.readBoolean(page1+848);
+            boolean after2 = pager.readBoolean(page1+849);
             assertFalse(after1);
             assertTrue(after2);
         }
         pager.close();
 
+    }
+    
+    /**
+     * Test of readBoolean method, of class Pager.
+     */
+    @Test
+    public void testWriteAndReadString() throws Exception {
+        Pager pager = new Pager(testFile);
+        
+        int page1 = pager.newPage();
+        int page2 = pager.newPage();
+        {    
+            String before = "The green dragon sleeps at night.";
+            pager.writeString(page1 + 124, before,33);
+            String after = pager.readString(page1 + 124,33);
+            assertEquals(before, after);
+            pager.writeString(page1 + 848, "Hello World",20);
+            pager.writeString(page1 + 848, "Goodbye!", 20);
+            String after2 = pager.readString(page1 + 848,20);
+            assertEquals("Goodbye!", after2);
+        }
+        {
+            String before = "A knight in shining armor.";
+            pager.writeString(page2 + 848, before,30);
+            String after = pager.readString(page2 + 848,30);
+            assertEquals(before, after);
+        }
+        {
+            String after = pager.readString(page1+848,20);
+            assertEquals("Goodbye!",after);
+        }
+        pager.close();
+
+    }
+    
+    /**
+     * Test of readFloat method, of class Pager.
+     */
+    @Test
+    public void testWriteAndReadString2() throws Exception {
+        Pager pager = new Pager(testFile);
+        int page = pager.newPage();
+        String before1 = "1234567890";
+        String before2 = "XXXXXXXXXX";
+        String before3 = "1234567890";
+        
+        pager.writeString(page + 100, before1,10);
+        pager.writeString(page + 110, before2,10);
+        pager.writeString(page + 120, before3,10);
+        
+        String after1 = pager.readString(page + 100,10);
+        String after2 = pager.readString(page + 110,10);
+        String after3 = pager.readString(page + 120,10);
+        
+        assertEquals(before2, after2);
+        assertEquals(before1, after1);
+        assertEquals(before3, after3);
+        
+        pager.close();
+    }
+    
+    /**
+     * Test of readFloat method, of class Pager.
+     */
+    @Test
+    public void testWriteAndReadString3() throws Exception {
+        Pager pager = new Pager(testFile);
+        int page = pager.newPage();
+        String before1 = "123";
+        String before2 = "XXXXXX";
+        String before3 = "12345";
+        
+        pager.writeString(page + 100, before1,10);
+        pager.writeString(page + 110, before2,10);
+        pager.writeString(page + 120, before3,10);
+        
+        String after1 = pager.readString(page + 100,10);
+        String after2 = pager.readString(page + 110,10);
+        String after3 = pager.readString(page + 120,10);
+        
+        assertEquals(before1, after1);
+        assertEquals(before2, after2);
+        assertEquals(before3, after3);
+        
+        pager.close();
+    }
+    
+    /**
+     * Test of readFloat method, of class Pager.
+     */
+    @Test
+    public void testWriteAndReadString4() throws Exception {
+        Pager pager = new Pager(testFile);
+        int page = pager.newPage();
+        String before1 = "1234567890ABCDEF";
+        String before2 = "XXXXXXXXXX------";
+        String before3 = "1234567890ABCDEF";
+        
+        pager.writeString(page + 100, before1,10);
+        pager.writeString(page + 110, before2,10);
+        pager.writeString(page + 120, before3,10);
+        
+        String after3 = pager.readString(page + 120,10);
+        String after1 = pager.readString(page + 100,10);
+        String after2 = pager.readString(page + 110,10);
+        
+        assertEquals(before1.substring(0, 10), after1);
+        assertEquals(before2.substring(0, 10), after2);
+        assertEquals(before3.substring(0, 10), after3);
+        
+        pager.close();
     }
 
 }
