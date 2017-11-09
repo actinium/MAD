@@ -41,7 +41,7 @@ public class PagerReadWriteTest {
     }
 
     /**
-     * Test of readInteger method, of class Pager.
+     * Test of reading and writing integers.
      */
     @Test
     public void testWriteAndReadInteger1() throws Exception {
@@ -55,7 +55,7 @@ public class PagerReadWriteTest {
     }
     
     /**
-     * Test of readInteger method, of class Pager.
+     * Test of reading and writing integers.
      */
     @Test
     public void testWriteAndReadInteger2() throws Exception {
@@ -84,7 +84,7 @@ public class PagerReadWriteTest {
     }
     
     /**
-     * Test of readInteger method, of class Pager.
+     * Test of reading and writing integers.
      */
     @Test
     public void testWriteAndReadInteger3() throws Exception {
@@ -129,7 +129,7 @@ public class PagerReadWriteTest {
     }
 
     /**
-     * Test of readFloat method, of class Pager.
+     * Test of reading and writing floats.
      */
     @Test
     public void testWriteAndReadFloat() throws Exception {
@@ -143,7 +143,7 @@ public class PagerReadWriteTest {
     }
 
     /**
-     * Test of readBoolean method, of class Pager.
+     * Test of reading and writing booleans.
      */
     @Test
     public void testWriteAndReadBoolean() throws Exception {
@@ -176,7 +176,7 @@ public class PagerReadWriteTest {
     }
     
     /**
-     * Test of readBoolean method, of class Pager.
+     * Test of reading and writing strings.
      */
     @Test
     public void testWriteAndReadString() throws Exception {
@@ -209,7 +209,7 @@ public class PagerReadWriteTest {
     }
     
     /**
-     * Test of readFloat method, of class Pager.
+     * Test of reading and writing strings.
      */
     @Test
     public void testWriteAndReadString2() throws Exception {
@@ -235,7 +235,7 @@ public class PagerReadWriteTest {
     }
     
     /**
-     * Test of readFloat method, of class Pager.
+     * Test of reading and writing strings.
      */
     @Test
     public void testWriteAndReadString3() throws Exception {
@@ -261,7 +261,7 @@ public class PagerReadWriteTest {
     }
     
     /**
-     * Test of readFloat method, of class Pager.
+     * Test of reading and writing strings.
      */
     @Test
     public void testWriteAndReadString4() throws Exception {
