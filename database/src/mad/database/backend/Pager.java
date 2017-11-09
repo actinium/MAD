@@ -122,11 +122,11 @@ public class Pager {
         writeBytes(filePosition, Bytes.fromBoolean(bool), 1);
     }
 
-    public String readString(int fileposition, int length) {
+    public String readString(int filePosition, int length) throws IOException {
         throw new UnsupportedOperationException("Not yet Implemented!");
     }
 
-    public void writeString(int fileposition, String string) {
+    public void writeString(int filePosition, String string, int length) throws IOException {
         throw new UnsupportedOperationException("Not yet Implemented!");
     }
 
