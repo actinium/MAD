@@ -8,26 +8,26 @@ import mad.database.sql.Tokenizer.Token;
 /**
  *
  */
-public class Tokenizer implements Iterator<Token>{
+public class Tokenizer implements Iterator<Token> {
 
     private Queue<Token> tokens;
     private int index;
     private String tokenStr;
 
-    public Tokenizer(){
+    public Tokenizer() {
         tokens = new ArrayDeque<>();
         this.tokenStr = null;
         index = 0;
     }
-        
+
     public void tokenize(String tokenStr) throws TokenizeException {
         this.tokenStr = tokenStr;
         index = 0;
-        while (index < tokenStr.length()) {
-            char c = tokenStr.charAt(index);
+        while (index < length()) {
+            char c = charAt(index);
             if (c == ' ' || c == '\t' || c == '\n') {
                 index++;
-            } else if ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_".indexOf(c) != -1) {
+            } else if (isAZazUnderscore(c)) {
                 if (parseKeyword("select")) {
                     continue;
                 }
@@ -40,12 +40,12 @@ public class Tokenizer implements Iterator<Token>{
                 if (parseKeyword("delete")) {
                     continue;
                 }
-                if (index + 4 <= tokenStr.length() && "true".equalsIgnoreCase(tokenStr.substring(index, index + 4))) {
+                if (index + 4 <= length() && "true".equalsIgnoreCase(tokenStr.substring(index, index + 4))) {
                     tokens.add(new Token(Token.Type.Boolean, "true"));
                     index += 4;
                     continue;
                 }
-                if (index + 5 <= tokenStr.length() && "false".equalsIgnoreCase(tokenStr.substring(index, index + 5))) {
+                if (index + 5 <= length() && "false".equalsIgnoreCase(tokenStr.substring(index, index + 5))) {
                     tokens.add(new Token(Token.Type.Boolean, "false"));
                     index += 5;
                     continue;
@@ -53,7 +53,7 @@ public class Tokenizer implements Iterator<Token>{
                 parseId();
             } else if (c == '\"' || c == '\'') {
                 parseString();
-            } else if ("0123456789".indexOf(c) != -1) {
+            } else if (isDigit(c)) {
                 parseNumber();
             } else if (c == ';') {
                 tokens.add(new Token(Token.Type.Semicolon, null));
@@ -83,9 +83,9 @@ public class Tokenizer implements Iterator<Token>{
 
     private boolean parseKeyword(String keyword) {
         int length = keyword.length();
-        if (index + length <= tokenStr.length()
+        if (index + length <= length()
                 && keyword.equalsIgnoreCase(tokenStr.substring(index, index + length))
-                && "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_".indexOf(tokenStr.charAt(index + length)) == -1) {
+                && !isAZazDigitUnderscore(charAt(index + length))) {
             tokens.add(new Token(tokenTypeFromKyeword(keyword), null));
             index += 6;
             return true;
@@ -110,79 +110,105 @@ public class Tokenizer implements Iterator<Token>{
 
     private void parseId() {
         int start = index;
-        while (index < tokenStr.length() && "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_".indexOf(tokenStr.charAt(index)) != -1) {
+        while (index < length() && isAZazDigitUnderscore(charAt(index))) {
             index++;
         }
         tokens.add(new Token(Token.Type.ID, tokenStr.substring(start, index)));
     }
 
     private void parseString() throws TokenizeException {
-        char mark = tokenStr.charAt(index);
+        char mark = charAt(index);
         index++;
         StringBuilder builder = new StringBuilder();
-        
+
         while (true) {
-            if (index + 1 < tokenStr.length() && tokenStr.charAt(index) == mark && tokenStr.charAt(index + 1) != mark) {
+            if (index + 1 < length() && charAt(index) == mark && charAt(index + 1) != mark) {
                 index++;
                 break;
-            } else if (index + 1 == tokenStr.length() && tokenStr.charAt(index) == mark) {
+            } else if (index + 1 == length() && charAt(index) == mark) {
                 index++;
                 break;
-            } else if (index == tokenStr.length()) {
-                throw new TokenizeException("Failed to tokenize string!",index);
-            }else{
-                if(tokenStr.charAt(index)==mark){
+            } else if (index == length()) {
+                throw new TokenizeException("Failed to tokenize string!", index);
+            } else {
+                if (charAt(index) == mark) {
                     index++;
                 }
-                builder.append(tokenStr.charAt(index));
+                builder.append(charAt(index));
                 index++;
             }
         }
-        
-        tokens.add(new Token(Token.Type.Text,builder.toString()));
+
+        tokens.add(new Token(Token.Type.Text, builder.toString()));
     }
 
     private void parseNumber() throws TokenizeException {
         StringBuilder builder = new StringBuilder();
         boolean dotFound = false;
-        
-        if(tokenStr.charAt(index) == '0'){
-            if(index+1 == tokenStr.length() || tokenStr.charAt(index+1) != '.'){
+
+        if (charAt(index) == '0') {
+            if (index + 1 == length() || charAt(index + 1) != '.') {
                 tokens.add(new Token(Token.Type.Integer, "0"));
-            }else if(index +2 <tokenStr.length() && tokenStr.charAt(index+1) == '.' && "0123456789".indexOf(tokenStr.charAt(index+2)) != -1){
+            } else if (index + 2 < length() && charAt(index + 1) == '.' && isDigit(charAt(index + 2))) {
                 builder.append("0.");
                 dotFound = true;
-                builder.append(tokenStr.charAt(index+2));
-                index+=3;
-            }else{
-                throw new TokenizeException("Could not parse number!",index);
+                builder.append(charAt(index + 2));
+                index += 3;
+            } else {
+                throw new TokenizeException("Could not parse number!", index);
             }
         }
-        
-        while(true){
-            if(tokenStr.charAt(index) == '.'){
-                if(dotFound){
+
+        while (true) {
+            if (charAt(index) == '.') {
+                if (dotFound) {
                     throw new TokenizeException("Could not parse number!", index);
-                }else{
+                } else {
                     builder.append('.');
                     dotFound = true;
                     index++;
                     continue;
                 }
             }
-            if("0123456789".indexOf(tokenStr.charAt(index)) != -1){
-                builder.append(tokenStr.charAt(index));
+            if (isDigit(charAt(index))) {
+                builder.append(charAt(index));
                 index++;
-            }else{
+            } else {
                 break;
             }
         }
-        
-        if(dotFound){
+
+        if (dotFound) {
             tokens.add(new Token(Token.Type.Float, builder.toString()));
-        }else{
+        } else {
             tokens.add(new Token(Token.Type.Integer, builder.toString()));
         }
+    }
+
+    private boolean isDigit(char c) {
+        return 0x30 <= c && c <= 0x39;
+    }
+
+    private boolean isAZaz(char c) {
+        boolean large = 0x41 <= c && c <= 0x5A;
+        boolean small = 0x61 <= c && c <= 0x7A;
+        return small || large;
+    }
+
+    private boolean isAZazUnderscore(char c) {
+        return isAZaz(c) || c == '_';
+    }
+
+    private boolean isAZazDigitUnderscore(char c) {
+        return isAZazUnderscore(c) || isDigit(c);
+    }
+
+    private char charAt(int index) {
+        return tokenStr.charAt(index);
+    }
+
+    private int length() {
+        return tokenStr.length();
     }
 
     @Override
@@ -211,6 +237,7 @@ public class Tokenizer implements Iterator<Token>{
         }
 
         public enum Type {
+
             // Keywords:
             Select, // 'select'
             Insert, // 'insert'
@@ -250,13 +277,13 @@ public class Tokenizer implements Iterator<Token>{
             }
             return false;
         }
-        
+
         @Override
-        public String toString(){
+        public String toString() {
             StringBuilder builder = new StringBuilder();
             builder.append("(");
             builder.append(type.toString());
-            if(value != null){
+            if (value != null) {
                 builder.append(",").append(value);
             }
             builder.append(")");
@@ -267,13 +294,13 @@ public class Tokenizer implements Iterator<Token>{
     public static class TokenizeException extends Exception {
 
         private final int index;
-        
-        private TokenizeException(String message,int index) {
+
+        private TokenizeException(String message, int index) {
             super(message);
             this.index = index;
         }
-        
-        public int getIndex(){
+
+        public int getIndex() {
             return index;
         }
     }
