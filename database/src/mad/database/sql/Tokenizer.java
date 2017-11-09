@@ -28,34 +28,7 @@ public class Tokenizer implements Iterator<Token> {
             if (c == ' ' || c == '\t' || c == '\n') {
                 index++;
             } else if (isAZazUnderscore(c)) {
-                if (parseKeyword("select")) {
-                    continue;
-                }
-                if (parseKeyword("from")) {
-                    continue;
-                }
-                if (parseKeyword("where")) {
-                    continue;
-                }
-                if (parseKeyword("group")) {
-                    continue;
-                }
-                if (parseKeyword("having")) {
-                    continue;
-                }
-                if (parseKeyword("order")) {
-                    continue;
-                }
-                if (parseKeyword("by")) {
-                    continue;
-                }
-                if (parseKeyword("insert")) {
-                    continue;
-                }
-                if (parseKeyword("update")) {
-                    continue;
-                }
-                if (parseKeyword("delete")) {
+                if (parseKeywords()) {
                     continue;
                 }
                 if (index + 4 <= length() && "true".equalsIgnoreCase(tokenStr.substring(index, index + 4))) {
@@ -103,11 +76,31 @@ public class Tokenizer implements Iterator<Token> {
             } else if (c == '-') {
                 tokens.add(new Token(Token.Type.Minus, null));
                 index++;
-            } else{
+            } else {
                 throw new TokenizeException("Unknow character '" + charAt(index) + "'.", index);
             }
 
         }
+    }
+
+    private boolean parseKeywords() {
+        String[] keywords = {
+            "by",
+            "delete",
+            "from",
+            "group",
+            "having",
+            "insert",
+            "order",
+            "select",
+            "update",
+            "where",};
+        for (String keyword : keywords) {
+            if (parseKeyword(keyword)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean parseKeyword(String keyword) {
@@ -125,26 +118,26 @@ public class Tokenizer implements Iterator<Token> {
     private Token.Type tokenTypeFromKeyword(String keyword) {
         keyword = keyword.toLowerCase();
         switch (keyword) {
-            case "select":
-                return Token.Type.Select;
+            case "by":
+                return Token.Type.By;
+            case "delete":
+                return Token.Type.Delete;
             case "from":
                 return Token.Type.From;
-            case "where":
-                return Token.Type.Where;
             case "group":
                 return Token.Type.Group;
             case "having":
                 return Token.Type.Having;
-            case "order":
-                return Token.Type.Order;
-            case "by":
-                return Token.Type.By;
             case "insert":
                 return Token.Type.Insert;
-            case "delete":
-                return Token.Type.Delete;
+            case "order":
+                return Token.Type.Order;
+            case "select":
+                return Token.Type.Select;
             case "update":
                 return Token.Type.Update;
+            case "where":
+                return Token.Type.Where;
         }
         return null;
     }
@@ -179,9 +172,9 @@ public class Tokenizer implements Iterator<Token> {
                 index++;
             }
         }
-        if(mark == '"'){
+        if (mark == '"') {
             tokens.add(new Token(Token.Type.StringID, builder.toString()));
-        }else{
+        } else {
             tokens.add(new Token(Token.Type.Text, builder.toString()));
         }
     }
@@ -283,17 +276,16 @@ public class Tokenizer implements Iterator<Token> {
         public enum Type {
 
             // Keywords:
-            Select, // 'select'
+            By,
+            Delete,
             From,
-            Where,
             Group,
             Having,
+            Insert,
             Order,
-            By,
-            Insert, // 'insert'
-            Delete, // 'delete'
-            Update, // 'update'
-
+            Select,
+            Update,
+            Where,
             // Types
             ID, // [A-Za-z][A-Za-z0-9_]*
             StringID, // Text surrounded or '"'
