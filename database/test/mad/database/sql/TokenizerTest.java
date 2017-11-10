@@ -774,6 +774,21 @@ public class TokenizerTest {
 
         testTokeniser(query, tokens);
     }
+    
+    /**
+     * Test of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer31() {
+        String query = "select \"true\" from notnot;";
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.StringID, "true"),
+                new Token(Token.Type.From),
+                new Token(Token.Type.ID, "notnot"),
+                new Token(Token.Type.Semicolon)));
+        testTokeniser(query, tokens);
+    }
 
     private void testTokeniser(String query, List<Token> expTokens){
         Tokenizer tokenizer = new Tokenizer();

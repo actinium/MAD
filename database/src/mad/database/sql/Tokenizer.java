@@ -58,17 +58,44 @@ public class Tokenizer implements Iterator<Token> {
     }
 
     private boolean parseKeywords() {
+        if (parseKeyword("is not")) {
+            // must run first to prevent matching with 'is'.
+            return true;
+        }
         String[] keywords = {
+            "all",
             "and",
+            "as",
+            "asc",
+            "ascending",
             "by",
+            "cross",
             "delete",
+            "desc",
+            "descending",
+            "distinct",
+            "except",
             "from",
+            "full",
             "group",
             "having",
+            "inner",
             "insert",
+            "intersect",
+            "is",
+            "join",
+            "left",
+            "limit",
+            "natural",
+            "not",
+            "null",
+            "on",
             "or",
             "order",
+            "outer",
+            "right",
             "select",
+            "union",
             "update",
             "where",};
         for (String keyword : keywords) {
@@ -93,10 +120,16 @@ public class Tokenizer implements Iterator<Token> {
 
     private Token.Type tokenTypeFromKeyword(String keyword) {
         keyword = keyword.toLowerCase();
-        for(Token.Type type : Token.Type.values()){
-            if(type.stringValue().equals(keyword)){
+        for (Token.Type type : Token.Type.values()) {
+            if (type.stringValue().equals(keyword)) {
                 return type;
             }
+        }
+        if ("asc".equals(keyword)) {
+            return Token.Type.Ascending;
+        }
+        if ("desc".equals(keyword)) {
+            return Token.Type.Descending;
         }
         return null;
     }
@@ -325,16 +358,38 @@ public class Tokenizer implements Iterator<Token> {
         public enum Type {
 
             // Keywords:
+            All("all"),
             And("and"),
+            As("as"),
+            Ascending("ascending"),
             By("by"),
+            Cross("cross"),
             Delete("delete"),
+            Descending("descending"),
+            Distinct("distinct"),
+            Except("except"),
             From("from"),
+            Full("full"),
             Group("group"),
             Having("having"),
+            Inner("inner"),
             Insert("insert"),
+            Intersect("intersect"),
+            Is("is"),
+            IsNot("is not"),
+            Join("join"),
+            Left("left"),
+            Limit("limit"),
+            Natural("natural"),
+            Not("not"),
+            Null("null"),
+            On("on"),
             Or("or"),
             Order("order"),
+            Outer("outer"),
+            Right("right"),
             Select("select"),
+            Union("union"),
             Update("update"),
             Where("where"),
             // Types
