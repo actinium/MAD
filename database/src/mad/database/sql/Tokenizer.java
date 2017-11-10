@@ -46,35 +46,7 @@ public class Tokenizer implements Iterator<Token> {
                 parseString();
             } else if (isDigit(c)) {
                 parseNumber();
-            } else if (c == ';') {
-                tokens.add(new Token(Token.Type.Semicolon, null));
-                index++;
-            } else if (c == '(') {
-                tokens.add(new Token(Token.Type.LParen, null));
-                index++;
-            } else if (c == ')') {
-                tokens.add(new Token(Token.Type.RParen, null));
-                index++;
-            } else if (c == '=') {
-                tokens.add(new Token(Token.Type.Equals, null));
-                index++;
-            } else if (c == ',') {
-                tokens.add(new Token(Token.Type.Comma, null));
-                index++;
-            } else if (c == '.') {
-                tokens.add(new Token(Token.Type.Dot, null));
-                index++;
-            } else if (c == '*') {
-                tokens.add(new Token(Token.Type.Star, null));
-                index++;
-            } else if (c == '/') {
-                tokens.add(new Token(Token.Type.Slash, null));
-                index++;
-            } else if (c == '+') {
-                tokens.add(new Token(Token.Type.Plus, null));
-                index++;
-            } else if (c == '-') {
-                tokens.add(new Token(Token.Type.Minus, null));
+            }else if (parseSingleCharOperators(c)) {
                 index++;
             } else {
                 throw new TokenizeException("Unknow character '" + charAt(index) + "'.", index);
@@ -113,6 +85,43 @@ public class Tokenizer implements Iterator<Token> {
             return true;
         }
         return false;
+    }
+
+    private boolean parseSingleCharOperators(char c) {
+        switch (c) {
+            case ';':
+                tokens.add(new Token(Token.Type.Semicolon, null));
+                return true;
+            case '(':
+                tokens.add(new Token(Token.Type.LParen, null));
+                return true;
+            case ')':
+                tokens.add(new Token(Token.Type.RParen, null));
+                return true;
+            case '=':
+                tokens.add(new Token(Token.Type.Equals, null));
+                return true;
+            case ',':
+                tokens.add(new Token(Token.Type.Comma, null));
+                return true;
+            case '.':
+                tokens.add(new Token(Token.Type.Dot, null));
+                return true;
+            case '*':
+                tokens.add(new Token(Token.Type.Star, null));
+                return true;
+            case '/':
+                tokens.add(new Token(Token.Type.Slash, null));
+                return true;
+            case '+':
+                tokens.add(new Token(Token.Type.Plus, null));
+                return true;
+            case '-':
+                tokens.add(new Token(Token.Type.Minus, null));
+                return true;
+            default:
+                return false;
+        }
     }
 
     private Token.Type tokenTypeFromKeyword(String keyword) {
@@ -301,23 +310,23 @@ public class Tokenizer implements Iterator<Token> {
             Comma(","),
             Dot("."),
             Equals("="),
+            DoubleEquals("=="),
             Star("*"),
             Slash("/"),
             Plus("+"),
-            Minus("-"),
-            ;
-            
+            Minus("-"),;
+
             private final String string;
-            
-            private Type(){
+
+            private Type() {
                 this.string = "";
             }
-            
-            private Type(String string){
+
+            private Type(String string) {
                 this.string = string;
             }
-            
-            public String asString(){
+
+            public String asString() {
                 return string;
             }
         }

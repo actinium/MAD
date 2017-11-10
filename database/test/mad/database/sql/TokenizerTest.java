@@ -45,7 +45,7 @@ public class TokenizerTest {
         try {
             tokenizer.tokenize("select;");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage());
+            fail("" + ex.getIndex() +": "+ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
@@ -71,7 +71,7 @@ public class TokenizerTest {
         try {
             tokenizer.tokenize("select true;");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage());
+            fail("" + ex.getIndex() +": "+ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
@@ -98,7 +98,7 @@ public class TokenizerTest {
         try {
             tokenizer.tokenize("select tableName;");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage());
+            fail("" + ex.getIndex() +": "+ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
@@ -126,7 +126,7 @@ public class TokenizerTest {
             tokenizer.tokenize("select (tableName);");
             tokenizer.tokenize("select \"TextID\";");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage());
+            fail("" + ex.getIndex() +": "+ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
@@ -158,7 +158,7 @@ public class TokenizerTest {
         try {
             tokenizer.tokenize("select ( 'Text with a char: ''c'' and a string: \"str\". Hello World!' ); ");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage() + " " + ex.getIndex());
+            fail("" + ex.getIndex() +": "+ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
@@ -187,7 +187,7 @@ public class TokenizerTest {
         try {
             tokenizer.tokenize("select 'Text: ''Hello World!'',  Char: ''c'''; ");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage());
+            fail("" + ex.getIndex() +": "+ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
@@ -215,7 +215,7 @@ public class TokenizerTest {
         try {
             tokenizer.tokenize("select (\"select\"); ");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage());
+            fail("" + ex.getIndex() +": "+ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
@@ -235,7 +235,7 @@ public class TokenizerTest {
         try {
             tokenizer.tokenize("select (tableName);");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage());
+            fail("" + ex.getIndex() +": "+ex.getMessage());
         }
         ArrayList<Token> tokens2 = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
@@ -263,7 +263,7 @@ public class TokenizerTest {
         try {
             tokenizer.tokenize("select 12.34;");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage());
+            fail("" + ex.getIndex() +": "+ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
@@ -290,7 +290,7 @@ public class TokenizerTest {
         try {
             tokenizer.tokenize("select (1234);");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage());
+            fail("" + ex.getIndex() +": "+ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
@@ -319,7 +319,7 @@ public class TokenizerTest {
         try {
             tokenizer.tokenize("select col1,col2 from tablename where col1 = 12;");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage());
+            fail("" + ex.getIndex() +": "+ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
@@ -354,7 +354,7 @@ public class TokenizerTest {
         try {
             tokenizer.tokenize("select * from table1,table2 where table1.col2 = table2.col1;");
         } catch (Tokenizer.TokenizeException ex) {
-            fail(ex.getMessage());
+            fail("" + ex.getIndex() +": "+ex.getMessage());
         }
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.Type.Select),
