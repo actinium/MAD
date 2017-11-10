@@ -666,6 +666,114 @@ public class TokenizerTest {
 
         testTokeniser(query, tokens);
     }
+    
+    /**
+     * Test of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer27() {
+        String query =
+                "select *\n"+
+                "   from tablename\n"+
+                "   where col1==col2 or col1==col3;";
+        
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.Star),
+                new Token(Token.Type.From),
+                new Token(Token.Type.ID, "tablename"),
+                new Token(Token.Type.Where),
+                new Token(Token.Type.ID, "col1"),
+                new Token(Token.Type.DoubleEquals),
+                new Token(Token.Type.ID, "col2"),
+                new Token(Token.Type.Or),
+                new Token(Token.Type.ID, "col1"),
+                new Token(Token.Type.DoubleEquals),
+                new Token(Token.Type.ID, "col3"),
+                new Token(Token.Type.Semicolon)));
+
+        testTokeniser(query, tokens);
+    }
+    
+    /**
+     * Test of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer28() {
+        String query =
+                "select *\n"+
+                "   from tablename\n"+
+                "   where col1==col2 | col1==col3;";
+        
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.Star),
+                new Token(Token.Type.From),
+                new Token(Token.Type.ID, "tablename"),
+                new Token(Token.Type.Where),
+                new Token(Token.Type.ID, "col1"),
+                new Token(Token.Type.DoubleEquals),
+                new Token(Token.Type.ID, "col2"),
+                new Token(Token.Type.Or),
+                new Token(Token.Type.ID, "col1"),
+                new Token(Token.Type.DoubleEquals),
+                new Token(Token.Type.ID, "col3"),
+                new Token(Token.Type.Semicolon)));
+
+        testTokeniser(query, tokens);
+    }
+    
+    /**
+     * Test of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer29() {
+        String query =
+                "select *\n"+
+                "   from numbers\n"+
+                "   where value<<10=100;";
+        
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.Star),
+                new Token(Token.Type.From),
+                new Token(Token.Type.ID, "numbers"),
+                new Token(Token.Type.Where),
+                new Token(Token.Type.ID, "value"),
+                new Token(Token.Type.LeftShift),
+                new Token(Token.Type.Integer,"10"),
+                new Token(Token.Type.Equals),
+                new Token(Token.Type.Integer,"100"),
+                new Token(Token.Type.Semicolon)));
+
+        testTokeniser(query, tokens);
+    }
+    
+    /**
+     * Test of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer30() {
+        String query =
+                "select *\n"+
+                "   from numbers\n"+
+                "   where value>>10=0;";
+        
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.Star),
+                new Token(Token.Type.From),
+                new Token(Token.Type.ID, "numbers"),
+                new Token(Token.Type.Where),
+                new Token(Token.Type.ID, "value"),
+                new Token(Token.Type.RightShift),
+                new Token(Token.Type.Integer,"10"),
+                new Token(Token.Type.Equals),
+                new Token(Token.Type.Integer,"0"),
+                new Token(Token.Type.Semicolon)));
+
+        testTokeniser(query, tokens);
+    }
 
     private void testTokeniser(String query, List<Token> expTokens){
         Tokenizer tokenizer = new Tokenizer();

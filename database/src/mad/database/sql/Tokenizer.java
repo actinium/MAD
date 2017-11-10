@@ -122,6 +122,14 @@ public class Tokenizer implements Iterator<Token> {
             tokens.add(new Token(Token.Type.LessThanOrEquals));
             return true;
         }
+        if (c1 == '<' && c2 == '<') {
+            tokens.add(new Token(Token.Type.LeftShift));
+            return true;
+        }
+        if (c1 == '>' && c2 == '>') {
+            tokens.add(new Token(Token.Type.RightShift));
+            return true;
+        }
         if (c1 == '|' && c2 == '|') {
             tokens.add(new Token(Token.Type.Concat));
             return true;
@@ -354,6 +362,8 @@ public class Tokenizer implements Iterator<Token> {
             Plus("+"),
             Minus("-"),
             Modulo("%"),
+            LeftShift("<<"),
+            RightShift(">>"),
             Concat("||");
 
             private final String string;
