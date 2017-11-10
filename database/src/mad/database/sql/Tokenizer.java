@@ -276,16 +276,16 @@ public class Tokenizer implements Iterator<Token> {
         public enum Type {
 
             // Keywords:
-            By,
-            Delete,
-            From,
-            Group,
-            Having,
-            Insert,
-            Order,
-            Select,
-            Update,
-            Where,
+            By("by"),
+            Delete("delete"),
+            From("from"),
+            Group("group"),
+            Having("having"),
+            Insert("insert"),
+            Order("order"),
+            Select("select"),
+            Update("update"),
+            Where("where"),
             // Types
             ID, // [A-Za-z][A-Za-z0-9_]*
             StringID, // Text surrounded or '"'
@@ -295,17 +295,31 @@ public class Tokenizer implements Iterator<Token> {
             Text, // Text surrounded or '''
 
             // Symbols
-            Semicolon, // ';'
-            LParen, // '('
-            RParen, // ')'
-            Comma, // ','
-            Dot, // '.'
-            Equals, // '='
-            Star, // '*'
-            Slash, // '/'
-            Plus, // '+'
-            Minus, // '-'
-
+            Semicolon(";"),
+            LParen("("),
+            RParen(")"),
+            Comma(","),
+            Dot("."),
+            Equals("="),
+            Star("*"),
+            Slash("/"),
+            Plus("+"),
+            Minus("-"),
+            ;
+            
+            private final String string;
+            
+            private Type(){
+                this.string = "";
+            }
+            
+            private Type(String string){
+                this.string = string;
+            }
+            
+            public String asString(){
+                return string;
+            }
         }
 
         @Override
