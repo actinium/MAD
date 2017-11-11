@@ -27,6 +27,8 @@ public class Tokenizer implements Iterator<Token> {
             char c = charAt(index);
             if (c == ' ' || c == '\t' || c == '\n') {
                 index++;
+            } else if (c == '-' && index + 1 < length() && charAt(index + 1) == '-') {
+                parseComment();
             } else if (isAZazUnderscore(c)) {
                 if (parseKeywords()) {
                     continue;
@@ -57,6 +59,182 @@ public class Tokenizer implements Iterator<Token> {
         }
     }
 
+    private boolean parseDoubleCharOperators(char c1, char c2) {
+        if (c1 == '=' && c2 == '=') {
+            tokens.add(new Token(Token.Type.DoubleEquals));
+            return true;
+        }
+        if (c1 == '!' && c2 == '=') {
+            tokens.add(new Token(Token.Type.NotEquals));
+            return true;
+        }
+        if (c1 == '<' && c2 == '>') {
+            tokens.add(new Token(Token.Type.NotEquals));
+            return true;
+        }
+        if (c1 == '>' && c2 == '=') {
+            tokens.add(new Token(Token.Type.GreaterThanOrEquals));
+            return true;
+        }
+        if (c1 == '<' && c2 == '=') {
+            tokens.add(new Token(Token.Type.LessThanOrEquals));
+            return true;
+        }
+        if (c1 == '<' && c2 == '<') {
+            tokens.add(new Token(Token.Type.LeftShift));
+            return true;
+        }
+        if (c1 == '>' && c2 == '>') {
+            tokens.add(new Token(Token.Type.RightShift));
+            return true;
+        }
+        if (c1 == '|' && c2 == '|') {
+            tokens.add(new Token(Token.Type.Concat));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean parseSingleCharOperators(char c) {
+        switch (c) {
+            case ';':
+                tokens.add(new Token(Token.Type.Semicolon));
+                return true;
+            case '(':
+                tokens.add(new Token(Token.Type.LParen));
+                return true;
+            case ')':
+                tokens.add(new Token(Token.Type.RParen));
+                return true;
+            case '=':
+                tokens.add(new Token(Token.Type.Equals));
+                return true;
+            case '>':
+                tokens.add(new Token(Token.Type.GreaterThan));
+                return true;
+            case '<':
+                tokens.add(new Token(Token.Type.LessThan));
+                return true;
+            case '&':
+                tokens.add(new Token(Token.Type.And));
+                return true;
+            case '|':
+                tokens.add(new Token(Token.Type.Or));
+                return true;
+            case ',':
+                tokens.add(new Token(Token.Type.Comma));
+                return true;
+            case '.':
+                tokens.add(new Token(Token.Type.Dot));
+                return true;
+            case '*':
+                tokens.add(new Token(Token.Type.Star));
+                return true;
+            case '/':
+                tokens.add(new Token(Token.Type.Slash));
+                return true;
+            case '+':
+                tokens.add(new Token(Token.Type.Plus));
+                return true;
+            case '-':
+                tokens.add(new Token(Token.Type.Minus));
+                return true;
+            case '%':
+                tokens.add(new Token(Token.Type.Modulo));
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void parseId() {
+        int start = index;
+        while (index < length() && isAZazDigitUnderscore(charAt(index))) {
+            index++;
+        }
+        tokens.add(new Token(Token.Type.ID, tokenStr.substring(start, index)));
+    }
+    
+    private void parseComment(){
+        while(index < length() && charAt(index)!='\n'){
+            index++;
+        }
+    }
+
+    private void parseString() throws TokenizeException {
+        char mark = charAt(index);
+        index++;
+        StringBuilder builder = new StringBuilder();
+
+        while (true) {
+            if (index + 1 < length() && charAt(index) == mark && charAt(index + 1) != mark) {
+                index++;
+                break;
+            } else if (index + 1 == length() && charAt(index) == mark) {
+                index++;
+                break;
+            } else if (index == length()) {
+                throw new TokenizeException("Failed to tokenize string!", index);
+            } else {
+                if (charAt(index) == mark) {
+                    index++;
+                }
+                builder.append(charAt(index));
+                index++;
+            }
+        }
+        if (mark == '"') {
+            tokens.add(new Token(Token.Type.StringID, builder.toString()));
+        } else {
+            tokens.add(new Token(Token.Type.Text, builder.toString()));
+        }
+    }
+
+    private void parseNumber() throws TokenizeException {
+        StringBuilder builder = new StringBuilder();
+        boolean dotFound = false;
+
+        if (charAt(index) == '0') {
+            if (index + 1 == length() || charAt(index + 1) != '.') {
+                tokens.add(new Token(Token.Type.Integer, "0"));
+                index++;
+                return;
+            } else if (index + 2 < length() && charAt(index + 1) == '.' && isDigit(charAt(index + 2))) {
+                builder.append("0.");
+                dotFound = true;
+                builder.append(charAt(index + 2));
+                index += 3;
+            } else {
+                throw new TokenizeException("Could not parse number!", index);
+            }
+        }
+
+        while (index < length()) {
+            if (charAt(index) == '.') {
+                if (dotFound) {
+                    throw new TokenizeException("Could not parse number!", index);
+                } else {
+                    builder.append('.');
+                    dotFound = true;
+                    index++;
+                    continue;
+                }
+            }
+            if (isDigit(charAt(index))) {
+                builder.append(charAt(index));
+                index++;
+            } else {
+                break;
+            }
+        }
+
+        if (dotFound) {
+            tokens.add(new Token(Token.Type.Float, builder.toString()));
+        } else {
+            tokens.add(new Token(Token.Type.Integer, builder.toString()));
+        }
+    }
+    
     private boolean parseKeywords() {
         if (parseKeyword("is not")) {
             // must run first to prevent matching with 'is'.
@@ -155,176 +333,6 @@ public class Tokenizer implements Iterator<Token> {
             return Token.Type.Descending;
         }
         return null;
-    }
-
-    private boolean parseDoubleCharOperators(char c1, char c2) {
-        if (c1 == '=' && c2 == '=') {
-            tokens.add(new Token(Token.Type.DoubleEquals));
-            return true;
-        }
-        if (c1 == '!' && c2 == '=') {
-            tokens.add(new Token(Token.Type.NotEquals));
-            return true;
-        }
-        if (c1 == '<' && c2 == '>') {
-            tokens.add(new Token(Token.Type.NotEquals));
-            return true;
-        }
-        if (c1 == '>' && c2 == '=') {
-            tokens.add(new Token(Token.Type.GreaterThanOrEquals));
-            return true;
-        }
-        if (c1 == '<' && c2 == '=') {
-            tokens.add(new Token(Token.Type.LessThanOrEquals));
-            return true;
-        }
-        if (c1 == '<' && c2 == '<') {
-            tokens.add(new Token(Token.Type.LeftShift));
-            return true;
-        }
-        if (c1 == '>' && c2 == '>') {
-            tokens.add(new Token(Token.Type.RightShift));
-            return true;
-        }
-        if (c1 == '|' && c2 == '|') {
-            tokens.add(new Token(Token.Type.Concat));
-            return true;
-        }
-        return false;
-    }
-
-    private boolean parseSingleCharOperators(char c) {
-        switch (c) {
-            case ';':
-                tokens.add(new Token(Token.Type.Semicolon));
-                return true;
-            case '(':
-                tokens.add(new Token(Token.Type.LParen));
-                return true;
-            case ')':
-                tokens.add(new Token(Token.Type.RParen));
-                return true;
-            case '=':
-                tokens.add(new Token(Token.Type.Equals));
-                return true;
-            case '>':
-                tokens.add(new Token(Token.Type.GreaterThan));
-                return true;
-            case '<':
-                tokens.add(new Token(Token.Type.LessThan));
-                return true;
-            case '&':
-                tokens.add(new Token(Token.Type.And));
-                return true;
-            case '|':
-                tokens.add(new Token(Token.Type.Or));
-                return true;
-            case ',':
-                tokens.add(new Token(Token.Type.Comma));
-                return true;
-            case '.':
-                tokens.add(new Token(Token.Type.Dot));
-                return true;
-            case '*':
-                tokens.add(new Token(Token.Type.Star));
-                return true;
-            case '/':
-                tokens.add(new Token(Token.Type.Slash));
-                return true;
-            case '+':
-                tokens.add(new Token(Token.Type.Plus));
-                return true;
-            case '-':
-                tokens.add(new Token(Token.Type.Minus));
-                return true;
-            case '%':
-                tokens.add(new Token(Token.Type.Modulo));
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    private void parseId() {
-        int start = index;
-        while (index < length() && isAZazDigitUnderscore(charAt(index))) {
-            index++;
-        }
-        tokens.add(new Token(Token.Type.ID, tokenStr.substring(start, index)));
-    }
-
-    private void parseString() throws TokenizeException {
-        char mark = charAt(index);
-        index++;
-        StringBuilder builder = new StringBuilder();
-
-        while (true) {
-            if (index + 1 < length() && charAt(index) == mark && charAt(index + 1) != mark) {
-                index++;
-                break;
-            } else if (index + 1 == length() && charAt(index) == mark) {
-                index++;
-                break;
-            } else if (index == length()) {
-                throw new TokenizeException("Failed to tokenize string!", index);
-            } else {
-                if (charAt(index) == mark) {
-                    index++;
-                }
-                builder.append(charAt(index));
-                index++;
-            }
-        }
-        if (mark == '"') {
-            tokens.add(new Token(Token.Type.StringID, builder.toString()));
-        } else {
-            tokens.add(new Token(Token.Type.Text, builder.toString()));
-        }
-    }
-
-    private void parseNumber() throws TokenizeException {
-        StringBuilder builder = new StringBuilder();
-        boolean dotFound = false;
-
-        if (charAt(index) == '0') {
-            if (index + 1 == length() || charAt(index + 1) != '.') {
-                tokens.add(new Token(Token.Type.Integer, "0"));
-                index++;
-                return;
-            } else if (index + 2 < length() && charAt(index + 1) == '.' && isDigit(charAt(index + 2))) {
-                builder.append("0.");
-                dotFound = true;
-                builder.append(charAt(index + 2));
-                index += 3;
-            } else {
-                throw new TokenizeException("Could not parse number!", index);
-            }
-        }
-
-        while (index < length()) {
-            if (charAt(index) == '.') {
-                if (dotFound) {
-                    throw new TokenizeException("Could not parse number!", index);
-                } else {
-                    builder.append('.');
-                    dotFound = true;
-                    index++;
-                    continue;
-                }
-            }
-            if (isDigit(charAt(index))) {
-                builder.append(charAt(index));
-                index++;
-            } else {
-                break;
-            }
-        }
-
-        if (dotFound) {
-            tokens.add(new Token(Token.Type.Float, builder.toString()));
-        } else {
-            tokens.add(new Token(Token.Type.Integer, builder.toString()));
-        }
     }
 
     private boolean isDigit(char c) {

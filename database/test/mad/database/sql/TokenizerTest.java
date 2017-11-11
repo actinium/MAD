@@ -789,6 +789,60 @@ public class TokenizerTest {
                 new Token(Token.Type.Semicolon)));
         testTokeniser(query, tokens);
     }
+    
+    /**
+     * Test of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer32() {
+        String query =
+                "--Hello Comments\n"+
+                "select col1,col2\n"+
+                "   from tablename -- Usefullcomment about tablename\n"+
+                "   where col1 == 12;";
+        
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.ID, "col1"),
+                new Token(Token.Type.Comma),
+                new Token(Token.Type.ID, "col2"),
+                new Token(Token.Type.From),
+                new Token(Token.Type.ID, "tablename"),
+                new Token(Token.Type.Where),
+                new Token(Token.Type.ID, "col1"),
+                new Token(Token.Type.DoubleEquals),
+                new Token(Token.Type.Integer, "12"),
+                new Token(Token.Type.Semicolon)));
+
+        testTokeniser(query, tokens);
+    }
+    
+    /**
+     * Test of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer33() {
+        String query =
+                "select col1,col2\n"+
+                "   -- hello col1 & col2\n"+
+                "   from tablename\n"+
+                "   where col1 == 12;-- end comment";
+        
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Select),
+                new Token(Token.Type.ID, "col1"),
+                new Token(Token.Type.Comma),
+                new Token(Token.Type.ID, "col2"),
+                new Token(Token.Type.From),
+                new Token(Token.Type.ID, "tablename"),
+                new Token(Token.Type.Where),
+                new Token(Token.Type.ID, "col1"),
+                new Token(Token.Type.DoubleEquals),
+                new Token(Token.Type.Integer, "12"),
+                new Token(Token.Type.Semicolon)));
+
+        testTokeniser(query, tokens);
+    }
 
     private void testTokeniser(String query, List<Token> expTokens){
         Tokenizer tokenizer = new Tokenizer();
