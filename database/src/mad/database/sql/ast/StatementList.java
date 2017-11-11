@@ -6,7 +6,7 @@ import java.util.List;
 /**
  *
  */
-public class StatementList {
+public class StatementList implements Statement{
     List<Statement> statements;
     
     public StatementList(){
