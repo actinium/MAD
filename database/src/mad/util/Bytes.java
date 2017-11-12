@@ -8,7 +8,11 @@ import static mad.database.Config.CHARSET;
  *
  */
 public class Bytes {
-    
+
+    public static ByteBuffer getByteBuffer(byte[] bytes) {
+        return ByteBuffer.wrap(bytes).order(BYTEORDER);
+    }
+
     public static byte[] fromInt(int number) {
         byte[] ret = new byte[4];
         ByteBuffer bb = ByteBuffer.allocate(4).order(BYTEORDER);
@@ -54,18 +58,18 @@ public class Bytes {
     public static byte[] fromString(String string) {
         return string.getBytes(CHARSET);
     }
-    
+
     public static byte[] fromString(String string, int length) {
         byte[] bytes = new byte[length];
         byte[] strBytes = string.getBytes(CHARSET);
-        System.arraycopy(strBytes,0,bytes, 0, Math.min(length, strBytes.length));
+        System.arraycopy(strBytes, 0, bytes, 0, Math.min(length, strBytes.length));
         return bytes;
     }
 
     public static String toString(byte[] bytes) {
         int end = bytes.length;
         for (int i = 0; i < bytes.length; i++) {
-            if(bytes[i] == 0){
+            if (bytes[i] == 0) {
                 end = i;
                 break;
             }
