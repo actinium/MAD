@@ -12,10 +12,10 @@ import mad.util.Bytes;
  */
 public class Pager {
 
-    private final int firstTablePointerOffset = 0;
-    private final int lastTablePointerOffset = 4;
-    private final int freePagePointerOffset = 8;
-    private final int startOffset = 12;
+    private static final int firstTablePointerOffset = 0;
+    private static final int lastTablePointerOffset = 4;
+    private static final int freePagePointerOffset = 8;
+    private static final int startOffset = 12;
 
     private final RandomAccessFile dbFile;
 
