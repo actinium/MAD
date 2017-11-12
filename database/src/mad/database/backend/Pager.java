@@ -130,7 +130,7 @@ public class Pager {
         writeBytes(filePosition,Bytes.fromString(string, length), length);
     }
 
-    private byte[] readBytes(int filePosition, int length) throws IOException {
+    public byte[] readBytes(int filePosition, int length) throws IOException {
         int pageStart = positionToPageStart(filePosition);
         Page page;
         if (currentPage != null && pageStart == currentPage.getPageStartPosition()) {
@@ -146,7 +146,7 @@ public class Pager {
         return page.getBytes(filePosition, length);
     }
 
-    private void writeBytes(int filePosition, byte[] bytes, int length) throws IOException {
+    public void writeBytes(int filePosition, byte[] bytes, int length) throws IOException {
         if (filePosition >= 0 && filePosition < startOffset) { // File Header
             dbFile.seek(filePosition);
             dbFile.write(bytes, 0, length);
