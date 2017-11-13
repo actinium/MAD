@@ -62,6 +62,26 @@ public class Schema implements Iterable<Field> {
     public int size() {
         return fields.size();
     }
+    
+    /**
+     * 
+     * @return the number of bytes needed to represent one row.
+     */
+    public int bytes(){
+        int bSize = 16;
+        for(Field f: fields){
+            if(f.type == Field.Type.Boolean){
+                bSize += 1;
+            }else if(f.type == Field.Type.Integer){
+                bSize += 4;
+            }else if(f.type == Field.Type.Float){
+                bSize += 4;
+            }else if(f.type == Field.Type.Varchar){
+                bSize += f.length;
+            }
+        }
+        return bSize;
+    }
 
     public static class Field {
 
