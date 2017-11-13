@@ -43,6 +43,7 @@ public class DBCreateTableTest {
     @Test
     public void testCreateTable() throws Exception {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
+        testFile.deleteOnExit();
         {
             DB db = DB.open(testFile.getAbsolutePath());
             db.createTable("AwesomeTable", new Schema(
@@ -62,6 +63,7 @@ public class DBCreateTableTest {
             for (int i = 0; i < expTableNames.size() && i < tableNames.size(); i++) {
                 assertEquals(expTableNames.get(i), tableNames.get(i));
             }
+            db.close();
         }
     }
 
@@ -71,6 +73,7 @@ public class DBCreateTableTest {
     @Test
     public void testCreateTable2() throws Exception {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
+        testFile.deleteOnExit();
         {
             DB db = DB.open(testFile.getAbsolutePath());
             db.createTable("AwesomeTable", new Schema(
@@ -101,6 +104,7 @@ public class DBCreateTableTest {
             for (int i = 0; i < expTableNames.size() && i < tableNames.size(); i++) {
                 assertEquals(expTableNames.get(i), tableNames.get(i));
             }
+            db.close();
         }
     }
 
@@ -110,6 +114,7 @@ public class DBCreateTableTest {
     @Test
     public void testCreateTable3() throws Exception {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
+        testFile.deleteOnExit();
         {
             DB db = DB.open(testFile.getAbsolutePath());
             db.createTable("AwesomeTable", new Schema(
@@ -133,6 +138,7 @@ public class DBCreateTableTest {
             assertEquals("field2", schema.get(1).name);
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
             assertEquals(Schema.Field.Type.Integer, schema.get(1).type);
+            db.close();
         }
     }
 
