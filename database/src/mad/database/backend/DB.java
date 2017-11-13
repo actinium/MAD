@@ -15,6 +15,8 @@ import mad.util.Bytes;
 public class DB {
 
     private Pager pager;
+    private SchemaWriter schemaWriter;
+    private SchemaReader schemaReader;
 
     private DB(String filename) throws FileNotFoundException, IOException {
         File file = new File(filename);
@@ -25,25 +27,49 @@ public class DB {
             initDBFile(file);
         }
         pager = new Pager(file);
+        schemaWriter = new SchemaWriter(pager);
+        schemaReader = new SchemaReader(pager);
     }
 
+    /**
+     *
+     * @param filename
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public static DB open(String filename) throws FileNotFoundException, IOException {
         return new DB(filename);
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     public void close() throws IOException {
         pager.close();
     }
 
-    public void createTable(String name) throws IOException {
+    /**
+     *
+     * @param name
+     * @param schema
+     * @throws IOException
+     */
+    public void createTable(String name, Schema schema) throws IOException {
         int firstTablePointer = pager.readInteger(0);
         int lastTablePointer = pager.readInteger(4);
         int newTablePointer = pager.newPage();
 
         byte[] nameAsBytes = Bytes.fromString(name);
-        byte[] table = new byte[5 * 4 + nameAsBytes.length];
+        int tableHeaderLength = 5 * 4 + nameAsBytes.length;
+        byte[] table = new byte[tableHeaderLength];
         ByteBuffer tableBuffer = Bytes.getByteBuffer(table);
 
+        int schemaPointer = newTablePointer+tableHeaderLength;
+        tableBuffer.putInt(4,schemaPointer);
+        schemaWriter.write(schemaPointer, schema);
+        
         tableBuffer.putInt(16, nameAsBytes.length);
         tableBuffer.position(20).mark();
         tableBuffer.put(nameAsBytes, 0, nameAsBytes.length);
@@ -57,15 +83,32 @@ public class DB {
         pager.writeInteger(4, newTablePointer);
     }
 
+    /**
+     *
+     * @return @throws IOException
+     */
     public List<String> getTableNames() throws IOException {
         List<String> tables = new ArrayList<>();
         for (int tablePointer = pager.readInteger(0); tablePointer != 0;
                 tablePointer = pager.readInteger(tablePointer)) {
-            int nameLength = pager.readInteger(tablePointer+16);
-            String name = pager.readString(tablePointer+20, nameLength);
+            int nameLength = pager.readInteger(tablePointer + 16);
+            String name = pager.readString(tablePointer + 20, nameLength);
             tables.add(name);
         }
         return tables;
+    }
+    
+    public Schema getSchema(String tableName) throws IOException{
+        for (int tablePointer = pager.readInteger(0); tablePointer != 0;
+                tablePointer = pager.readInteger(tablePointer)) {
+            int nameLength = pager.readInteger(tablePointer + 16);
+            String name = pager.readString(tablePointer + 20, nameLength);
+            if(name.equals(tableName)){
+                int scheamPointer = pager.readInteger(tablePointer+4);
+                return schemaReader.read(scheamPointer);
+            }
+        }
+        return null;
     }
 
     // - Alter Table

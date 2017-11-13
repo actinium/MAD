@@ -127,7 +127,16 @@ public class Pager {
     }
 
     public void writeString(int filePosition, String string, int length) throws IOException {
-        writeBytes(filePosition,Bytes.fromString(string, length), length);
+        writeBytes(filePosition, Bytes.fromString(string, length), length);
+    }
+
+    public byte readByte(int filePosition) throws IOException {
+        return readBytes(filePosition, 1)[0];
+    }
+
+    public void writeByte(int filePosition, byte b) throws IOException {
+        byte[] bytes = {b};
+        writeBytes(filePosition, bytes, 1);
     }
 
     public byte[] readBytes(int filePosition, int length) throws IOException {

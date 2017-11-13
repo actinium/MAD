@@ -7,6 +7,8 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,8 +45,12 @@ public class DBCreateTableTest {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
         {
             DB db = DB.open(testFile.getAbsolutePath());
-            db.createTable("AwesomeTable");
-            db.createTable("SecondTable");
+            db.createTable("AwesomeTable", new Schema(
+                    new Schema.Field(0, "afield1", Schema.Field.Type.Integer, 0, 4),
+                    new Schema.Field(1, "afield2", Schema.Field.Type.Integer, 4, 8)));
+            db.createTable("SecondTable", new Schema(
+                    new Schema.Field(0, "sfield1", Schema.Field.Type.Integer, 0, 4),
+                    new Schema.Field(1, "sfield2", Schema.Field.Type.Integer, 4, 8)));
             db.close();
         }
         {
@@ -54,11 +60,11 @@ public class DBCreateTableTest {
                     "AwesomeTable", "SecondTable"));
             assertEquals(expTableNames.size(), tableNames.size());
             for (int i = 0; i < expTableNames.size() && i < tableNames.size(); i++) {
-                assertEquals(expTableNames.get(i),tableNames.get(i));
+                assertEquals(expTableNames.get(i), tableNames.get(i));
             }
         }
     }
-    
+
     /**
      * Test of createTable method, of class DB.
      */
@@ -67,25 +73,66 @@ public class DBCreateTableTest {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
         {
             DB db = DB.open(testFile.getAbsolutePath());
-            db.createTable("AwesomeTable");
-            db.createTable("SecondTable");
+            db.createTable("AwesomeTable", new Schema(
+                    new Schema.Field(0, "afield1", Schema.Field.Type.Integer, 0, 4),
+                    new Schema.Field(0, "afield2", Schema.Field.Type.Integer, 0, 4),
+                    new Schema.Field(1, "afield3", Schema.Field.Type.Integer, 4, 8)));
+            db.createTable("SecondTable", new Schema(
+                    new Schema.Field(0, "sfield1", Schema.Field.Type.Integer, 0, 4),
+                    new Schema.Field(1, "sfield2", Schema.Field.Type.Integer, 4, 8)));
             db.close();
         }
         {
             DB db = DB.open(testFile.getAbsolutePath());
-            db.createTable("ThirdTable");
+            db.createTable("ThirdTable", new Schema(
+                    new Schema.Field(0, "field1", Schema.Field.Type.Integer, 0, 4),
+                    new Schema.Field(1, "field2", Schema.Field.Type.Integer, 4, 8)));
             db.close();
         }
         {
             DB db = DB.open(testFile.getAbsolutePath());
-            db.createTable("EndTable");
+            db.createTable("EndTable", new Schema(
+                    new Schema.Field(0, "field1", Schema.Field.Type.Integer, 0, 4),
+                    new Schema.Field(1, "field2", Schema.Field.Type.Integer, 4, 8)));
             List<String> tableNames = db.getTableNames();
             ArrayList<String> expTableNames = new ArrayList<>(Arrays.asList(
-                    "AwesomeTable", "SecondTable","ThirdTable","EndTable"));
+                    "AwesomeTable", "SecondTable", "ThirdTable", "EndTable"));
             assertEquals(expTableNames.size(), tableNames.size());
             for (int i = 0; i < expTableNames.size() && i < tableNames.size(); i++) {
-                assertEquals(expTableNames.get(i),tableNames.get(i));
+                assertEquals(expTableNames.get(i), tableNames.get(i));
             }
+        }
+    }
+    
+    /**
+     * Test of createTable method, of class DB.
+     */
+    @Test
+    public void testCreateTable3() throws Exception {
+        File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            db.createTable("AwesomeTable", new Schema(
+                    new Schema.Field(0, "field1", Schema.Field.Type.Integer, 0, 4),
+                    new Schema.Field(1, "field2", Schema.Field.Type.Integer, 4, 8)));
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            List<String> tableNames = db.getTableNames();
+            ArrayList<String> expTableNames = new ArrayList<>(Arrays.asList(
+                    "AwesomeTable"));
+            assertEquals(expTableNames.size(), tableNames.size());
+            for (int i = 0; i < expTableNames.size() && i < tableNames.size(); i++) {
+                assertEquals(expTableNames.get(i), tableNames.get(i));
+            }
+            Schema schema = db.getSchema("AwesomeTable");
+            assertNotNull(schema);
+            assertEquals(2, schema.size());
+            assertEquals("field1",schema.get(0).name);
+            assertEquals("field2",schema.get(1).name);
+            assertEquals(Schema.Field.Type.Integer,schema.get(0).type);
+            assertEquals(Schema.Field.Type.Integer,schema.get(1).type);
         }
     }
 
