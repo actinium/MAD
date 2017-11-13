@@ -97,5 +97,21 @@ public class Schema implements Iterable<Field> {
             this.offset = offset;
             this.length = length;
         }
+        
+        public Field(String name, Type type, int length) {
+            this.columnNumber = 0;
+            this.name = name;
+            this.type = type;
+            this.offset = 0;
+            this.length = length;
+        }
+        
+        public Field(String name, Type type) {
+            this.columnNumber = 0;
+            this.name = name;
+            this.type = type;
+            this.offset = 0;
+            this.length = 0;
+        }
     }
 }

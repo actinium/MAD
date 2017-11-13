@@ -46,11 +46,11 @@ public class DBCreateTableTest {
         {
             DB db = DB.open(testFile.getAbsolutePath());
             db.createTable("AwesomeTable", new Schema(
-                    new Schema.Field(0, "afield1", Schema.Field.Type.Integer, 0, 4),
-                    new Schema.Field(1, "afield2", Schema.Field.Type.Integer, 4, 8)));
+                    new Schema.Field("afield1", Schema.Field.Type.Integer),
+                    new Schema.Field("afield2", Schema.Field.Type.Integer)));
             db.createTable("SecondTable", new Schema(
-                    new Schema.Field(0, "sfield1", Schema.Field.Type.Integer, 0, 4),
-                    new Schema.Field(1, "sfield2", Schema.Field.Type.Integer, 4, 8)));
+                    new Schema.Field("sfield1", Schema.Field.Type.Integer),
+                    new Schema.Field("sfield2", Schema.Field.Type.Integer)));
             db.close();
         }
         {
@@ -74,26 +74,26 @@ public class DBCreateTableTest {
         {
             DB db = DB.open(testFile.getAbsolutePath());
             db.createTable("AwesomeTable", new Schema(
-                    new Schema.Field(0, "afield1", Schema.Field.Type.Integer, 0, 4),
-                    new Schema.Field(0, "afield2", Schema.Field.Type.Integer, 0, 4),
-                    new Schema.Field(1, "afield3", Schema.Field.Type.Integer, 4, 8)));
+                    new Schema.Field("afield1", Schema.Field.Type.Integer),
+                    new Schema.Field("afield2", Schema.Field.Type.Integer),
+                    new Schema.Field("afield3", Schema.Field.Type.Integer)));
             db.createTable("SecondTable", new Schema(
-                    new Schema.Field(0, "sfield1", Schema.Field.Type.Integer, 0, 4),
-                    new Schema.Field(1, "sfield2", Schema.Field.Type.Integer, 4, 8)));
+                    new Schema.Field("sfield1", Schema.Field.Type.Integer),
+                    new Schema.Field("sfield2", Schema.Field.Type.Integer)));
             db.close();
         }
         {
             DB db = DB.open(testFile.getAbsolutePath());
             db.createTable("ThirdTable", new Schema(
-                    new Schema.Field(0, "field1", Schema.Field.Type.Integer, 0, 4),
-                    new Schema.Field(1, "field2", Schema.Field.Type.Integer, 4, 8)));
+                    new Schema.Field("field1", Schema.Field.Type.Integer),
+                    new Schema.Field("field2", Schema.Field.Type.Integer)));
             db.close();
         }
         {
             DB db = DB.open(testFile.getAbsolutePath());
             db.createTable("EndTable", new Schema(
-                    new Schema.Field(0, "field1", Schema.Field.Type.Integer, 0, 4),
-                    new Schema.Field(1, "field2", Schema.Field.Type.Integer, 4, 8)));
+                    new Schema.Field("field1", Schema.Field.Type.Integer),
+                    new Schema.Field("field2", Schema.Field.Type.Integer)));
             List<String> tableNames = db.getTableNames();
             ArrayList<String> expTableNames = new ArrayList<>(Arrays.asList(
                     "AwesomeTable", "SecondTable", "ThirdTable", "EndTable"));
@@ -103,7 +103,7 @@ public class DBCreateTableTest {
             }
         }
     }
-    
+
     /**
      * Test of createTable method, of class DB.
      */
@@ -113,8 +113,8 @@ public class DBCreateTableTest {
         {
             DB db = DB.open(testFile.getAbsolutePath());
             db.createTable("AwesomeTable", new Schema(
-                    new Schema.Field(0, "field1", Schema.Field.Type.Integer, 0, 4),
-                    new Schema.Field(1, "field2", Schema.Field.Type.Integer, 4, 8)));
+                    new Schema.Field("field1", Schema.Field.Type.Integer),
+                    new Schema.Field("field2", Schema.Field.Type.Integer)));
             db.close();
         }
         {
@@ -129,10 +129,10 @@ public class DBCreateTableTest {
             Schema schema = db.getSchema("AwesomeTable");
             assertNotNull(schema);
             assertEquals(2, schema.size());
-            assertEquals("field1",schema.get(0).name);
-            assertEquals("field2",schema.get(1).name);
-            assertEquals(Schema.Field.Type.Integer,schema.get(0).type);
-            assertEquals(Schema.Field.Type.Integer,schema.get(1).type);
+            assertEquals("field1", schema.get(0).name);
+            assertEquals("field2", schema.get(1).name);
+            assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
+            assertEquals(Schema.Field.Type.Integer, schema.get(1).type);
         }
     }
 
