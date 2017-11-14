@@ -10,7 +10,7 @@ import mad.util.Bytes;
 /**
  *
  */
-public class Pager {
+public class Pager implements AutoCloseable{
 
     private static final int firstTablePointerOffset = 0;
     private static final int lastTablePointerOffset = 4;
@@ -38,6 +38,7 @@ public class Pager {
         freePagePointer = Bytes.toInt(bytes);
     }
 
+    @Override
     public void close() throws IOException {
         dbFile.close();
     }

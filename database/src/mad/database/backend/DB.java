@@ -12,7 +12,7 @@ import mad.util.Bytes;
 /**
  *
  */
-public class DB {
+public class DB implements AutoCloseable{
 
     private Pager pager;
     private SchemaWriter schemaWriter;
@@ -46,6 +46,7 @@ public class DB {
      *
      * @throws IOException
      */
+    @Override
     public void close() throws IOException {
         pager.close();
     }
