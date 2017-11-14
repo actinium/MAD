@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import static mad.database.Config.PAGESIZE;
 import mad.database.backend.Schema.Field;
 
 /**
@@ -12,6 +13,8 @@ import mad.database.backend.Schema.Field;
 public class Schema implements Iterable<Field> {
 
     private final List<Field> fields;
+    private final int bytes;
+    private final int size;
 
     /**
      *
@@ -19,6 +22,8 @@ public class Schema implements Iterable<Field> {
      */
     public Schema(List<Field> fields) {
         this.fields = Collections.unmodifiableList(fields);
+        this.bytes = calcBytes(fields);
+        this.size = this.fields.size();
     }
 
     /**
@@ -27,6 +32,24 @@ public class Schema implements Iterable<Field> {
      */
     public Schema(Field... fields) {
         this.fields = Collections.unmodifiableList(Arrays.asList(fields));
+        this.bytes = calcBytes(this.fields);
+        this.size = this.fields.size();
+    }
+
+    private int calcBytes(List<Field> fields) {
+        int bSize = 16;
+        for (Field f : fields) {
+            if (f.type == Field.Type.Boolean) {
+                bSize += 1;
+            } else if (f.type == Field.Type.Integer) {
+                bSize += 4;
+            } else if (f.type == Field.Type.Float) {
+                bSize += 4;
+            } else if (f.type == Field.Type.Varchar) {
+                bSize += f.length;
+            }
+        }
+        return bSize;
     }
 
     /**
@@ -54,33 +77,37 @@ public class Schema implements Iterable<Field> {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public Iterator<Field> iterator() {
         return fields.iterator();
     }
 
-    public int size() {
-        return fields.size();
-    }
-    
     /**
-     * 
+     *
+     * @return
+     */
+    public int size() {
+        return size;
+    }
+
+    /**
+     *
      * @return the number of bytes needed to represent one row.
      */
-    public int bytes(){
-        int bSize = 16;
-        for(Field f: fields){
-            if(f.type == Field.Type.Boolean){
-                bSize += 1;
-            }else if(f.type == Field.Type.Integer){
-                bSize += 4;
-            }else if(f.type == Field.Type.Float){
-                bSize += 4;
-            }else if(f.type == Field.Type.Varchar){
-                bSize += f.length;
-            }
-        }
-        return bSize;
+    public int bytes() {
+        return bytes;
+    }
+
+    /**
+     *
+     * @return the maximum number of rows that can be stored in one page.
+     */
+    public int rowsPerPage() {
+        return PAGESIZE / bytes();
     }
 
     public static class Field {
@@ -117,7 +144,7 @@ public class Schema implements Iterable<Field> {
             this.offset = offset;
             this.length = length;
         }
-        
+
         public Field(String name, Type type, int length) {
             this.columnNumber = 0;
             this.name = name;
@@ -125,7 +152,7 @@ public class Schema implements Iterable<Field> {
             this.offset = 0;
             this.length = length;
         }
-        
+
         public Field(String name, Type type) {
             this.columnNumber = 0;
             this.name = name;
