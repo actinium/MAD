@@ -1,7 +1,6 @@
 
 package mad.database.backend;
 
-import java.util.Iterator;
 import mad.database.backend.Schema.Field;
 import org.junit.After;
 import org.junit.AfterClass;
