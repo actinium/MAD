@@ -11,6 +11,8 @@ Pager handles all reads and writes to the database file.
 | [float readFloat(...)](#readfloat)|[void writeFloat(...)](#writefloat)|
 | [boolean readBoolean(...)](#readboolean)|[void writeBoolean(...)](#writeboolean)|
 | [String readString(...)](#readstring)|[void writeString(...)](#writestring)
+| [byte readByte(...)](#readbyte)|[void writeByte(...)](#writebyte)|
+| [byte[] readBytes(...)](#readbytes)|[void writeBytes(...)](#writebytes)|
 
 ## Pager(...)
 ```Java
@@ -90,3 +92,27 @@ Reads `length` bytes from `filePosition` and converts them to a string.
 public void writeString(int filePosition, String string, int length) throws IOException {
 ```
 Converts a string to bytes and writes at most `length` bytes of it to `filePosition`.
+
+## readByte(...)
+```Java
+public byte readByte(int filePosition) throws IOException {
+```
+Reads one byte from `filePosition`.
+
+## writeByte(...)
+```Java
+public void writeByte(int filePosition, byte b) throws IOException {
+```
+Writes one byte to `filePosition`.
+
+## readBytes(...)
+```Java
+public byte[] readBytes(int filePosition, int length) throws IOException {
+```
+Reads `length` bytes from `filePosition`.
+
+## writeBytes(...)
+```Java
+public void writeBytes(int filePosition, byte[] bytes, int length) throws IOException {
+```
+Writes `length` bytes to `filePosition`.
