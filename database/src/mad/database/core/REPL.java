@@ -103,7 +103,6 @@ public class REPL implements Runnable {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println(args.length);
         System.out.printf("MAD version %s\n", MADVERSION);
         REPL repl = new REPL(System.in, System.out);
         repl.run();
