@@ -22,6 +22,7 @@ public interface Row {
     
     public String getName( int columnNumber) throws NoSuchColumnException;
     public Schema.Field.Type getType( int columnNumber) throws NoSuchColumnException;
+    public int size();
     
     public class NoSuchColumnException extends Exception{}
     public class TypeMismatchException extends Exception{

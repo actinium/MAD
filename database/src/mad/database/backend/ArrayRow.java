@@ -122,6 +122,11 @@ public class ArrayRow implements Row {
         }
         return row.get(columnNumber).getType();
     }
+    
+    @Override
+    public int size(){
+        return row.size();
+    }
 
     private static abstract class Cell {
 
