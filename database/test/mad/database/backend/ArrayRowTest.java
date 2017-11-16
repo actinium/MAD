@@ -59,6 +59,10 @@ public class ArrayRowTest {
     @Test
     public void testGetValues1() throws Exception {
         Row row = intStringRow;
+        assertEquals("id", row.getName(0));
+        assertEquals("name", row.getName(1));
+        assertEquals(Schema.Field.Type.Integer, row.getType(0));
+        assertEquals(Schema.Field.Type.Varchar, row.getType(1));
         assertEquals(4433, row.getInteger(0));
         assertEquals("Charlie", row.getString(1));
     }
@@ -79,6 +83,14 @@ public class ArrayRowTest {
     @Test
     public void testGetValues3() throws Exception {
         Row row = stringBoolFloatIntRow;
+        assertEquals("name", row.getName(0));
+        assertEquals("smart", row.getName(1));
+        assertEquals("height", row.getName(2));
+        assertEquals("age", row.getName(3));
+        assertEquals(Schema.Field.Type.Varchar, row.getType(0));
+        assertEquals(Schema.Field.Type.Boolean, row.getType(1));
+        assertEquals(Schema.Field.Type.Float, row.getType(2));
+        assertEquals(Schema.Field.Type.Integer, row.getType(3));
         assertEquals("Alice", row.getString("name"));
         assertEquals(true, row.getBoolean("smart"));
         assertEquals(1.75F, row.getFloat("height"), 0.01);

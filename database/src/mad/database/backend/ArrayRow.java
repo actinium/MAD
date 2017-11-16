@@ -107,6 +107,22 @@ public class ArrayRow implements Row {
         throw new NoSuchColumnException();
     }
 
+    @Override
+    public String getName(int columnNumber) throws NoSuchColumnException {
+        if(columnNumber < 0 || columnNumber>=row.size()){
+            throw new NoSuchColumnException();
+        }
+        return row.get(columnNumber).columnName;
+    }
+
+    @Override
+    public Schema.Field.Type getType(int columnNumber) throws NoSuchColumnException {
+        if(columnNumber < 0 || columnNumber>=row.size()){
+            throw new NoSuchColumnException();
+        }
+        return row.get(columnNumber).getType();
+    }
+
     private static abstract class Cell {
 
         protected final String columnName;
@@ -126,6 +142,8 @@ public class ArrayRow implements Row {
         public abstract boolean getBoolean() throws TypeMismatchException;
 
         public abstract String getString() throws TypeMismatchException;
+        
+        public abstract Schema.Field.Type getType();
 
     }
 
@@ -156,6 +174,11 @@ public class ArrayRow implements Row {
         @Override
         public String getString() throws TypeMismatchException {
             throw new TypeMismatchException("Requested type did not match actual type.");
+        }
+
+        @Override
+        public Schema.Field.Type getType() {
+            return Schema.Field.Type.Integer;
         }
 
     }
@@ -189,6 +212,11 @@ public class ArrayRow implements Row {
             throw new TypeMismatchException("Requested type did not match actual type.");
         }
 
+        @Override
+        public Schema.Field.Type getType() {
+            return Schema.Field.Type.Float;
+        }
+
     }
 
     private static class BooleanCell extends Cell {
@@ -217,6 +245,11 @@ public class ArrayRow implements Row {
 
         public String getString() throws TypeMismatchException {
             throw new TypeMismatchException("Requested type did not match actual type.");
+        }
+
+        @Override
+        public Schema.Field.Type getType() {
+            return Schema.Field.Type.Boolean;
         }
 
     }
@@ -248,6 +281,11 @@ public class ArrayRow implements Row {
         @Override
         public String getString() throws TypeMismatchException {
             return value;
+        }
+
+        @Override
+        public Schema.Field.Type getType() {
+            return Schema.Field.Type.Varchar;
         }
 
     }
