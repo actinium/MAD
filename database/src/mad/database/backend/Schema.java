@@ -88,7 +88,7 @@ public class Schema implements Iterable<Field> {
 
     /**
      *
-     * @return
+     * @return the number of columns in a row.
      */
     public int size() {
         return size;
