@@ -3,6 +3,7 @@ package mad.util;
 import java.nio.ByteBuffer;
 import static mad.database.Config.BYTEORDER;
 import static mad.database.Config.CHARSET;
+import mad.database.backend.NullBitMap;
 
 /**
  *
@@ -75,5 +76,16 @@ public class Bytes {
             }
         }
         return new String(bytes, 0, end, CHARSET);
+    }
+    
+    public static byte[] fromNullBitMap(NullBitMap nullMap){
+        byte[] bytes = new byte[8];
+        byte[] nullBytes = nullMap.toBytes();
+        System.arraycopy(nullBytes, 0, bytes, 0, nullBytes.length);
+        return bytes;
+    }
+    
+    public static NullBitMap toNullBitMap(byte[] bytes){
+        return new NullBitMap(bytes);
     }
 }
