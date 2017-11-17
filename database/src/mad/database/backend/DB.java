@@ -12,7 +12,7 @@ import mad.util.Bytes;
 /**
  *
  */
-public class DB implements AutoCloseable{
+public class DB implements AutoCloseable {
 
     private Pager pager;
     private SchemaWriter schemaWriter;
@@ -67,10 +67,10 @@ public class DB implements AutoCloseable{
         byte[] table = new byte[tableHeaderLength];
         ByteBuffer tableBuffer = Bytes.getByteBuffer(table);
 
-        int schemaPointer = newTablePointer+tableHeaderLength;
-        tableBuffer.putInt(4,schemaPointer);
+        int schemaPointer = newTablePointer + tableHeaderLength;
+        tableBuffer.putInt(4, schemaPointer);
         schemaWriter.write(schemaPointer, schema);
-        
+
         tableBuffer.putInt(16, nameAsBytes.length);
         tableBuffer.position(20).mark();
         tableBuffer.put(nameAsBytes, 0, nameAsBytes.length);
@@ -98,14 +98,38 @@ public class DB implements AutoCloseable{
         }
         return tables;
     }
-    
-    public Schema getSchema(String tableName) throws IOException{
+
+    /**
+     *
+     * @param tableName
+     * @return
+     * @throws IOException
+     */
+    public int getTablePointer(String tableName) throws IOException {
         for (int tablePointer = pager.readInteger(0); tablePointer != 0;
                 tablePointer = pager.readInteger(tablePointer)) {
             int nameLength = pager.readInteger(tablePointer + 16);
             String name = pager.readString(tablePointer + 20, nameLength);
-            if(name.equals(tableName)){
-                int scheamPointer = pager.readInteger(tablePointer+4);
+            if (name.equals(tableName)) {
+                return tablePointer;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     *
+     * @param tableName
+     * @return
+     * @throws IOException
+     */
+    public Schema getSchema(String tableName) throws IOException {
+        for (int tablePointer = pager.readInteger(0); tablePointer != 0;
+                tablePointer = pager.readInteger(tablePointer)) {
+            int nameLength = pager.readInteger(tablePointer + 16);
+            String name = pager.readString(tablePointer + 20, nameLength);
+            if (name.equals(tableName)) {
+                int scheamPointer = pager.readInteger(tablePointer + 4);
                 return schemaReader.read(scheamPointer);
             }
         }
@@ -113,13 +137,82 @@ public class DB implements AutoCloseable{
     }
 
     // - Alter Table
+    // - Truncate Table
     // - Drop Table
     //
-    // - Insert Row/Rows
+    /**
+     *
+     * @param tableFilePosition
+     * @param row
+     * @throws IOException
+     * @throws mad.database.backend.Row.TypeMismatchException
+     */
+    public void insertRow(int tableFilePosition, Row row) throws IOException, Row.TypeMismatchException {
+        int schemaPointer = pager.readInteger(tableFilePosition + 4);
+        Schema tableSchema = schemaReader.read(schemaPointer);
+        RowWriter writer = new RowWriter(pager, tableSchema);
+        int firstRowPointer = pager.readInteger(tableFilePosition + 8);
+        int lastRowPointer = pager.readInteger(tableFilePosition + 12);
+
+        if (lastRowPointer != 0) {
+            int pagePointer = pager.positionToPageStart(lastRowPointer);
+            int numOfRowsInPage = (lastRowPointer - pagePointer) / tableSchema.bytes();
+            if (numOfRowsInPage == tableSchema.rowsPerPage()) {
+                pagePointer = pager.newPage();
+                writer.setNextRowPointer(lastRowPointer, pagePointer);
+                writer.write(pagePointer, row);
+                pager.writeInteger(tableFilePosition + 12, pagePointer);
+            } else {
+                writer.setNextRowPointer(lastRowPointer, lastRowPointer + tableSchema.bytes());
+                writer.write(lastRowPointer + tableSchema.bytes(), row);
+                pager.writeInteger(tableFilePosition + 12, lastRowPointer + tableSchema.bytes());
+            }
+        } else {
+            int pagePointer = pager.newPage();
+            writer.write(pagePointer, row);
+            pager.writeInteger(tableFilePosition + 8, pagePointer);
+            pager.writeInteger(tableFilePosition + 12, pagePointer);
+        }
+
+    }
+
+    /**
+     *
+     * @param tableName
+     * @param row
+     * @throws IOException
+     * @throws mad.database.backend.Row.TypeMismatchException
+     */
+    public void insertRow(String tableName, Row row) throws IOException, Row.TypeMismatchException {
+        insertRow(getTablePointer(tableName), row);
+    }
+
+    /**
+     *
+     * @param tableFilePosition
+     * @return
+     * @throws IOException
+     */
+    public Row getFirstRow(int tableFilePosition) throws IOException {
+        int rowPointer = pager.readInteger(tableFilePosition + 8);
+        if(rowPointer == 0){
+            return null;
+        }
+        int schemaPointer = pager.readInteger(tableFilePosition + 4);
+        Schema schema = schemaReader.read(schemaPointer);
+        return new DBRow(pager, schema, rowPointer);
+    }
+
     // - Update Row/Rows
     // - Delete Row/Rows
     // 
     // - Select
+    /**
+     *
+     * @param file
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     private void initDBFile(File file) throws FileNotFoundException, IOException {
         int dbHeaderSize = 12;
         try (FileOutputStream writer = new FileOutputStream(file)) {

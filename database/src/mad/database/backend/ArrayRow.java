@@ -9,22 +9,26 @@ public class ArrayRow implements Row {
 
     ArrayList<Cell> row = new ArrayList<>();
 
-    public void addIntegerColumn(String columnName,int value){
+    public ArrayRow addIntegerColumn(String columnName, int value) {
         row.add(new IntegerCell(columnName, value));
+        return this;
     }
-    
-    public void addFloatColumn(String columnName,float value){
+
+    public ArrayRow addFloatColumn(String columnName, float value) {
         row.add(new FloatCell(columnName, value));
+        return this;
     }
-    
-    public void addBooleanColumn(String columnName,boolean value){
+
+    public ArrayRow addBooleanColumn(String columnName, boolean value) {
         row.add(new BooleanCell(columnName, value));
+        return this;
     }
-    
-    public void addStringColumn(String columnName,String value){
+
+    public ArrayRow addStringColumn(String columnName, String value) {
         row.add(new StringCell(columnName, value));
+        return this;
     }
-    
+
     @Override
     public Row next() {
         return null;
@@ -37,7 +41,7 @@ public class ArrayRow implements Row {
 
     @Override
     public int getInteger(int columnNumber) throws NoSuchColumnException, TypeMismatchException {
-        if(columnNumber < 0 || columnNumber>=row.size()){
+        if (columnNumber < 0 || columnNumber >= row.size()) {
             throw new NoSuchColumnException();
         }
         return row.get(columnNumber).getInteger();
@@ -45,8 +49,8 @@ public class ArrayRow implements Row {
 
     @Override
     public int getInteger(String columnName) throws NoSuchColumnException, TypeMismatchException {
-        for(Cell c : row){
-            if(c.getColumnName().equals(columnName)){
+        for (Cell c : row) {
+            if (c.getColumnName().equals(columnName)) {
                 return c.getInteger();
             }
         }
@@ -55,7 +59,7 @@ public class ArrayRow implements Row {
 
     @Override
     public float getFloat(int columnNumber) throws NoSuchColumnException, TypeMismatchException {
-        if(columnNumber < 0 || columnNumber>=row.size()){
+        if (columnNumber < 0 || columnNumber >= row.size()) {
             throw new NoSuchColumnException();
         }
         return row.get(columnNumber).getFloat();
@@ -63,8 +67,8 @@ public class ArrayRow implements Row {
 
     @Override
     public float getFloat(String columnName) throws NoSuchColumnException, TypeMismatchException {
-        for(Cell c : row){
-            if(c.getColumnName().equals(columnName)){
+        for (Cell c : row) {
+            if (c.getColumnName().equals(columnName)) {
                 return c.getFloat();
             }
         }
@@ -73,7 +77,7 @@ public class ArrayRow implements Row {
 
     @Override
     public boolean getBoolean(int columnNumber) throws NoSuchColumnException, TypeMismatchException {
-        if(columnNumber < 0 || columnNumber>=row.size()){
+        if (columnNumber < 0 || columnNumber >= row.size()) {
             throw new NoSuchColumnException();
         }
         return row.get(columnNumber).getBoolean();
@@ -81,8 +85,8 @@ public class ArrayRow implements Row {
 
     @Override
     public boolean getBoolean(String columnName) throws NoSuchColumnException, TypeMismatchException {
-        for(Cell c : row){
-            if(c.getColumnName().equals(columnName)){
+        for (Cell c : row) {
+            if (c.getColumnName().equals(columnName)) {
                 return c.getBoolean();
             }
         }
@@ -91,7 +95,7 @@ public class ArrayRow implements Row {
 
     @Override
     public String getString(int columnNumber) throws NoSuchColumnException, TypeMismatchException {
-        if(columnNumber < 0 || columnNumber>=row.size()){
+        if (columnNumber < 0 || columnNumber >= row.size()) {
             throw new NoSuchColumnException();
         }
         return row.get(columnNumber).getString();
@@ -99,8 +103,8 @@ public class ArrayRow implements Row {
 
     @Override
     public String getString(String columnName) throws NoSuchColumnException, TypeMismatchException {
-        for(Cell c : row){
-            if(c.getColumnName().equals(columnName)){
+        for (Cell c : row) {
+            if (c.getColumnName().equals(columnName)) {
                 return c.getString();
             }
         }
@@ -109,7 +113,7 @@ public class ArrayRow implements Row {
 
     @Override
     public String getName(int columnNumber) throws NoSuchColumnException {
-        if(columnNumber < 0 || columnNumber>=row.size()){
+        if (columnNumber < 0 || columnNumber >= row.size()) {
             throw new NoSuchColumnException();
         }
         return row.get(columnNumber).columnName;
@@ -117,27 +121,42 @@ public class ArrayRow implements Row {
 
     @Override
     public Schema.Field.Type getType(int columnNumber) throws NoSuchColumnException {
-        if(columnNumber < 0 || columnNumber>=row.size()){
+        if (columnNumber < 0 || columnNumber >= row.size()) {
             throw new NoSuchColumnException();
         }
         return row.get(columnNumber).getType();
     }
-    
+
+    /**
+     * 
+     * @return the number of columns in this row.
+     */
     @Override
-    public int size(){
+    public int size() {
         return row.size();
+    }
+
+    @Override
+    public boolean isNull(int columnNumber) throws NoSuchColumnException {
+        return row.get(columnNumber).isNull();
     }
 
     private static abstract class Cell {
 
         protected final String columnName;
+        protected final boolean isNull;
 
-        public Cell(String columnName) {
+        public Cell(String columnName, boolean isNull) {
             this.columnName = columnName;
+            this.isNull = isNull;
         }
-        
-        public String getColumnName(){
+
+        public String getColumnName() {
             return columnName;
+        }
+
+        public boolean isNull() {
+            return isNull;
         }
 
         public abstract int getInteger() throws TypeMismatchException;
@@ -147,7 +166,7 @@ public class ArrayRow implements Row {
         public abstract boolean getBoolean() throws TypeMismatchException;
 
         public abstract String getString() throws TypeMismatchException;
-        
+
         public abstract Schema.Field.Type getType();
 
     }
@@ -157,8 +176,13 @@ public class ArrayRow implements Row {
         private final int value;
 
         public IntegerCell(String columnName, int value) {
-            super(columnName);
+            super(columnName, false);
             this.value = value;
+        }
+
+        public IntegerCell(String columnName) {
+            super(columnName, true);
+            this.value = 0;
         }
 
         @Override
@@ -193,8 +217,13 @@ public class ArrayRow implements Row {
         private final float value;
 
         public FloatCell(String columnName, float value) {
-            super(columnName);
+            super(columnName, false);
             this.value = value;
+        }
+
+        public FloatCell(String columnName) {
+            super(columnName, true);
+            this.value = 0;
         }
 
         @Override
@@ -229,8 +258,13 @@ public class ArrayRow implements Row {
         private final boolean value;
 
         public BooleanCell(String columnName, boolean value) {
-            super(columnName);
+            super(columnName, false);
             this.value = value;
+        }
+
+        public BooleanCell(String columnName) {
+            super(columnName, true);
+            this.value = false;
         }
 
         @Override
@@ -264,8 +298,13 @@ public class ArrayRow implements Row {
         private final String value;
 
         public StringCell(String columnName, String value) {
-            super(columnName);
+            super(columnName, false);
             this.value = value;
+        }
+
+        public StringCell(String columnName) {
+            super(columnName, true);
+            this.value = null;
         }
 
         @Override
