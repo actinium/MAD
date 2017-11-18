@@ -16,20 +16,20 @@ public class NullBitMap {
     public NullBitMap(byte[] bytes) {
         bitmap = BitSet.valueOf(bytes);
     }
-    
-    public void setNull(int index){
+
+    public void setNull(int index) {
         bitmap.set(index, true);
     }
-    
-    public void setNotNull(int index){
+
+    public void setNotNull(int index) {
         bitmap.set(index, false);
     }
-    
-    public boolean isNull(int index){
+
+    public boolean isNull(int index) {
         return bitmap.get(index);
     }
-    
-    public byte[] toBytes(){
+
+    public byte[] toBytes() {
         return bitmap.toByteArray();
     }
 }
