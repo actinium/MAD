@@ -19,31 +19,33 @@ public class DBRow implements Row {
 
     @Override
     public Row next() {
-        try{
-            int nextRowPointer = pager.readInteger(filePosition+4);
-            if(nextRowPointer != 0){
+        try {
+            int nextRowPointer = pager.readInteger(filePosition + 4);
+            if (nextRowPointer != 0) {
                 return new DBRow(pager, tableSchema, nextRowPointer);
             }
-        }catch(IOException ex){}
+        } catch (IOException ex) {
+        }
         return null;
     }
 
     @Override
     public boolean hasNext() {
-        try{
-            int nextRowPointer = pager.readInteger(filePosition+4);
-            if(nextRowPointer != 0){
+        try {
+            int nextRowPointer = pager.readInteger(filePosition + 4);
+            if (nextRowPointer != 0) {
                 return true;
             }
-        }catch(IOException ex){}
+        } catch (IOException ex) {
+        }
         return false;
     }
 
     @Override
     public int getInteger(int columnNumber) throws NoSuchColumnException, TypeMismatchException, IOException {
-        if(tableSchema.get(columnNumber).type!=Schema.Field.Type.Integer){
+        if (tableSchema.get(columnNumber).type != Schema.Field.Type.Integer) {
             throw new TypeMismatchException("");
-        }else{
+        } else {
             int position = filePosition + tableSchema.get(columnNumber).offset;
             return pager.readInteger(position);
         }
@@ -56,9 +58,9 @@ public class DBRow implements Row {
 
     @Override
     public float getFloat(int columnNumber) throws NoSuchColumnException, TypeMismatchException, IOException {
-        if(tableSchema.get(columnNumber).type!=Schema.Field.Type.Float){
+        if (tableSchema.get(columnNumber).type != Schema.Field.Type.Float) {
             throw new TypeMismatchException("");
-        }else{
+        } else {
             int position = filePosition + tableSchema.get(columnNumber).offset;
             return pager.readFloat(position);
         }
@@ -71,9 +73,9 @@ public class DBRow implements Row {
 
     @Override
     public boolean getBoolean(int columnNumber) throws NoSuchColumnException, TypeMismatchException, IOException {
-        if(tableSchema.get(columnNumber).type!=Schema.Field.Type.Boolean){
+        if (tableSchema.get(columnNumber).type != Schema.Field.Type.Boolean) {
             throw new TypeMismatchException("");
-        }else{
+        } else {
             int position = filePosition + tableSchema.get(columnNumber).offset;
             return pager.readBoolean(position);
         }
@@ -86,11 +88,11 @@ public class DBRow implements Row {
 
     @Override
     public String getString(int columnNumber) throws NoSuchColumnException, TypeMismatchException, IOException {
-        if(tableSchema.get(columnNumber).type!=Schema.Field.Type.Varchar){
+        if (tableSchema.get(columnNumber).type != Schema.Field.Type.Varchar) {
             throw new TypeMismatchException("");
-        }else{
+        } else {
             int position = filePosition + tableSchema.get(columnNumber).offset;
-            return pager.readString(position,tableSchema.get(columnNumber).length);
+            return pager.readString(position, tableSchema.get(columnNumber).length);
         }
     }
 
