@@ -151,7 +151,6 @@ public class DB implements AutoCloseable {
         int schemaPointer = pager.readInteger(tableFilePosition + 4);
         Schema tableSchema = schemaReader.read(schemaPointer);
         RowWriter writer = new RowWriter(pager, tableSchema);
-        int firstRowPointer = pager.readInteger(tableFilePosition + 8);
         int lastRowPointer = pager.readInteger(tableFilePosition + 12);
 
         if (lastRowPointer != 0) {
