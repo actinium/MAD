@@ -2,6 +2,7 @@ package mad.database.backend;
 
 import java.io.IOException;
 import mad.util.Bytes;
+import mad.util.NullBitMap;
 
 /**
  *

@@ -3,7 +3,6 @@ package mad.util;
 import java.nio.ByteBuffer;
 import static mad.database.Config.BYTEORDER;
 import static mad.database.Config.CHARSET;
-import mad.database.backend.NullBitMap;
 
 /**
  *
