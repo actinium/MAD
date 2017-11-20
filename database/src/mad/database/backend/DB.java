@@ -1,5 +1,8 @@
 package mad.database.backend;
 
+import mad.database.backend.table.DBRow;
+import mad.database.backend.table.Schema;
+import mad.database.backend.table.Row;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

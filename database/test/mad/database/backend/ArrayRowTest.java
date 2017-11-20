@@ -1,5 +1,8 @@
 package mad.database.backend;
 
+import mad.database.backend.table.ArrayRow;
+import mad.database.backend.table.Schema;
+import mad.database.backend.table.Row;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

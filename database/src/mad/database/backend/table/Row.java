@@ -1,4 +1,4 @@
-package mad.database.backend;
+package mad.database.backend.table;
 
 import java.io.IOException;
 
@@ -37,12 +37,12 @@ public interface Row {
     
     public int size();
 
-    public class NoSuchColumnException extends Exception {
+    public static class NoSuchColumnException extends Exception {
     }
 
-    public class TypeMismatchException extends Exception {
+    public static class TypeMismatchException extends Exception {
 
-        TypeMismatchException(String message) {
+        public TypeMismatchException(String message) {
             super(message);
         }
     }

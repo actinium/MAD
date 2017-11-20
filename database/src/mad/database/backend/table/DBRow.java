@@ -1,6 +1,7 @@
-package mad.database.backend;
+package mad.database.backend.table;
 
 import java.io.IOException;
+import mad.database.backend.Pager;
 import mad.util.Bytes;
 
 /**

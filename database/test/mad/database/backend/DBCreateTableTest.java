@@ -1,5 +1,6 @@
 package mad.database.backend;
 
+import mad.database.backend.table.Schema;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;

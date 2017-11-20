@@ -1,4 +1,4 @@
-package mad.database.backend;
+package mad.database.backend.table;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,8 +1,9 @@
 package mad.database.backend;
 
+import mad.database.backend.table.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
-import mad.database.backend.Schema.Field;
+import mad.database.backend.table.Schema.Field;
 
 /**
  *

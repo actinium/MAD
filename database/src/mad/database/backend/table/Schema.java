@@ -1,11 +1,11 @@
-package mad.database.backend;
+package mad.database.backend.table;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import static mad.database.Config.PAGESIZE;
-import mad.database.backend.Schema.Field;
+import mad.database.backend.table.Schema.Field;
 
 /**
  *

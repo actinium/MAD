@@ -1,5 +1,7 @@
 package mad.database.backend;
 
+import mad.database.backend.table.Schema;
+import mad.database.backend.table.Row;
 import java.io.IOException;
 import mad.util.Bytes;
 import mad.util.NullBitMap;
