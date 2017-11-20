@@ -158,19 +158,28 @@ public class DB implements AutoCloseable {
             int numOfRowsInPage = (lastRowPointer - pagePointer) / tableSchema.bytes() + 1;
             if (numOfRowsInPage == tableSchema.rowsPerPage()) {
                 pagePointer = pager.newPage();
-                writer.setNextRowPointer(lastRowPointer, pagePointer);
-                writer.write(pagePointer, row);
-                pager.writeInteger(tableFilePosition + 12, pagePointer);
+                int thisRowPointer = pagePointer;
+                writer.setNextRowPointer(lastRowPointer, thisRowPointer);
+                writer.setPreviousRowPointer(thisRowPointer, lastRowPointer);
+                writer.setNextRowPointer(thisRowPointer, 0);
+                writer.write(thisRowPointer, row);
+                pager.writeInteger(tableFilePosition + 12, thisRowPointer);
             } else {
-                writer.setNextRowPointer(lastRowPointer, lastRowPointer + tableSchema.bytes());
-                writer.write(lastRowPointer + tableSchema.bytes(), row);
-                pager.writeInteger(tableFilePosition + 12, lastRowPointer + tableSchema.bytes());
+                int thisRowPointer = lastRowPointer + tableSchema.bytes();
+                writer.setNextRowPointer(lastRowPointer, thisRowPointer);
+                writer.setPreviousRowPointer(thisRowPointer, lastRowPointer);
+                writer.setNextRowPointer(thisRowPointer, 0);
+                writer.write(thisRowPointer, row);
+                pager.writeInteger(tableFilePosition + 12, thisRowPointer);
             }
         } else {
             int pagePointer = pager.newPage();
-            writer.write(pagePointer, row);
-            pager.writeInteger(tableFilePosition + 8, pagePointer);
-            pager.writeInteger(tableFilePosition + 12, pagePointer);
+            int thisRowPointer = pagePointer;
+            writer.setPreviousRowPointer(thisRowPointer, lastRowPointer);
+            writer.setNextRowPointer(thisRowPointer, 0);
+            writer.write(thisRowPointer, row);
+            pager.writeInteger(tableFilePosition + 8, thisRowPointer);
+            pager.writeInteger(tableFilePosition + 12, thisRowPointer);
         }
 
     }
