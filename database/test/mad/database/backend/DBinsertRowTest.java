@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static junit.framework.Assert.assertEquals;
+import static mad.database.Config.PAGESIZE;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -38,6 +39,7 @@ public class DBinsertRowTest {
 
     /**
      *
+     * @throws java.lang.Exception
      */
     @Test
     public void testInsertRow() throws Exception {
@@ -129,6 +131,7 @@ public class DBinsertRowTest {
 
     /**
      *
+     * @throws java.lang.Exception
      */
     @Test
     public void testInsertRow2() throws Exception {
@@ -298,4 +301,73 @@ public class DBinsertRowTest {
         }
     }
 
+    /**
+     *
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testInsertRow3() throws Exception {
+        File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
+        testFile.deleteOnExit();
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            db.createTable("Person", new Schema(
+                    new Schema.Field("id", Schema.Field.Type.Integer),
+                    new Schema.Field("name", Schema.Field.Type.Varchar, 100)));
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            List<String> tableNames = db.getTableNames();
+            ArrayList<String> expTableNames = new ArrayList<>(Arrays.asList(
+                    "Person"));
+            assertEquals(expTableNames.size(), tableNames.size());
+            for (int i = 0; i < expTableNames.size() && i < tableNames.size(); i++) {
+                assertEquals(expTableNames.get(i), tableNames.get(i));
+            }
+            Schema schema = db.getSchema("Person");
+            assertNotNull(schema);
+            assertEquals(2, schema.size());
+            assertEquals("id", schema.get(0).name);
+            assertEquals("name", schema.get(1).name);
+            assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
+            assertEquals(Schema.Field.Type.Varchar, schema.get(1).type);
+            assertEquals(100, schema.get(1).length);
+            assertEquals(PAGESIZE / (4 + 4 + 8 + 4 + 100), schema.rowsPerPage());
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            Row row = db.getFirstRow(db.getTablePointer("Person"));
+            assertNull(row);
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            for (int i = 0; i < 100; i++) {
+                Row row = new ArrayRow().addIntegerColumn("id", i)
+                        .addStringColumn("name", "Person-" + i);
+                db.insertRow("Person", row);
+            }
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+
+            Row row = db.getFirstRow(db.getTablePointer("Person"));
+            for (int i = 0; i < 100; i++) {
+                assertNotNull(row);
+                assertEquals(i, row.getInteger(0));
+                assertEquals(i, row.getInteger("id"));
+                assertEquals("Person-" + i, row.getString(1));
+                assertEquals("Person-" + i, row.getString("name"));
+                if (i < 99) {
+                    assertTrue(row.hasNext());
+                    row = row.next();
+                } else {
+                    assertFalse(row.hasNext());
+                }
+            }
+            db.close();
+        }
+    }
 }

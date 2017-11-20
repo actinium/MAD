@@ -155,7 +155,7 @@ public class DB implements AutoCloseable {
 
         if (lastRowPointer != 0) {
             int pagePointer = pager.positionToPageStart(lastRowPointer);
-            int numOfRowsInPage = (lastRowPointer - pagePointer) / tableSchema.bytes();
+            int numOfRowsInPage = (lastRowPointer - pagePointer) / tableSchema.bytes() + 1;
             if (numOfRowsInPage == tableSchema.rowsPerPage()) {
                 pagePointer = pager.newPage();
                 writer.setNextRowPointer(lastRowPointer, pagePointer);
