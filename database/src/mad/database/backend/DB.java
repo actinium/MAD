@@ -201,7 +201,7 @@ public class DB implements AutoCloseable {
      * @return
      * @throws IOException
      */
-    public Row getFirstRow(int tableFilePosition) throws IOException {
+    public DBRow getFirstRow(int tableFilePosition) throws IOException {
         int rowPointer = pager.readInteger(tableFilePosition + 8);
         if (rowPointer == 0) {
             return null;
