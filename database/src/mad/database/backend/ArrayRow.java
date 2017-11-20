@@ -1,5 +1,6 @@
 package mad.database.backend;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -26,6 +27,26 @@ public class ArrayRow implements Row {
 
     public ArrayRow addStringColumn(String columnName, String value) {
         row.add(new StringCell(columnName, value));
+        return this;
+    }
+    
+    public ArrayRow addNullIntegerColumn(String columnName) {
+        row.add(new IntegerCell(columnName));
+        return this;
+    }
+
+    public ArrayRow addNullFloatColumn(String columnName) {
+        row.add(new FloatCell(columnName));
+        return this;
+    }
+
+    public ArrayRow addNullBooleanColumn(String columnName) {
+        row.add(new BooleanCell(columnName));
+        return this;
+    }
+
+    public ArrayRow addNullStringColumn(String columnName) {
+        row.add(new StringCell(columnName));
         return this;
     }
 
@@ -139,6 +160,16 @@ public class ArrayRow implements Row {
     @Override
     public boolean isNull(int columnNumber) throws NoSuchColumnException {
         return row.get(columnNumber).isNull();
+    }
+
+    @Override
+    public boolean isNull(String columnName) throws NoSuchColumnException, IOException {
+        for (Cell c : row) {
+            if (c.getColumnName().equals(columnName)) {
+                return c.isNull();
+            }
+        }
+        throw new NoSuchColumnException();
     }
 
     private static abstract class Cell {

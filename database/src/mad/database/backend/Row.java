@@ -27,12 +27,14 @@ public interface Row {
 
     public String getString(String columnName) throws NoSuchColumnException, TypeMismatchException, IOException;
 
+    public boolean isNull(int columnNumber) throws NoSuchColumnException, IOException;
+    
+    public boolean isNull(String columnName) throws NoSuchColumnException, IOException;
+
     public String getName(int columnNumber) throws NoSuchColumnException, IOException;
 
-    public boolean isNull(int columnNumber) throws NoSuchColumnException, IOException;
-
-    public Schema.Field.Type getType(int columnNumber) throws NoSuchColumnException;
-
+    public Schema.Field.Type getType(int columnNumber) throws NoSuchColumnException, IOException;
+    
     public int size();
 
     public class NoSuchColumnException extends Exception {

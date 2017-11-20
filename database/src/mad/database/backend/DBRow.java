@@ -1,6 +1,7 @@
 package mad.database.backend;
 
 import java.io.IOException;
+import mad.util.Bytes;
 
 /**
  *
@@ -102,17 +103,22 @@ public class DBRow implements Row {
     }
 
     @Override
-    public String getName(int columnNumber) throws NoSuchColumnException {
+    public String getName(int columnNumber) throws NoSuchColumnException, IOException {
         return tableSchema.get(columnNumber).name;
     }
 
     @Override
-    public boolean isNull(int columnNumber) throws NoSuchColumnException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public boolean isNull(int columnNumber) throws NoSuchColumnException, IOException {
+        return Bytes.toNullBitMap(pager.readBytes(filePosition + 8, 8)).isNull(columnNumber);
     }
 
     @Override
-    public Schema.Field.Type getType(int columnNumber) throws NoSuchColumnException {
+    public boolean isNull(String columnName) throws NoSuchColumnException, IOException {
+        return isNull(tableSchema.get(columnName).columnNumber);
+    }
+
+    @Override
+    public Schema.Field.Type getType(int columnNumber) throws NoSuchColumnException, IOException {
         return tableSchema.get(columnNumber).type;
     }
 

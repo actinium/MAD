@@ -405,7 +405,7 @@ public class DBinsertRowTest {
 
             Row row = db.getFirstRow(db.getTablePointer("Person"));
             assertNull(row);
-            
+
             for (int i = 0; i < 100; i++) {
                 Row irow = new ArrayRow().addIntegerColumn("id", i)
                         .addStringColumn("name", "Person-" + i);
@@ -429,7 +429,7 @@ public class DBinsertRowTest {
             db.close();
         }
     }
-    
+
     /**
      *
      * @throws java.lang.Exception
@@ -500,7 +500,7 @@ public class DBinsertRowTest {
             db.close();
         }
     }
-    
+
     /**
      *
      * @throws java.lang.Exception
@@ -578,7 +578,7 @@ public class DBinsertRowTest {
             for (int i = 0; i < 100; i++) {
                 Row row = new ArrayRow().addIntegerColumn("id", i)
                         .addStringColumn("name", "Country-" + i)
-                        .addStringColumn("capital", "Capital-"+i);
+                        .addStringColumn("capital", "Capital-" + i);
                 db.insertRow("Country", row);
             }
             db.close();
@@ -628,7 +628,7 @@ public class DBinsertRowTest {
             for (int i = 100; i < 300; i++) {
                 Row row = new ArrayRow().addIntegerColumn("id", i)
                         .addStringColumn("name", "Country-" + i)
-                        .addStringColumn("capital", "Capital-"+i);
+                        .addStringColumn("capital", "Capital-" + i);
                 db.insertRow("Country", row);
             }
             db.close();
@@ -647,7 +647,7 @@ public class DBinsertRowTest {
             for (int i = 300; i < 400; i++) {
                 Row row = new ArrayRow().addIntegerColumn("id", i)
                         .addStringColumn("name", "Country-" + i)
-                        .addStringColumn("capital", "Capital-"+i);
+                        .addStringColumn("capital", "Capital-" + i);
                 db.insertRow("Country", row);
             }
             db.close();
@@ -690,6 +690,104 @@ public class DBinsertRowTest {
                     assertFalse(row.hasNext());
                 }
             }
+            db.close();
+        }
+    }
+
+    /**
+     *
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testInsertRow7() throws Exception {
+        File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
+        testFile.deleteOnExit();
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            db.createTable("Employee", new Schema(
+                    new Schema.Field("id", Schema.Field.Type.Integer),
+                    new Schema.Field("name", Schema.Field.Type.Varchar, 100),
+                    new Schema.Field("boss", Schema.Field.Type.Boolean),
+                    new Schema.Field("salary", Schema.Field.Type.Integer)));
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            Row row = new ArrayRow().addIntegerColumn("id", 1)
+                    .addStringColumn("name", "Boss Bossman")
+                    .addBooleanColumn("boss", true)
+                    .addIntegerColumn("salary", 100000);
+            db.insertRow("Employee", row);
+            Row row2 = new ArrayRow().addIntegerColumn("id", 2)
+                    .addStringColumn("name", "Alice")
+                    .addNullBooleanColumn("boss")
+                    .addIntegerColumn("salary", 35000);
+            db.insertRow("Employee", row2);
+            Row row3 = new ArrayRow().addIntegerColumn("id", 3)
+                    .addStringColumn("name", "Bob")
+                    .addBooleanColumn("boss", false)
+                    .addNullIntegerColumn("salary");
+            db.insertRow("Employee", row3);
+            Row row4 = new ArrayRow().addIntegerColumn("id", 4)
+                    .addStringColumn("name", "Charlie")
+                    .addNullBooleanColumn("boss")
+                    .addNullIntegerColumn("salary");
+            db.insertRow("Employee", row4);
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+
+            Row row = db.getFirstRow(db.getTablePointer("Employee"));
+            assertNotNull(row);
+            assertFalse(row.isNull(0));
+            assertFalse(row.isNull("id"));
+            assertFalse(row.isNull(1));
+            assertFalse(row.isNull("name"));
+            assertFalse(row.isNull(2));
+            assertFalse(row.isNull("boss"));
+            assertFalse(row.isNull(3));
+            assertFalse(row.isNull("salary"));
+            assertTrue(row.hasNext());
+
+            Row row2 = row.next();
+            assertNotNull(row2);
+            assertFalse(row2.isNull(0));
+            assertFalse(row2.isNull("id"));
+            assertFalse(row2.isNull(1));
+            assertFalse(row2.isNull("name"));
+            assertTrue(row2.isNull(2));
+            assertTrue(row2.isNull("boss"));
+            assertFalse(row2.isNull(3));
+            assertFalse(row2.isNull("salary"));
+            assertTrue(row.hasNext());
+
+            Row row3 = row2.next();
+            assertNotNull(row3);
+            assertFalse(row3.isNull(0));
+            assertFalse(row3.isNull("id"));
+            assertFalse(row3.isNull(1));
+            assertFalse(row3.isNull("name"));
+            assertFalse(row3.isNull(2));
+            assertFalse(row3.isNull("boss"));
+            assertTrue(row3.isNull(3));
+            assertTrue(row3.isNull("salary"));
+            assertTrue(row.hasNext());
+
+            Row row4 = row3.next();
+            assertNotNull(row4);
+            assertFalse(row4.isNull(0));
+            assertFalse(row4.isNull("id"));
+            assertFalse(row4.isNull(1));
+            assertFalse(row4.isNull("name"));
+            assertTrue(row4.isNull(2));
+            assertTrue(row4.isNull("boss"));
+            assertTrue(row4.isNull(3));
+            assertTrue(row4.isNull("salary"));
+            assertFalse(row4.hasNext());
+            Row row5 = row4.next();
+            assertNull(row5);
+
             db.close();
         }
     }
