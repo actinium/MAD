@@ -334,6 +334,7 @@ public class DBinsertRowTest {
             assertEquals(Schema.Field.Type.Varchar, schema.get(1).type);
             assertEquals(100, schema.get(1).length);
             assertEquals(PAGESIZE / (4 + 4 + 8 + 4 + 100), schema.rowsPerPage());
+            db.close();
         }
         {
             DB db = DB.open(testFile.getAbsolutePath());
@@ -361,6 +362,328 @@ public class DBinsertRowTest {
                 assertEquals("Person-" + i, row.getString(1));
                 assertEquals("Person-" + i, row.getString("name"));
                 if (i < 99) {
+                    assertTrue(row.hasNext());
+                    row = row.next();
+                } else {
+                    assertFalse(row.hasNext());
+                }
+            }
+            db.close();
+        }
+    }
+
+    /**
+     *
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testInsertRow4() throws Exception {
+        File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
+        testFile.deleteOnExit();
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            db.createTable("Person", new Schema(
+                    new Schema.Field("id", Schema.Field.Type.Integer),
+                    new Schema.Field("name", Schema.Field.Type.Varchar, 100)));
+
+            List<String> tableNames = db.getTableNames();
+            ArrayList<String> expTableNames = new ArrayList<>(Arrays.asList("Person"));
+            assertEquals(expTableNames.size(), tableNames.size());
+            for (int i = 0; i < expTableNames.size() && i < tableNames.size(); i++) {
+                assertEquals(expTableNames.get(i), tableNames.get(i));
+            }
+
+            Schema schema = db.getSchema("Person");
+            assertNotNull(schema);
+            assertEquals(2, schema.size());
+            assertEquals("id", schema.get(0).name);
+            assertEquals("name", schema.get(1).name);
+            assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
+            assertEquals(Schema.Field.Type.Varchar, schema.get(1).type);
+            assertEquals(100, schema.get(1).length);
+            assertEquals(PAGESIZE / (4 + 4 + 8 + 4 + 100), schema.rowsPerPage());
+
+            Row row = db.getFirstRow(db.getTablePointer("Person"));
+            assertNull(row);
+            
+            for (int i = 0; i < 100; i++) {
+                Row irow = new ArrayRow().addIntegerColumn("id", i)
+                        .addStringColumn("name", "Person-" + i);
+                db.insertRow("Person", irow);
+            }
+
+            row = db.getFirstRow(db.getTablePointer("Person"));
+            for (int i = 0; i < 100; i++) {
+                assertNotNull(row);
+                assertEquals(i, row.getInteger(0));
+                assertEquals(i, row.getInteger("id"));
+                assertEquals("Person-" + i, row.getString(1));
+                assertEquals("Person-" + i, row.getString("name"));
+                if (i < 99) {
+                    assertTrue(row.hasNext());
+                    row = row.next();
+                } else {
+                    assertFalse(row.hasNext());
+                }
+            }
+            db.close();
+        }
+    }
+    
+    /**
+     *
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testInsertRow5() throws Exception {
+        File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
+        testFile.deleteOnExit();
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            db.createTable("Person", new Schema(
+                    new Schema.Field("id", Schema.Field.Type.Integer),
+                    new Schema.Field("name", Schema.Field.Type.Varchar, 100)));
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            List<String> tableNames = db.getTableNames();
+            ArrayList<String> expTableNames = new ArrayList<>(Arrays.asList(
+                    "Person"));
+            assertEquals(expTableNames.size(), tableNames.size());
+            for (int i = 0; i < expTableNames.size() && i < tableNames.size(); i++) {
+                assertEquals(expTableNames.get(i), tableNames.get(i));
+            }
+            Schema schema = db.getSchema("Person");
+            assertNotNull(schema);
+            assertEquals(2, schema.size());
+            assertEquals("id", schema.get(0).name);
+            assertEquals("name", schema.get(1).name);
+            assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
+            assertEquals(Schema.Field.Type.Varchar, schema.get(1).type);
+            assertEquals(100, schema.get(1).length);
+            assertEquals(PAGESIZE / (4 + 4 + 8 + 4 + 100), schema.rowsPerPage());
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            Row row = db.getFirstRow(db.getTablePointer("Person"));
+            assertNull(row);
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            for (int i = 0; i < 400; i++) {
+                Row row = new ArrayRow().addIntegerColumn("id", i)
+                        .addStringColumn("name", "Person-" + i);
+                db.insertRow("Person", row);
+            }
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+
+            Row row = db.getFirstRow(db.getTablePointer("Person"));
+            for (int i = 0; i < 400; i++) {
+                assertNotNull(row);
+                assertEquals(i, row.getInteger(0));
+                assertEquals(i, row.getInteger("id"));
+                assertEquals("Person-" + i, row.getString(1));
+                assertEquals("Person-" + i, row.getString("name"));
+                if (i < 399) {
+                    assertTrue(row.hasNext());
+                    row = row.next();
+                } else {
+                    assertFalse(row.hasNext());
+                }
+            }
+            db.close();
+        }
+    }
+    
+    /**
+     *
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testInsertRow6() throws Exception {
+        File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
+        testFile.deleteOnExit();
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            db.createTable("Person", new Schema(
+                    new Schema.Field("id", Schema.Field.Type.Integer),
+                    new Schema.Field("name", Schema.Field.Type.Varchar, 40)));
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            Row row = db.getFirstRow(db.getTablePointer("Person"));
+            assertNull(row);
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            for (int i = 0; i < 100; i++) {
+                Row row = new ArrayRow().addIntegerColumn("id", i)
+                        .addStringColumn("name", "Person-" + i);
+                db.insertRow("Person", row);
+            }
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            db.createTable("Country", new Schema(
+                    new Schema.Field("id", Schema.Field.Type.Integer),
+                    new Schema.Field("name", Schema.Field.Type.Varchar, 120),
+                    new Schema.Field("capital", Schema.Field.Type.Varchar, 120)));
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            Row row = db.getFirstRow(db.getTablePointer("Country"));
+            assertNull(row);
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+
+            Row row = db.getFirstRow(db.getTablePointer("Person"));
+            for (int i = 0; i < 100; i++) {
+                assertNotNull(row);
+                assertEquals(i, row.getInteger(0));
+                assertEquals(i, row.getInteger("id"));
+                assertEquals("Person-" + i, row.getString(1));
+                assertEquals("Person-" + i, row.getString("name"));
+                if (i < 99) {
+                    assertTrue(row.hasNext());
+                    row = row.next();
+                } else {
+                    assertFalse(row.hasNext());
+                }
+            }
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            for (int i = 100; i < 200; i++) {
+                Row row = new ArrayRow().addIntegerColumn("id", i)
+                        .addStringColumn("name", "Person-" + i);
+                db.insertRow("Person", row);
+            }
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            for (int i = 0; i < 100; i++) {
+                Row row = new ArrayRow().addIntegerColumn("id", i)
+                        .addStringColumn("name", "Country-" + i)
+                        .addStringColumn("capital", "Capital-"+i);
+                db.insertRow("Country", row);
+            }
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+
+            Row row = db.getFirstRow(db.getTablePointer("Person"));
+            for (int i = 0; i < 200; i++) {
+                assertNotNull(row);
+                assertEquals(i, row.getInteger(0));
+                assertEquals(i, row.getInteger("id"));
+                assertEquals("Person-" + i, row.getString(1));
+                assertEquals("Person-" + i, row.getString("name"));
+                if (i < 199) {
+                    assertTrue(row.hasNext());
+                    row = row.next();
+                } else {
+                    assertFalse(row.hasNext());
+                }
+            }
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+
+            Row row = db.getFirstRow(db.getTablePointer("Country"));
+            for (int i = 0; i < 100; i++) {
+                assertNotNull(row);
+                assertEquals(i, row.getInteger(0));
+                assertEquals(i, row.getInteger("id"));
+                assertEquals("Country-" + i, row.getString(1));
+                assertEquals("Country-" + i, row.getString("name"));
+                assertEquals("Capital-" + i, row.getString(2));
+                assertEquals("Capital-" + i, row.getString("capital"));
+                if (i < 99) {
+                    assertTrue(row.hasNext());
+                    row = row.next();
+                } else {
+                    assertFalse(row.hasNext());
+                }
+            }
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            for (int i = 100; i < 300; i++) {
+                Row row = new ArrayRow().addIntegerColumn("id", i)
+                        .addStringColumn("name", "Country-" + i)
+                        .addStringColumn("capital", "Capital-"+i);
+                db.insertRow("Country", row);
+            }
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            for (int i = 200; i < 400; i++) {
+                Row row = new ArrayRow().addIntegerColumn("id", i)
+                        .addStringColumn("name", "Person-" + i);
+                db.insertRow("Person", row);
+            }
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+            for (int i = 300; i < 400; i++) {
+                Row row = new ArrayRow().addIntegerColumn("id", i)
+                        .addStringColumn("name", "Country-" + i)
+                        .addStringColumn("capital", "Capital-"+i);
+                db.insertRow("Country", row);
+            }
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+
+            Row row = db.getFirstRow(db.getTablePointer("Person"));
+            for (int i = 0; i < 400; i++) {
+                assertNotNull(row);
+                assertEquals(i, row.getInteger(0));
+                assertEquals(i, row.getInteger("id"));
+                assertEquals("Person-" + i, row.getString(1));
+                assertEquals("Person-" + i, row.getString("name"));
+                if (i < 399) {
+                    assertTrue(row.hasNext());
+                    row = row.next();
+                } else {
+                    assertFalse(row.hasNext());
+                }
+            }
+            db.close();
+        }
+        {
+            DB db = DB.open(testFile.getAbsolutePath());
+
+            Row row = db.getFirstRow(db.getTablePointer("Country"));
+            for (int i = 0; i < 400; i++) {
+                assertNotNull(row);
+                assertEquals(i, row.getInteger(0));
+                assertEquals(i, row.getInteger("id"));
+                assertEquals("Country-" + i, row.getString(1));
+                assertEquals("Country-" + i, row.getString("name"));
+                assertEquals("Capital-" + i, row.getString(2));
+                assertEquals("Capital-" + i, row.getString("capital"));
+                if (i < 399) {
                     assertTrue(row.hasNext());
                     row = row.next();
                 } else {
