@@ -12,10 +12,12 @@ public class DBRow implements Row {
     private final Pager pager;
     private final Schema tableSchema;
     private final int filePosition;
+    private final String tableName;
 
-    public DBRow(Pager pager, Schema tableSchema, int filePosition) {
+    public DBRow(Pager pager, Schema tableSchema, String tableName, int filePosition) {
         this.pager = pager;
         this.tableSchema = tableSchema;
+        this.tableName = tableName;
         this.filePosition = filePosition;
     }
 
@@ -24,7 +26,7 @@ public class DBRow implements Row {
         try {
             int nextRowPointer = pager.readInteger(filePosition + 4);
             if (nextRowPointer != 0) {
-                return new DBRow(pager, tableSchema, nextRowPointer);
+                return new DBRow(pager, tableSchema, tableName, nextRowPointer);
             }
         } catch (IOException ex) {
         }
@@ -126,6 +128,11 @@ public class DBRow implements Row {
     @Override
     public int size() {
         return tableSchema.size();
+    }
+    
+    @Override
+    public String getTableName(){
+        return tableName;
     }
 
 }

@@ -36,6 +36,8 @@ public interface Row {
     public Schema.Field.Type getType(int columnNumber) throws NoSuchColumnException, IOException;
     
     public int size();
+    
+    public String getTableName() throws IOException;
 
     public static class NoSuchColumnException extends Exception {
     }

@@ -148,7 +148,7 @@ public class DB implements AutoCloseable {
      * @param tableFilePosition
      * @param row
      * @throws IOException
-     * @throws mad.database.backend.Row.TypeMismatchException
+     * @throws mad.database.backend.table.Row.TypeMismatchException
      */
     public void insertRow(int tableFilePosition, Row row) throws IOException, Row.TypeMismatchException {
         int schemaPointer = pager.readInteger(tableFilePosition + 4);
@@ -192,7 +192,7 @@ public class DB implements AutoCloseable {
      * @param tableName
      * @param row
      * @throws IOException
-     * @throws mad.database.backend.Row.TypeMismatchException
+     * @throws mad.database.backend.table.Row.TypeMismatchException
      */
     public void insertRow(String tableName, Row row) throws IOException, Row.TypeMismatchException {
         insertRow(getTablePointer(tableName), row);
@@ -209,9 +209,11 @@ public class DB implements AutoCloseable {
         if (rowPointer == 0) {
             return null;
         }
+        int tableNameLength = pager.readInteger(tableFilePosition+16);
+        String tableName = pager.readString(tableFilePosition+20, tableNameLength);
         int schemaPointer = pager.readInteger(tableFilePosition + 4);
         Schema schema = schemaReader.read(schemaPointer);
-        return new DBRow(pager, schema, rowPointer);
+        return new DBRow(pager, schema, tableName, rowPointer);
     }
 
     // - Update Row/Rows

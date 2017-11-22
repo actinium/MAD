@@ -132,6 +132,40 @@ public class ArrayRow implements Row {
         throw new NoSuchColumnException();
     }
 
+    /**
+     * 
+     * @param columnNumber
+     * @return
+     * @throws mad.database.backend.table.Row.NoSuchColumnException 
+     */
+    @Override
+    public boolean isNull(int columnNumber) throws NoSuchColumnException {
+        return row.get(columnNumber).isNull();
+    }
+
+    /**
+     * 
+     * @param columnName
+     * @return
+     * @throws mad.database.backend.table.Row.NoSuchColumnException
+     * @throws IOException 
+     */
+    @Override
+    public boolean isNull(String columnName) throws NoSuchColumnException, IOException {
+        for (Cell c : row) {
+            if (c.getColumnName().equals(columnName)) {
+                return c.isNull();
+            }
+        }
+        throw new NoSuchColumnException();
+    }
+    
+    /**
+     * 
+     * @param columnNumber
+     * @return
+     * @throws mad.database.backend.table.Row.NoSuchColumnException 
+     */
     @Override
     public String getName(int columnNumber) throws NoSuchColumnException {
         if (columnNumber < 0 || columnNumber >= row.size()) {
@@ -140,6 +174,12 @@ public class ArrayRow implements Row {
         return row.get(columnNumber).columnName;
     }
 
+    /**
+     * 
+     * @param columnNumber
+     * @return
+     * @throws mad.database.backend.table.Row.NoSuchColumnException 
+     */
     @Override
     public Schema.Field.Type getType(int columnNumber) throws NoSuchColumnException {
         if (columnNumber < 0 || columnNumber >= row.size()) {
@@ -156,20 +196,14 @@ public class ArrayRow implements Row {
     public int size() {
         return row.size();
     }
-
+    
+    /**
+     * 
+     * @return 
+     */
     @Override
-    public boolean isNull(int columnNumber) throws NoSuchColumnException {
-        return row.get(columnNumber).isNull();
-    }
-
-    @Override
-    public boolean isNull(String columnName) throws NoSuchColumnException, IOException {
-        for (Cell c : row) {
-            if (c.getColumnName().equals(columnName)) {
-                return c.isNull();
-            }
-        }
-        throw new NoSuchColumnException();
+    public String getTableName(){
+        return "";
     }
 
     private static abstract class Cell {

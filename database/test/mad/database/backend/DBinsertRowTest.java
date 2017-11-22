@@ -233,6 +233,7 @@ public class DBinsertRowTest {
             assertEquals(1, row.getInteger("id"));
             assertEquals("RnD", row.getString(1));
             assertEquals("RnD", row.getString("name"));
+            assertEquals("Department", row.getTableName());
             assertTrue(row.hasNext());
 
             Row row2 = row.next();
@@ -241,6 +242,7 @@ public class DBinsertRowTest {
             assertEquals(2, row2.getInteger("id"));
             assertEquals("Finance", row2.getString(1));
             assertEquals("Finance", row2.getString("name"));
+            assertEquals("Department", row2.getTableName());
             assertFalse(row2.hasNext());
 
             Row row3 = row2.next();
@@ -260,6 +262,7 @@ public class DBinsertRowTest {
             assertEquals(true, row.getBoolean("boss"));
             assertEquals(100000, row.getInteger(3));
             assertEquals(100000, row.getInteger("salary"));
+            assertEquals("Employee", row.getTableName());
             assertTrue(row.hasNext());
 
             Row row2 = row.next();
@@ -272,6 +275,7 @@ public class DBinsertRowTest {
             assertEquals(false, row2.getBoolean("boss"));
             assertEquals(35000, row2.getInteger(3));
             assertEquals(35000, row2.getInteger("salary"));
+            assertEquals("Employee", row2.getTableName());
             assertTrue(row.hasNext());
 
             Row row3 = row2.next();
@@ -284,6 +288,7 @@ public class DBinsertRowTest {
             assertEquals(false, row3.getBoolean("boss"));
             assertEquals(32000, row3.getInteger(3));
             assertEquals(32000, row3.getInteger("salary"));
+            assertEquals("Employee", row3.getTableName());
             assertTrue(row.hasNext());
 
             Row row4 = row3.next();
@@ -296,6 +301,7 @@ public class DBinsertRowTest {
             assertEquals(false, row4.getBoolean("boss"));
             assertEquals(36000, row4.getInteger(3));
             assertEquals(36000, row4.getInteger("salary"));
+            assertEquals("Employee", row4.getTableName());
             assertFalse(row4.hasNext());
             Row row5 = row4.next();
             assertNull(row5);
