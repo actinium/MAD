@@ -22,9 +22,6 @@ import static org.junit.Assert.*;
  */
 public class DBinsertRowTest {
 
-    public DBinsertRowTest() {
-    }
-
     @BeforeClass
     public static void setUpClass() {
     }
@@ -49,18 +46,15 @@ public class DBinsertRowTest {
     public void testInsertRow() throws Exception {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
         testFile.deleteOnExit();
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             db.createTable("AwesomeTable", new Schema(
                     new Schema.Field("aCol1", Schema.Field.Type.Integer),
                     new Schema.Field("aCol2", Schema.Field.Type.Integer)));
             db.createTable("SecondTable", new Schema(
                     new Schema.Field("sCol1", Schema.Field.Type.Integer),
                     new Schema.Field("sCol2", Schema.Field.Type.Integer)));
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             List<String> tableNames = db.getTableNames();
             ArrayList<String> expTableNames = new ArrayList<>(Arrays.asList(
                     "AwesomeTable", "SecondTable"));
@@ -68,10 +62,8 @@ public class DBinsertRowTest {
             for (int i = 0; i < expTableNames.size() && i < tableNames.size(); i++) {
                 assertEquals(expTableNames.get(i), tableNames.get(i));
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             Schema schema = db.getSchema("AwesomeTable");
             assertNotNull(schema);
             assertEquals(2, schema.size());
@@ -79,10 +71,8 @@ public class DBinsertRowTest {
             assertEquals("aCol2", schema.get(1).name);
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
             assertEquals(Schema.Field.Type.Integer, schema.get(1).type);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             Schema schema = db.getSchema("SecondTable");
             assertNotNull(schema);
             assertEquals(2, schema.size());
@@ -90,34 +80,26 @@ public class DBinsertRowTest {
             assertEquals("sCol2", schema.get(1).name);
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
             assertEquals(Schema.Field.Type.Integer, schema.get(1).type);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             ArrayRow row = new ArrayRow().addIntegerColumn("aCol1", 3141).addIntegerColumn("aCol2", 8848);
             int tablePointer = db.getTablePointer("AwesomeTable");
             db.insertRow(tablePointer, row);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             int tablePointer = db.getTablePointer("AwesomeTable");
             Row row = db.getFirstRow(tablePointer);
             assertNotNull(row);
             assertEquals(3141, row.getInteger(0));
             assertEquals(8848, row.getInteger(1));
             assertFalse(row.hasNext());
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             ArrayRow row = new ArrayRow().addIntegerColumn("aCol1", 111).addIntegerColumn("aCol2", 222);
             int tablePointer = db.getTablePointer("AwesomeTable");
             db.insertRow(tablePointer, row);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             int tablePointer = db.getTablePointer("AwesomeTable");
             Row row = db.getFirstRow(tablePointer);
             assertNotNull(row);
@@ -129,7 +111,6 @@ public class DBinsertRowTest {
             assertEquals(111, row.getInteger(0));
             assertEquals(222, row.getInteger(1));
             assertFalse(row.hasNext());
-            db.close();
         }
     }
 
@@ -141,8 +122,7 @@ public class DBinsertRowTest {
     public void testInsertRow2() throws Exception {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
         testFile.deleteOnExit();
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             db.createTable("Employee", new Schema(
                     new Schema.Field("id", Schema.Field.Type.Integer),
                     new Schema.Field("name", Schema.Field.Type.Varchar, 100),
@@ -151,10 +131,8 @@ public class DBinsertRowTest {
             db.createTable("Department", new Schema(
                     new Schema.Field("id", Schema.Field.Type.Integer),
                     new Schema.Field("name", Schema.Field.Type.Varchar, 45)));
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             List<String> tableNames = db.getTableNames();
             ArrayList<String> expTableNames = new ArrayList<>(Arrays.asList(
                     "Employee", "Department"));
@@ -183,16 +161,12 @@ public class DBinsertRowTest {
             assertEquals(Schema.Field.Type.Integer, schema2.get(0).type);
             assertEquals(Schema.Field.Type.Varchar, schema2.get(1).type);
             assertEquals(45, schema2.get(1).length);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             Row row = db.getFirstRow(db.getTablePointer("Employee"));
             assertNull(row);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             Row row = new ArrayRow().addIntegerColumn("id", 1)
                     .addStringColumn("name", "Boss Bossman")
                     .addBooleanColumn("boss", true)
@@ -208,10 +182,8 @@ public class DBinsertRowTest {
                     .addBooleanColumn("boss", false)
                     .addIntegerColumn("salary", 32000);
             db.insertRow("Employee", row3);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             Row row = new ArrayRow().addIntegerColumn("id", 1)
                     .addStringColumn("name", "RnD");
             db.insertRow("Department", row);
@@ -223,10 +195,8 @@ public class DBinsertRowTest {
                     .addBooleanColumn("boss", false)
                     .addIntegerColumn("salary", 36000);
             db.insertRow("Employee", row3);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
 
             Row row = db.getFirstRow(db.getTablePointer("Department"));
             assertNotNull(row);
@@ -248,10 +218,8 @@ public class DBinsertRowTest {
 
             Row row3 = row2.next();
             assertNull(row3);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
 
             Row row = db.getFirstRow(db.getTablePointer("Employee"));
             assertNotNull(row);
@@ -306,8 +274,6 @@ public class DBinsertRowTest {
             assertFalse(row4.hasNext());
             Row row5 = row4.next();
             assertNull(row5);
-
-            db.close();
         }
     }
 
@@ -319,15 +285,12 @@ public class DBinsertRowTest {
     public void testInsertRow3() throws Exception {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
         testFile.deleteOnExit();
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             db.createTable("Person", new Schema(
                     new Schema.Field("id", Schema.Field.Type.Integer),
                     new Schema.Field("name", Schema.Field.Type.Varchar, 100)));
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             List<String> tableNames = db.getTableNames();
             ArrayList<String> expTableNames = new ArrayList<>(Arrays.asList(
                     "Person"));
@@ -344,25 +307,19 @@ public class DBinsertRowTest {
             assertEquals(Schema.Field.Type.Varchar, schema.get(1).type);
             assertEquals(100, schema.get(1).length);
             assertEquals(PAGESIZE / (4 + 4 + 8 + 4 + 100), schema.rowsPerPage());
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             Row row = db.getFirstRow(db.getTablePointer("Person"));
             assertNull(row);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             for (int i = 0; i < 100; i++) {
                 Row row = new ArrayRow().addIntegerColumn("id", i)
                         .addStringColumn("name", "Person-" + i);
                 db.insertRow("Person", row);
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
 
             Row row = db.getFirstRow(db.getTablePointer("Person"));
             for (int i = 0; i < 100; i++) {
@@ -378,7 +335,6 @@ public class DBinsertRowTest {
                     assertFalse(row.hasNext());
                 }
             }
-            db.close();
         }
     }
 
@@ -390,8 +346,7 @@ public class DBinsertRowTest {
     public void testInsertRow4() throws Exception {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
         testFile.deleteOnExit();
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             db.createTable("Person", new Schema(
                     new Schema.Field("id", Schema.Field.Type.Integer),
                     new Schema.Field("name", Schema.Field.Type.Varchar, 100)));
@@ -436,7 +391,6 @@ public class DBinsertRowTest {
                     assertFalse(row.hasNext());
                 }
             }
-            db.close();
         }
     }
 
@@ -448,15 +402,12 @@ public class DBinsertRowTest {
     public void testInsertRow5() throws Exception {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
         testFile.deleteOnExit();
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             db.createTable("Person", new Schema(
                     new Schema.Field("id", Schema.Field.Type.Integer),
                     new Schema.Field("name", Schema.Field.Type.Varchar, 100)));
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             List<String> tableNames = db.getTableNames();
             ArrayList<String> expTableNames = new ArrayList<>(Arrays.asList(
                     "Person"));
@@ -473,25 +424,19 @@ public class DBinsertRowTest {
             assertEquals(Schema.Field.Type.Varchar, schema.get(1).type);
             assertEquals(100, schema.get(1).length);
             assertEquals(PAGESIZE / (4 + 4 + 8 + 4 + 100), schema.rowsPerPage());
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             Row row = db.getFirstRow(db.getTablePointer("Person"));
             assertNull(row);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             for (int i = 0; i < 400; i++) {
                 Row row = new ArrayRow().addIntegerColumn("id", i)
                         .addStringColumn("name", "Person-" + i);
                 db.insertRow("Person", row);
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
 
             Row row = db.getFirstRow(db.getTablePointer("Person"));
             for (int i = 0; i < 400; i++) {
@@ -507,7 +452,6 @@ public class DBinsertRowTest {
                     assertFalse(row.hasNext());
                 }
             }
-            db.close();
         }
     }
 
@@ -519,44 +463,33 @@ public class DBinsertRowTest {
     public void testInsertRow6() throws Exception {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
         testFile.deleteOnExit();
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             db.createTable("Person", new Schema(
                     new Schema.Field("id", Schema.Field.Type.Integer),
                     new Schema.Field("name", Schema.Field.Type.Varchar, 40)));
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             Row row = db.getFirstRow(db.getTablePointer("Person"));
             assertNull(row);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             for (int i = 0; i < 100; i++) {
                 Row row = new ArrayRow().addIntegerColumn("id", i)
                         .addStringColumn("name", "Person-" + i);
                 db.insertRow("Person", row);
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             db.createTable("Country", new Schema(
                     new Schema.Field("id", Schema.Field.Type.Integer),
                     new Schema.Field("name", Schema.Field.Type.Varchar, 120),
                     new Schema.Field("capital", Schema.Field.Type.Varchar, 120)));
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             Row row = db.getFirstRow(db.getTablePointer("Country"));
             assertNull(row);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
 
             Row row = db.getFirstRow(db.getTablePointer("Person"));
             for (int i = 0; i < 100; i++) {
@@ -572,29 +505,23 @@ public class DBinsertRowTest {
                     assertFalse(row.hasNext());
                 }
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             for (int i = 100; i < 200; i++) {
                 Row row = new ArrayRow().addIntegerColumn("id", i)
                         .addStringColumn("name", "Person-" + i);
                 db.insertRow("Person", row);
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             for (int i = 0; i < 100; i++) {
                 Row row = new ArrayRow().addIntegerColumn("id", i)
                         .addStringColumn("name", "Country-" + i)
                         .addStringColumn("capital", "Capital-" + i);
                 db.insertRow("Country", row);
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
 
             Row row = db.getFirstRow(db.getTablePointer("Person"));
             for (int i = 0; i < 200; i++) {
@@ -610,10 +537,8 @@ public class DBinsertRowTest {
                     assertFalse(row.hasNext());
                 }
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
 
             Row row = db.getFirstRow(db.getTablePointer("Country"));
             for (int i = 0; i < 100; i++) {
@@ -631,39 +556,31 @@ public class DBinsertRowTest {
                     assertFalse(row.hasNext());
                 }
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             for (int i = 100; i < 300; i++) {
                 Row row = new ArrayRow().addIntegerColumn("id", i)
                         .addStringColumn("name", "Country-" + i)
                         .addStringColumn("capital", "Capital-" + i);
                 db.insertRow("Country", row);
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             for (int i = 200; i < 400; i++) {
                 Row row = new ArrayRow().addIntegerColumn("id", i)
                         .addStringColumn("name", "Person-" + i);
                 db.insertRow("Person", row);
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             for (int i = 300; i < 400; i++) {
                 Row row = new ArrayRow().addIntegerColumn("id", i)
                         .addStringColumn("name", "Country-" + i)
                         .addStringColumn("capital", "Capital-" + i);
                 db.insertRow("Country", row);
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
 
             Row row = db.getFirstRow(db.getTablePointer("Person"));
             for (int i = 0; i < 400; i++) {
@@ -679,10 +596,8 @@ public class DBinsertRowTest {
                     assertFalse(row.hasNext());
                 }
             }
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
 
             Row row = db.getFirstRow(db.getTablePointer("Country"));
             for (int i = 0; i < 400; i++) {
@@ -700,7 +615,6 @@ public class DBinsertRowTest {
                     assertFalse(row.hasNext());
                 }
             }
-            db.close();
         }
     }
 
@@ -712,17 +626,14 @@ public class DBinsertRowTest {
     public void testInsertRow7() throws Exception {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
         testFile.deleteOnExit();
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             db.createTable("Employee", new Schema(
                     new Schema.Field("id", Schema.Field.Type.Integer),
                     new Schema.Field("name", Schema.Field.Type.Varchar, 100),
                     new Schema.Field("boss", Schema.Field.Type.Boolean),
                     new Schema.Field("salary", Schema.Field.Type.Integer)));
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             Row row = new ArrayRow().addIntegerColumn("id", 1)
                     .addStringColumn("name", "Boss Bossman")
                     .addBooleanColumn("boss", true)
@@ -743,10 +654,8 @@ public class DBinsertRowTest {
                     .addNullBooleanColumn("boss")
                     .addNullIntegerColumn("salary");
             db.insertRow("Employee", row4);
-            db.close();
         }
-        {
-            DB db = DB.open(testFile.getAbsolutePath());
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
 
             Row row = db.getFirstRow(db.getTablePointer("Employee"));
             assertNotNull(row);
@@ -797,11 +706,9 @@ public class DBinsertRowTest {
             assertFalse(row4.hasNext());
             Row row5 = row4.next();
             assertNull(row5);
-
-            db.close();
         }
     }
-    
+
     /**
      *
      * @throws java.lang.Exception
@@ -811,7 +718,7 @@ public class DBinsertRowTest {
         File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
         testFile.deleteOnExit();
         Config.PAGECACHESIZE = 1;
-        try (DB db = DB.open(testFile.getAbsolutePath())){
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             db.createTable("AwesomeTable", new Schema(
                     new Schema.Field("aCol1", Schema.Field.Type.Integer),
                     new Schema.Field("aCol2", Schema.Field.Type.Integer)));
@@ -819,7 +726,7 @@ public class DBinsertRowTest {
                     new Schema.Field("sCol1", Schema.Field.Type.Integer),
                     new Schema.Field("sCol2", Schema.Field.Type.Integer)));
         }
-        try (DB db = DB.open(testFile.getAbsolutePath())){
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             Schema schema = db.getSchema("AwesomeTable");
             assertNotNull(schema);
             assertEquals(2, schema.size());
@@ -828,7 +735,7 @@ public class DBinsertRowTest {
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
             assertEquals(Schema.Field.Type.Integer, schema.get(1).type);
         }
-        try (DB db = DB.open(testFile.getAbsolutePath())){
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             Schema schema = db.getSchema("SecondTable");
             assertNotNull(schema);
             assertEquals(2, schema.size());
@@ -837,12 +744,12 @@ public class DBinsertRowTest {
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
             assertEquals(Schema.Field.Type.Integer, schema.get(1).type);
         }
-        try (DB db = DB.open(testFile.getAbsolutePath())){
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             ArrayRow row = new ArrayRow().addIntegerColumn("aCol1", 3141).addIntegerColumn("aCol2", 8848);
             int tablePointer = db.getTablePointer("AwesomeTable");
             db.insertRow(tablePointer, row);
         }
-        try (DB db = DB.open(testFile.getAbsolutePath())){
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             int tablePointer = db.getTablePointer("AwesomeTable");
             Row row = db.getFirstRow(tablePointer);
             assertNotNull(row);
@@ -850,12 +757,12 @@ public class DBinsertRowTest {
             assertEquals(8848, row.getInteger(1));
             assertFalse(row.hasNext());
         }
-        try (DB db = DB.open(testFile.getAbsolutePath())){
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             ArrayRow row = new ArrayRow().addIntegerColumn("aCol1", 111).addIntegerColumn("aCol2", 222);
             int tablePointer = db.getTablePointer("AwesomeTable");
             db.insertRow(tablePointer, row);
         }
-        try (DB db = DB.open(testFile.getAbsolutePath())){
+        try (DB db = DB.open(testFile.getAbsolutePath())) {
             int tablePointer = db.getTablePointer("AwesomeTable");
             Row row = db.getFirstRow(tablePointer);
             assertNotNull(row);
