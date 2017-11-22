@@ -15,4 +15,6 @@ public class Config {
     public static final ByteOrder BYTEORDER = ByteOrder.LITTLE_ENDIAN;
     public static final Charset CHARSET = StandardCharsets.UTF_8;
 
+    public static int PAGECACHESIZE = 100;
+
 }

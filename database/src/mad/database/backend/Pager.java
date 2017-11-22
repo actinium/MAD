@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import static mad.database.Config.PAGECACHESIZE;
 import static mad.database.Config.PAGESIZE;
 import mad.util.Bytes;
 
@@ -25,6 +26,12 @@ public class Pager implements AutoCloseable{
     private int lastTablePointer;
     private int freePagePointer;
 
+    /**
+     * 
+     * @param file
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public Pager(File file) throws FileNotFoundException, IOException {
         dbFile = new RandomAccessFile(file, "rwd");
         cache = new PageCache();
@@ -38,6 +45,10 @@ public class Pager implements AutoCloseable{
         freePagePointer = Bytes.toInt(bytes);
     }
 
+    /**
+     * 
+     * @throws IOException 
+     */
     @Override
     public void close() throws IOException {
         dbFile.close();
@@ -76,6 +87,12 @@ public class Pager implements AutoCloseable{
         writeInteger(startPosition, firstFreePage);
     }
 
+    /**
+     * 
+     * @param filePosition
+     * @return
+     * @throws IOException 
+     */
     public int readInteger(int filePosition) throws IOException {
         if (filePosition >= 0 && filePosition < startOffset) { // File Header
             switch (filePosition) {
@@ -90,6 +107,12 @@ public class Pager implements AutoCloseable{
         return Bytes.toInt(readBytes(filePosition, 4));
     }
 
+    /**
+     * 
+     * @param filePosition
+     * @param number
+     * @throws IOException 
+     */
     public void writeInteger(int filePosition, int number) throws IOException {
         writeBytes(filePosition, Bytes.fromInt(number), 4);
         if (filePosition >= 0 && filePosition < startOffset) { // File Header
@@ -107,39 +130,96 @@ public class Pager implements AutoCloseable{
         }
     }
 
+    /**
+     * 
+     * @param filePosition
+     * @return
+     * @throws IOException 
+     */
     public float readFloat(int filePosition) throws IOException {
         return Bytes.toFloat(readBytes(filePosition, 4));
     }
 
+    /**
+     * 
+     * @param filePosition
+     * @param number
+     * @throws IOException 
+     */
     public void writeFloat(int filePosition, float number) throws IOException {
         writeBytes(filePosition, Bytes.fromFloat(number), 4);
     }
 
+    /**
+     * 
+     * @param filePosition
+     * @return
+     * @throws IOException 
+     */
     public boolean readBoolean(int filePosition) throws IOException {
         return Bytes.toBoolean(readBytes(filePosition, 1));
     }
 
+    /**
+     * 
+     * @param filePosition
+     * @param bool
+     * @throws IOException 
+     */
     public void writeBoolean(int filePosition, boolean bool) throws IOException {
         writeBytes(filePosition, Bytes.fromBoolean(bool), 1);
     }
 
+    /**
+     * 
+     * @param filePosition
+     * @param length
+     * @return
+     * @throws IOException 
+     */
     public String readString(int filePosition, int length) throws IOException {
         return Bytes.toString(readBytes(filePosition, length));
     }
 
+    /**
+     * 
+     * @param filePosition
+     * @param string
+     * @param length
+     * @throws IOException 
+     */
     public void writeString(int filePosition, String string, int length) throws IOException {
         writeBytes(filePosition, Bytes.fromString(string, length), length);
     }
 
+    /**
+     * 
+     * @param filePosition
+     * @return
+     * @throws IOException 
+     */
     public byte readByte(int filePosition) throws IOException {
         return readBytes(filePosition, 1)[0];
     }
 
+    /**
+     * 
+     * @param filePosition
+     * @param b
+     * @throws IOException 
+     */
     public void writeByte(int filePosition, byte b) throws IOException {
         byte[] bytes = {b};
         writeBytes(filePosition, bytes, 1);
     }
 
+    /**
+     * 
+     * @param filePosition
+     * @param length
+     * @return
+     * @throws IOException 
+     */
     public byte[] readBytes(int filePosition, int length) throws IOException {
         int pageStart = positionToPageStart(filePosition);
         Page page;
@@ -156,6 +236,13 @@ public class Pager implements AutoCloseable{
         return page.getBytes(filePosition, length);
     }
 
+    /**
+     * 
+     * @param filePosition
+     * @param bytes
+     * @param length
+     * @throws IOException 
+     */
     public void writeBytes(int filePosition, byte[] bytes, int length) throws IOException {
         if (filePosition >= 0 && filePosition < startOffset) { // File Header
             dbFile.seek(filePosition);
@@ -196,22 +283,43 @@ public class Pager implements AutoCloseable{
         private final byte[] data;
         private final int pageStartPosition;
 
+        /**
+         * 
+         * @param pageStartPosition
+         * @param data 
+         */
         public Page(int pageStartPosition, byte[] data) {
             super();
             this.pageStartPosition = pageStartPosition;
             this.data = data;
         }
 
+        /**
+         * 
+         * @return 
+         */
         public int getPageStartPosition() {
             return pageStartPosition;
         }
 
+        /**
+         * 
+         * @param filePosition
+         * @param length
+         * @return 
+         */
         public byte[] getBytes(int filePosition, int length) {
             byte[] ret = new byte[length];
             System.arraycopy(data, filePosition - pageStartPosition, ret, 0, length);
             return ret;
         }
 
+        /**
+         * 
+         * @param filePosition
+         * @param bytes
+         * @param length 
+         */
         public void putBytes(int filePosition, byte[] bytes, int length) {
             System.arraycopy(bytes, 0, data, filePosition - pageStartPosition, length);
         }
@@ -222,7 +330,7 @@ public class Pager implements AutoCloseable{
      */
     private static class PageCache {
 
-        private static final int CACHESIZE = 100;
+        private final int CACHESIZE = PAGECACHESIZE;
         private final Pager.Page[] cache = new Pager.Page[CACHESIZE];
         private int size = 0;
 
