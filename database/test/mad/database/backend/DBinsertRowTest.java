@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static junit.framework.Assert.assertEquals;
+import mad.database.Config;
 import static mad.database.Config.PAGESIZE;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -799,5 +800,74 @@ public class DBinsertRowTest {
 
             db.close();
         }
+    }
+    
+    /**
+     *
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testInsertRow8() throws Exception {
+        File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
+        testFile.deleteOnExit();
+        Config.PAGECACHESIZE = 1;
+        try (DB db = DB.open(testFile.getAbsolutePath())){
+            db.createTable("AwesomeTable", new Schema(
+                    new Schema.Field("aCol1", Schema.Field.Type.Integer),
+                    new Schema.Field("aCol2", Schema.Field.Type.Integer)));
+            db.createTable("SecondTable", new Schema(
+                    new Schema.Field("sCol1", Schema.Field.Type.Integer),
+                    new Schema.Field("sCol2", Schema.Field.Type.Integer)));
+        }
+        try (DB db = DB.open(testFile.getAbsolutePath())){
+            Schema schema = db.getSchema("AwesomeTable");
+            assertNotNull(schema);
+            assertEquals(2, schema.size());
+            assertEquals("aCol1", schema.get(0).name);
+            assertEquals("aCol2", schema.get(1).name);
+            assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
+            assertEquals(Schema.Field.Type.Integer, schema.get(1).type);
+        }
+        try (DB db = DB.open(testFile.getAbsolutePath())){
+            Schema schema = db.getSchema("SecondTable");
+            assertNotNull(schema);
+            assertEquals(2, schema.size());
+            assertEquals("sCol1", schema.get(0).name);
+            assertEquals("sCol2", schema.get(1).name);
+            assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
+            assertEquals(Schema.Field.Type.Integer, schema.get(1).type);
+        }
+        try (DB db = DB.open(testFile.getAbsolutePath())){
+            ArrayRow row = new ArrayRow().addIntegerColumn("aCol1", 3141).addIntegerColumn("aCol2", 8848);
+            int tablePointer = db.getTablePointer("AwesomeTable");
+            db.insertRow(tablePointer, row);
+        }
+        try (DB db = DB.open(testFile.getAbsolutePath())){
+            int tablePointer = db.getTablePointer("AwesomeTable");
+            Row row = db.getFirstRow(tablePointer);
+            assertNotNull(row);
+            assertEquals(3141, row.getInteger(0));
+            assertEquals(8848, row.getInteger(1));
+            assertFalse(row.hasNext());
+        }
+        try (DB db = DB.open(testFile.getAbsolutePath())){
+            ArrayRow row = new ArrayRow().addIntegerColumn("aCol1", 111).addIntegerColumn("aCol2", 222);
+            int tablePointer = db.getTablePointer("AwesomeTable");
+            db.insertRow(tablePointer, row);
+        }
+        try (DB db = DB.open(testFile.getAbsolutePath())){
+            int tablePointer = db.getTablePointer("AwesomeTable");
+            Row row = db.getFirstRow(tablePointer);
+            assertNotNull(row);
+            assertEquals(3141, row.getInteger(0));
+            assertEquals(8848, row.getInteger(1));
+            assertTrue(row.hasNext());
+            row = row.next();
+            assertNotNull(row);
+            assertEquals(111, row.getInteger(0));
+            assertEquals(222, row.getInteger(1));
+            assertFalse(row.hasNext());
+        }
+        Config.PAGECACHESIZE = 100;
     }
 }
