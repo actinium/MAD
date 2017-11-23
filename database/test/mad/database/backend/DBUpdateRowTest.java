@@ -2,11 +2,7 @@ package mad.database.backend;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import static junit.framework.Assert.assertEquals;
-import mad.database.backend.DB;
 import mad.database.backend.table.ArrayRow;
 import mad.database.backend.table.Row;
 import mad.database.backend.table.Schema;
