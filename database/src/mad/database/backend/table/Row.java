@@ -151,7 +151,7 @@ public interface Row {
      *
      * @return
      */
-    public int size();
+    public int columns();
 
     /**
      *

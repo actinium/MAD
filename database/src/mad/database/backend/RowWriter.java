@@ -20,7 +20,7 @@ public class RowWriter {
     }
 
     public void write(int filePosition, Row row) throws IOException, Row.TypeMismatchException {
-        if (row.size() != schema.columns()) {
+        if (row.columns() != schema.columns()) {
             throw new Row.TypeMismatchException("Row doesn't match schema!");
         }
         try {

@@ -193,7 +193,7 @@ public class ArrayRow implements Row {
      * @return the number of columns in this row.
      */
     @Override
-    public int size() {
+    public int columns() {
         return row.size();
     }
     

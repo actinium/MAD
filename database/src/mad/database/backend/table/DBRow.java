@@ -443,7 +443,7 @@ public class DBRow implements WritableRow {
      * @return
      */
     @Override
-    public int size() {
+    public int columns() {
         return tableSchema.columns();
     }
 
