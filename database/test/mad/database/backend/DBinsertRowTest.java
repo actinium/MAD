@@ -66,7 +66,7 @@ public class DBinsertRowTest {
         try (DB db = DB.open(testFile.getAbsolutePath())) {
             Schema schema = db.getSchema("AwesomeTable");
             assertNotNull(schema);
-            assertEquals(2, schema.size());
+            assertEquals(2, schema.columns());
             assertEquals("aCol1", schema.get(0).name);
             assertEquals("aCol2", schema.get(1).name);
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
@@ -75,7 +75,7 @@ public class DBinsertRowTest {
         try (DB db = DB.open(testFile.getAbsolutePath())) {
             Schema schema = db.getSchema("SecondTable");
             assertNotNull(schema);
-            assertEquals(2, schema.size());
+            assertEquals(2, schema.columns());
             assertEquals("sCol1", schema.get(0).name);
             assertEquals("sCol2", schema.get(1).name);
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
@@ -142,7 +142,7 @@ public class DBinsertRowTest {
             }
             Schema schema1 = db.getSchema("Employee");
             assertNotNull(schema1);
-            assertEquals(4, schema1.size());
+            assertEquals(4, schema1.columns());
             assertEquals("id", schema1.get(0).name);
             assertEquals("name", schema1.get(1).name);
             assertEquals("boss", schema1.get(2).name);
@@ -155,7 +155,7 @@ public class DBinsertRowTest {
 
             Schema schema2 = db.getSchema("Department");
             assertNotNull(schema2);
-            assertEquals(2, schema2.size());
+            assertEquals(2, schema2.columns());
             assertEquals("id", schema2.get(0).name);
             assertEquals("name", schema2.get(1).name);
             assertEquals(Schema.Field.Type.Integer, schema2.get(0).type);
@@ -300,7 +300,7 @@ public class DBinsertRowTest {
             }
             Schema schema = db.getSchema("Person");
             assertNotNull(schema);
-            assertEquals(2, schema.size());
+            assertEquals(2, schema.columns());
             assertEquals("id", schema.get(0).name);
             assertEquals("name", schema.get(1).name);
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
@@ -360,7 +360,7 @@ public class DBinsertRowTest {
 
             Schema schema = db.getSchema("Person");
             assertNotNull(schema);
-            assertEquals(2, schema.size());
+            assertEquals(2, schema.columns());
             assertEquals("id", schema.get(0).name);
             assertEquals("name", schema.get(1).name);
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
@@ -417,7 +417,7 @@ public class DBinsertRowTest {
             }
             Schema schema = db.getSchema("Person");
             assertNotNull(schema);
-            assertEquals(2, schema.size());
+            assertEquals(2, schema.columns());
             assertEquals("id", schema.get(0).name);
             assertEquals("name", schema.get(1).name);
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
@@ -729,7 +729,7 @@ public class DBinsertRowTest {
         try (DB db = DB.open(testFile.getAbsolutePath())) {
             Schema schema = db.getSchema("AwesomeTable");
             assertNotNull(schema);
-            assertEquals(2, schema.size());
+            assertEquals(2, schema.columns());
             assertEquals("aCol1", schema.get(0).name);
             assertEquals("aCol2", schema.get(1).name);
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);
@@ -738,7 +738,7 @@ public class DBinsertRowTest {
         try (DB db = DB.open(testFile.getAbsolutePath())) {
             Schema schema = db.getSchema("SecondTable");
             assertNotNull(schema);
-            assertEquals(2, schema.size());
+            assertEquals(2, schema.columns());
             assertEquals("sCol1", schema.get(0).name);
             assertEquals("sCol2", schema.get(1).name);
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);

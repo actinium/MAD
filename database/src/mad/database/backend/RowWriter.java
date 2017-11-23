@@ -20,11 +20,11 @@ public class RowWriter {
     }
 
     public void write(int filePosition, Row row) throws IOException, Row.TypeMismatchException {
-        if (row.size() != schema.size()) {
+        if (row.size() != schema.columns()) {
             throw new Row.TypeMismatchException("Row doesn't match schema!");
         }
         try {
-            for (int i = 0; i < schema.size(); i++) {
+            for (int i = 0; i < schema.columns(); i++) {
 
                 if (!row.getName(i).equals(schema.get(i).name)
                         || row.getType(i) != schema.get(i).type) {
@@ -43,7 +43,7 @@ public class RowWriter {
             throw new Row.TypeMismatchException("Row doesn't match schema!");
         }
         NullBitMap nullMap = new NullBitMap();
-        for (int i = 0; i < schema.size(); i++) {
+        for (int i = 0; i < schema.columns(); i++) {
             try {
                 int offset = schema.get(i).offset;
                 if (row.isNull(i)) {

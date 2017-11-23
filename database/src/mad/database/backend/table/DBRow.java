@@ -444,7 +444,7 @@ public class DBRow implements WritableRow {
      */
     @Override
     public int size() {
-        return tableSchema.size();
+        return tableSchema.columns();
     }
 
     /**

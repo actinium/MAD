@@ -17,7 +17,7 @@ public class SchemaWriter {
     }
 
     public void write(int filePosition, Schema schema) throws IOException {
-        int fieldCount = schema.size();
+        int fieldCount = schema.columns();
         pager.writeInteger(filePosition, fieldCount);
         int currentOffset = fieldCount * 4+4;
         int columnOffset = 16;
