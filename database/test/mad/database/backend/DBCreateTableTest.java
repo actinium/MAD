@@ -133,7 +133,7 @@ public class DBCreateTableTest {
             }
             Schema schema = db.getSchema("AwesomeTable");
             assertNotNull(schema);
-            assertEquals(2, schema.size());
+            assertEquals(2, schema.columns());
             assertEquals("field1", schema.get(0).name);
             assertEquals("field2", schema.get(1).name);
             assertEquals(Schema.Field.Type.Integer, schema.get(0).type);

@@ -43,7 +43,7 @@ public class SchemaTest {
                 new Field("id", Field.Type.Integer),
                 new Field("name", Field.Type.Varchar,100),
                 new Field("email", Field.Type.Varchar, 100));
-        assertEquals(3, schema.size());
+        assertEquals(3, schema.columns());
         
         assertEquals("id", schema.get(0).name);
         assertEquals(Field.Type.Integer, schema.get(0).type);
@@ -66,7 +66,7 @@ public class SchemaTest {
                 new Field("id", Field.Type.Integer),
                 new Field("name", Field.Type.Varchar,100),
                 new Field("email", Field.Type.Varchar, 100));
-        assertEquals(3, schema.size());
+        assertEquals(3, schema.columns());
         
         assertEquals("id", schema.get("id").name);
         assertEquals(Field.Type.Integer, schema.get("id").type);
@@ -89,7 +89,7 @@ public class SchemaTest {
                 new Field("id", Field.Type.Integer),
                 new Field("name", Field.Type.Varchar,100),
                 new Field("email", Field.Type.Varchar, 100));
-        assertEquals(3, schema.size());
+        assertEquals(3, schema.columns());
         assertEquals(220,schema.bytes());
         assertEquals(37, schema.rowsPerPage());
     }
