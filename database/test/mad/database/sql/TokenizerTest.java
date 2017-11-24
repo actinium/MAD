@@ -843,6 +843,40 @@ public class TokenizerTest {
 
         testTokeniser(query, tokens);
     }
+    
+    /**
+     * Test of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer34() {
+        String query =
+                "create table employee(\n"+
+                "   id integer,\n"+
+                "   name varchar(50),\n"+
+                "   salary integer\n"+
+                ");";
+        
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
+                new Token(Token.Type.Create),
+                new Token(Token.Type.Table),
+                new Token(Token.Type.ID,"employee"),
+                new Token(Token.Type.LParen),
+                new Token(Token.Type.ID, "id"),
+                new Token(Token.Type.ID, "integer"),
+                new Token(Token.Type.Comma),
+                new Token(Token.Type.ID, "name"),
+                new Token(Token.Type.ID,"varchar"),
+                new Token(Token.Type.LParen),
+                new Token(Token.Type.Integer, "50"),
+                new Token(Token.Type.RParen),
+                new Token(Token.Type.Comma),
+                new Token(Token.Type.ID, "salary"),
+                new Token(Token.Type.ID, "integer"),
+                new Token(Token.Type.RParen),
+                new Token(Token.Type.Semicolon)));
+
+        testTokeniser(query, tokens);
+    }
 
     private void testTokeniser(String query, List<Token> expTokens){
         Tokenizer tokenizer = new Tokenizer();
