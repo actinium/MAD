@@ -2,10 +2,7 @@ package mad.database.backend;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static junit.framework.Assert.assertEquals;
-import mad.database.backend.DB;
 import mad.database.backend.table.ArrayRow;
 import mad.database.backend.table.Row;
 import mad.database.backend.table.Schema;
