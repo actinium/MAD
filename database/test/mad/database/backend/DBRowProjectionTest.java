@@ -7,7 +7,6 @@ import mad.database.backend.table.ArrayRow;
 import mad.database.backend.table.ProjectionRow;
 import mad.database.backend.table.Row;
 import mad.database.backend.table.Schema;
-import mad.database.backend.table.SelectionRow;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
