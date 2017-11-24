@@ -1,5 +1,8 @@
-package mad.database.sql;
+package mad.database.backend.old;
 
+import mad.database.backend.old.Table;
+import mad.database.backend.old.Row;
+import mad.database.backend.old.DataType;
 import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;

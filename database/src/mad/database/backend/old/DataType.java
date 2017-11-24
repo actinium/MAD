@@ -1,4 +1,4 @@
-package mad.database.sql;
+package mad.database.backend.old;
 
 /**
  * MAD Data types

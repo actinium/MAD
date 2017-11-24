@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import static mad.database.Config.MADVERSION;
-import mad.database.sql.Statement;
+import mad.database.backend.old.Statement;
 
 /**
  *
