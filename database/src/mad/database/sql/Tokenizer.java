@@ -155,9 +155,9 @@ public class Tokenizer implements Iterator<Token> {
         }
         tokens.add(new Token(Token.Type.ID, tokenStr.substring(start, index)));
     }
-    
-    private void parseComment(){
-        while(index < length() && charAt(index)!='\n'){
+
+    private void parseComment() {
+        while (index < length() && charAt(index) != '\n') {
             index++;
         }
     }
@@ -235,7 +235,7 @@ public class Tokenizer implements Iterator<Token> {
             tokens.add(new Token(Token.Type.Integer, builder.toString()));
         }
     }
-    
+
     private boolean parseKeywords() {
         if (parseKeyword("is not")) {
             // must run first to prevent matching with 'is'.
