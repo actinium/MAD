@@ -8,7 +8,7 @@ import mad.util.NullBitMap;
 /**
  *
  */
-public class DBRow implements WritableRow {
+public class DBRow implements Row, WritableRow, DeleteableRow {
 
     private final Pager pager;
     private final Schema tableSchema;
@@ -53,6 +53,30 @@ public class DBRow implements WritableRow {
     public boolean hasNext() {
         try {
             int nextRowPointer = pager.readInteger(filePosition + 4);
+            if (nextRowPointer != 0) {
+                return true;
+            }
+        } catch (IOException ex) {
+        }
+        return false;
+    }
+
+    @Override
+    public WritableRow previous() {
+        try {
+            int nextRowPointer = pager.readInteger(filePosition);
+            if (nextRowPointer != 0) {
+                return new DBRow(pager, tableSchema, tableName, nextRowPointer);
+            }
+        } catch (IOException ex) {
+        }
+        return null;
+    }
+
+    @Override
+    public boolean hasPrevious() {
+        try {
+            int nextRowPointer = pager.readInteger(filePosition);
             if (nextRowPointer != 0) {
                 return true;
             }
