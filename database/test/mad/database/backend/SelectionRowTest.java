@@ -131,12 +131,8 @@ public class SelectionRowTest {
         try (DB db = DB.open(testFile.getAbsolutePath())) {
             Row initialRow = db.getFirstRow(db.getTablePointer("Employee"));
             Row row = SelectionRow.getFirstMatchingRow(initialRow, r -> {
-                try {
-                    // Select only rows where department_id == 0.
-                    return r.getInteger("department_id") == 0;
-                } catch (Row.NoSuchColumnException | Row.TypeMismatchException | IOException ex) {
-                    return false;
-                }
+                // Select only rows where department_id == 0.
+                return r.getInteger("department_id") == 0;
             });
 
             assertNotNull(row);

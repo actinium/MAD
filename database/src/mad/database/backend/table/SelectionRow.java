@@ -2,6 +2,8 @@ package mad.database.backend.table;
 
 import java.io.IOException;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -9,15 +11,19 @@ import java.util.function.Predicate;
 public class SelectionRow implements Row {
 
     Row row;
-    Predicate<Row> filter;
+    RowPredicate filter;
 
     /**
-     *
+     * 
      * @param row
      * @param filter
-     * @throws EmptySelection
+     * @throws SelectionRow.EmptySelection
+     * @throws Row.NoSuchColumnException
+     * @throws Row.TypeMismatchException
+     * @throws IOException 
      */
-    private SelectionRow(Row row, Predicate<Row> filter) throws EmptySelection {
+    private SelectionRow(Row row, RowPredicate filter) throws EmptySelection, NoSuchColumnException,
+            TypeMismatchException, IOException {
         this.filter = filter;
         this.row = row;
         while (!filter.test(this.row)) {
@@ -33,8 +39,12 @@ public class SelectionRow implements Row {
      * @param row
      * @param filter
      * @return
+     * @throws Row.NoSuchColumnException
+     * @throws Row.TypeMismatchException
+     * @throws java.io.IOException
      */
-    public static Row getFirstMatchingRow(Row row, Predicate<Row> filter) {
+    public static Row getFirstMatchingRow(Row row, RowPredicate filter) throws
+            NoSuchColumnException, TypeMismatchException, IOException {
         if (row == null) {
             return null;
         }
@@ -47,7 +57,11 @@ public class SelectionRow implements Row {
 
     @Override
     public Row next() {
-        return getFirstMatchingRow(row.next(), filter);
+        try {
+            return getFirstMatchingRow(row.next(), filter);
+        } catch (NoSuchColumnException | TypeMismatchException | IOException ex) {
+            return null;
+        }
     }
 
     @Override
