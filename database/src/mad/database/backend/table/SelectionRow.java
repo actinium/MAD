@@ -17,7 +17,7 @@ public class SelectionRow implements Row {
      * @param filter
      * @throws EmptySelection
      */
-    private SelectionRow(Row row, Predicate filter) throws EmptySelection {
+    private SelectionRow(Row row, Predicate<Row> filter) throws EmptySelection {
         this.filter = filter;
         this.row = row;
         while (!filter.test(this.row)) {
