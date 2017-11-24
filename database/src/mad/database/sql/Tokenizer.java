@@ -2,6 +2,7 @@ package mad.database.sql;
 
 import java.util.ArrayDeque;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Queue;
 import mad.database.sql.Tokenizer.Token;
 
@@ -504,6 +505,14 @@ public class Tokenizer implements Iterator<Token> {
                 }
             }
             return false;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 71 * hash + Objects.hashCode(this.type);
+            hash = 71 * hash + Objects.hashCode(this.value);
+            return hash;
         }
 
         @Override
