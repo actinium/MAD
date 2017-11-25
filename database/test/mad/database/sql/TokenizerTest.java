@@ -891,6 +891,18 @@ public class TokenizerTest {
                 new Token(Token.TokenType.Semicolon)));
         testTokeniser(query, tokens);
     }
+    
+    /**
+     * Test of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer36() {
+        String query = "drop\ntable";
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
+                new Token(Token.TokenType.Drop),
+                new Token(Token.TokenType.Table)));
+        testTokeniser(query, tokens);
+    }
 
     private void testTokeniser(String query, List<Token> expTokens) {
         Tokenizer tokenizer = new Tokenizer();
