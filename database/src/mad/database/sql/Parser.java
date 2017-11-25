@@ -2,14 +2,13 @@ package mad.database.sql;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import mad.database.backend.table.Schema.Field;
 import mad.database.sql.Tokenizer.Token;
-import mad.database.sql.Tokenizer.Token.Type;
+import mad.database.sql.Tokenizer.Token.TokenType;
 import mad.database.sql.ast.CreateTableStatement;
+import mad.database.sql.ast.CreateTableStatement.ColumnDefinition;
 import mad.database.sql.ast.DropTableStatement;
 import mad.database.sql.ast.Statement;
-import mad.database.sql.ast.StatementList;
 
 /**
  *
@@ -38,43 +37,15 @@ public class Parser {
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Parser helper functions
+    //----------------------------------------------------------------------------------------------
     /**
      *
      * @return
      */
-    Type symbol() {
-        return tokens.get(symbolIndex).type;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public Type lastSymbol() {
+    public TokenType lastSymbol() {
         return tokens.get(tokens.size() - 1).type;
-    }
-
-    /**
-     *
-     * @return
-     */
-    Token token() {
-        return tokens.get(symbolIndex);
-    }
-
-    /**
-     *
-     * @return
-     */
-    String value() {
-        return tokens.get(symbolIndex - 1).value;
-    }
-
-    /**
-     *
-     */
-    void nextSymbol() {
-        symbolIndex++;
     }
 
     /**
@@ -87,10 +58,40 @@ public class Parser {
 
     /**
      *
-     * @param message
-     * @throws Parser.ParseError
+     * @return
      */
-    ParseError error(String message) throws ParseError {
+    private TokenType symbol() {
+        return tokens.get(symbolIndex).type;
+    }
+
+    /**
+     *
+     * @return
+     */
+    private Token token() {
+        return tokens.get(symbolIndex);
+    }
+
+    /**
+     *
+     * @return
+     */
+    private String value() {
+        return tokens.get(symbolIndex - 1).value;
+    }
+
+    /**
+     *
+     */
+    private void nextSymbol() {
+        symbolIndex++;
+    }
+
+    /**
+     *
+     * @param message
+     */
+    private ParseError error(String message) {
         return new ParseError(message);
     }
 
@@ -99,7 +100,7 @@ public class Parser {
      * @param s
      * @return
      */
-    boolean accept(Token.Type s) {
+    private boolean accept(Token.TokenType s) {
         if (symbol() == s) {
             nextSymbol();
             return true;
@@ -111,14 +112,18 @@ public class Parser {
      *
      * @param s
      * @return
+     * @throws Parser.ParseError
      */
-    boolean expect(Token.Type s) throws ParseError {
+    private boolean expect(Token.TokenType s) throws ParseError {
         if (accept(s)) {
             return true;
         }
         throw error("expect: unexpected symbol");
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Parsing
+    //----------------------------------------------------------------------------------------------
     /**
      *
      * @return @throws Parser.ParseError
@@ -137,10 +142,10 @@ public class Parser {
      *
      * @return @throws Parser.ParseError
      */
-    String identifier() throws ParseError {
-        if (accept(Type.ID)) {
+    private String identifier() throws ParseError {
+        if (accept(TokenType.ID)) {
             return value();
-        } else if (accept(Type.StringID)) {
+        } else if (accept(TokenType.StringID)) {
             return value();
         } else {
             throw error("identifier: Not a valid identifier!");
@@ -149,16 +154,37 @@ public class Parser {
 
     /**
      *
+     * @return @throws mad.database.sql.Parser.ParseError
+     */
+    private int integer() throws ParseError {
+        if (accept(TokenType.Integer)) {
+            int value = 0;
+            try {
+                value = Integer.parseInt(value());
+            } catch (NumberFormatException ex) {
+                throw error("integer: Not a valid Integer!");
+            }
+            return value;
+        } else {
+            throw error("integer: Not a valid Integer!");
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // Statements
+    //----------------------------------------------------------------------------------------------
+    /**
+     *
      * @return @throws Parser.ParseError
      */
-    CreateTableStatement createTableStatement() throws ParseError {
-        if (accept(Type.Create)) {
-            if (accept(Type.Table)) {
+    private CreateTableStatement createTableStatement() throws ParseError {
+        if (accept(TokenType.Create)) {
+            if (accept(TokenType.Table)) {
                 String tableName = identifier();
-                expect(Type.LParen);
-                List<CreateTableStatement.ColumnDefinition> td = tableDefinition();
-                expect(Type.RParen);
-                expect(Type.Semicolon);
+                expect(TokenType.LParen);
+                List<ColumnDefinition> td = tableDefinition();
+                expect(TokenType.RParen);
+                expect(TokenType.Semicolon);
                 return new CreateTableStatement(tableName, td);
             }
         }
@@ -169,18 +195,22 @@ public class Parser {
      *
      * @return @throws Parser.ParseError
      */
-    List<CreateTableStatement.ColumnDefinition> tableDefinition() throws ParseError {
-        List<CreateTableStatement.ColumnDefinition> tableDefinition = new ArrayList<>();
+    private List<ColumnDefinition> tableDefinition() throws ParseError {
+        List<ColumnDefinition> tableDefinition = new ArrayList<>();
         do {
-            CreateTableStatement.ColumnDefinition cd = columnDefinition();
+            ColumnDefinition cd = columnDefinition();
             tableDefinition.add(cd);
-        } while (accept(Type.Comma));
+        } while (accept(TokenType.Comma));
         return tableDefinition;
     }
 
-    CreateTableStatement.ColumnDefinition columnDefinition() throws ParseError {
+    /**
+     *
+     * @return @throws mad.database.sql.Parser.ParseError
+     */
+    private ColumnDefinition columnDefinition() throws ParseError {
         String name = identifier();
-        expect(Type.ID);
+        expect(TokenType.ID);
         Field.Type type = null;
         int length = 0;
         switch (value()) {
@@ -195,11 +225,11 @@ public class Parser {
                 break;
             case "varchar":
                 type = Field.Type.Varchar;
-                expect(Type.LParen);
+                expect(TokenType.LParen);
                 length = integer();
-                expect(Type.RParen);
+                expect(TokenType.RParen);
         }
-        return new CreateTableStatement.ColumnDefinition(name, type, length);
+        return new ColumnDefinition(name, type, length);
     }
 
     /**
@@ -207,30 +237,19 @@ public class Parser {
      * @return @throws Parser.ParseError
      */
     DropTableStatement dropTableStatement() throws ParseError {
-        if (accept(Type.Drop)) {
-            if (accept(Type.Table)) {
+        if (accept(TokenType.Drop)) {
+            if (accept(TokenType.Table)) {
                 String tableName = identifier();
-                expect(Type.Semicolon);
+                expect(TokenType.Semicolon);
                 return new DropTableStatement(tableName);
             }
         }
         return null;
     }
 
-    int integer() throws ParseError {
-        if (accept(Type.Integer)) {
-            int value = 0;
-            try {
-                value = Integer.parseInt(value());
-            } catch (NumberFormatException ex) {
-                throw error("integer: Not a valid Integer!");
-            }
-            return value;
-        } else {
-            throw error("integer: Not a valid Integer!");
-        }
-    }
-
+    //----------------------------------------------------------------------------------------------
+    // Exception
+    //----------------------------------------------------------------------------------------------
     /**
      *
      */

@@ -15,12 +15,20 @@ public class Tokenizer implements Iterator<Token> {
     private int index;
     private String tokenStr;
 
+    /**
+     *
+     */
     public Tokenizer() {
         tokens = new ArrayDeque<>();
         this.tokenStr = null;
         index = 0;
     }
 
+    /**
+     *
+     * @param tokenStr
+     * @throws mad.database.sql.Tokenizer.TokenizeException
+     */
     public void tokenize(String tokenStr) throws TokenizeException {
         this.tokenStr = tokenStr;
         index = 0;
@@ -35,12 +43,12 @@ public class Tokenizer implements Iterator<Token> {
                     continue;
                 }
                 if (index + 4 <= length() && "true".equalsIgnoreCase(tokenStr.substring(index, index + 4))) {
-                    tokens.add(new Token(Token.Type.Boolean, "true"));
+                    tokens.add(new Token(Token.TokenType.Boolean, "true"));
                     index += 4;
                     continue;
                 }
                 if (index + 5 <= length() && "false".equalsIgnoreCase(tokenStr.substring(index, index + 5))) {
-                    tokens.add(new Token(Token.Type.Boolean, "false"));
+                    tokens.add(new Token(Token.TokenType.Boolean, "false"));
                     index += 5;
                     continue;
                 }
@@ -60,37 +68,55 @@ public class Tokenizer implements Iterator<Token> {
         }
     }
 
+    /**
+     *
+     * @return
+     */
+    @Override
+    public boolean hasNext() {
+        return !tokens.isEmpty();
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public Token next() {
+        return tokens.poll();
+    }
+
     private boolean parseDoubleCharOperators(char c1, char c2) {
         if (c1 == '=' && c2 == '=') {
-            tokens.add(new Token(Token.Type.DoubleEquals));
+            tokens.add(new Token(Token.TokenType.DoubleEquals));
             return true;
         }
         if (c1 == '!' && c2 == '=') {
-            tokens.add(new Token(Token.Type.NotEquals));
+            tokens.add(new Token(Token.TokenType.NotEquals));
             return true;
         }
         if (c1 == '<' && c2 == '>') {
-            tokens.add(new Token(Token.Type.NotEquals));
+            tokens.add(new Token(Token.TokenType.NotEquals));
             return true;
         }
         if (c1 == '>' && c2 == '=') {
-            tokens.add(new Token(Token.Type.GreaterThanOrEquals));
+            tokens.add(new Token(Token.TokenType.GreaterThanOrEquals));
             return true;
         }
         if (c1 == '<' && c2 == '=') {
-            tokens.add(new Token(Token.Type.LessThanOrEquals));
+            tokens.add(new Token(Token.TokenType.LessThanOrEquals));
             return true;
         }
         if (c1 == '<' && c2 == '<') {
-            tokens.add(new Token(Token.Type.LeftShift));
+            tokens.add(new Token(Token.TokenType.LeftShift));
             return true;
         }
         if (c1 == '>' && c2 == '>') {
-            tokens.add(new Token(Token.Type.RightShift));
+            tokens.add(new Token(Token.TokenType.RightShift));
             return true;
         }
         if (c1 == '|' && c2 == '|') {
-            tokens.add(new Token(Token.Type.Concat));
+            tokens.add(new Token(Token.TokenType.Concat));
             return true;
         }
         return false;
@@ -99,49 +125,49 @@ public class Tokenizer implements Iterator<Token> {
     private boolean parseSingleCharOperators(char c) {
         switch (c) {
             case ';':
-                tokens.add(new Token(Token.Type.Semicolon));
+                tokens.add(new Token(Token.TokenType.Semicolon));
                 return true;
             case '(':
-                tokens.add(new Token(Token.Type.LParen));
+                tokens.add(new Token(Token.TokenType.LParen));
                 return true;
             case ')':
-                tokens.add(new Token(Token.Type.RParen));
+                tokens.add(new Token(Token.TokenType.RParen));
                 return true;
             case '=':
-                tokens.add(new Token(Token.Type.Equals));
+                tokens.add(new Token(Token.TokenType.Equals));
                 return true;
             case '>':
-                tokens.add(new Token(Token.Type.GreaterThan));
+                tokens.add(new Token(Token.TokenType.GreaterThan));
                 return true;
             case '<':
-                tokens.add(new Token(Token.Type.LessThan));
+                tokens.add(new Token(Token.TokenType.LessThan));
                 return true;
             case '&':
-                tokens.add(new Token(Token.Type.And));
+                tokens.add(new Token(Token.TokenType.And));
                 return true;
             case '|':
-                tokens.add(new Token(Token.Type.Or));
+                tokens.add(new Token(Token.TokenType.Or));
                 return true;
             case ',':
-                tokens.add(new Token(Token.Type.Comma));
+                tokens.add(new Token(Token.TokenType.Comma));
                 return true;
             case '.':
-                tokens.add(new Token(Token.Type.Dot));
+                tokens.add(new Token(Token.TokenType.Dot));
                 return true;
             case '*':
-                tokens.add(new Token(Token.Type.Star));
+                tokens.add(new Token(Token.TokenType.Star));
                 return true;
             case '/':
-                tokens.add(new Token(Token.Type.Slash));
+                tokens.add(new Token(Token.TokenType.Slash));
                 return true;
             case '+':
-                tokens.add(new Token(Token.Type.Plus));
+                tokens.add(new Token(Token.TokenType.Plus));
                 return true;
             case '-':
-                tokens.add(new Token(Token.Type.Minus));
+                tokens.add(new Token(Token.TokenType.Minus));
                 return true;
             case '%':
-                tokens.add(new Token(Token.Type.Modulo));
+                tokens.add(new Token(Token.TokenType.Modulo));
                 return true;
             default:
                 return false;
@@ -153,7 +179,7 @@ public class Tokenizer implements Iterator<Token> {
         while (index < length() && isAZazDigitUnderscore(charAt(index))) {
             index++;
         }
-        tokens.add(new Token(Token.Type.ID, tokenStr.substring(start, index)));
+        tokens.add(new Token(Token.TokenType.ID, tokenStr.substring(start, index)));
     }
 
     private void parseComment() {
@@ -185,9 +211,9 @@ public class Tokenizer implements Iterator<Token> {
             }
         }
         if (mark == '"') {
-            tokens.add(new Token(Token.Type.StringID, builder.toString()));
+            tokens.add(new Token(Token.TokenType.StringID, builder.toString()));
         } else {
-            tokens.add(new Token(Token.Type.Text, builder.toString()));
+            tokens.add(new Token(Token.TokenType.Text, builder.toString()));
         }
     }
 
@@ -197,7 +223,7 @@ public class Tokenizer implements Iterator<Token> {
 
         if (charAt(index) == '0') {
             if (index + 1 == length() || charAt(index + 1) != '.') {
-                tokens.add(new Token(Token.Type.Integer, "0"));
+                tokens.add(new Token(Token.TokenType.Integer, "0"));
                 index++;
                 return;
             } else if (index + 2 < length() && charAt(index + 1) == '.' && isDigit(charAt(index + 2))) {
@@ -230,9 +256,9 @@ public class Tokenizer implements Iterator<Token> {
         }
 
         if (dotFound) {
-            tokens.add(new Token(Token.Type.Float, builder.toString()));
+            tokens.add(new Token(Token.TokenType.Float, builder.toString()));
         } else {
-            tokens.add(new Token(Token.Type.Integer, builder.toString()));
+            tokens.add(new Token(Token.TokenType.Integer, builder.toString()));
         }
     }
 
@@ -324,18 +350,18 @@ public class Tokenizer implements Iterator<Token> {
         return false;
     }
 
-    private Token.Type tokenTypeFromKeyword(String keyword) {
+    private Token.TokenType tokenTypeFromKeyword(String keyword) {
         keyword = keyword.toLowerCase();
-        for (Token.Type type : Token.Type.values()) {
+        for (Token.TokenType type : Token.TokenType.values()) {
             if (type.stringValue().equals(keyword)) {
                 return type;
             }
         }
         if ("asc".equals(keyword)) {
-            return Token.Type.Ascending;
+            return Token.TokenType.Ascending;
         }
         if ("desc".equals(keyword)) {
-            return Token.Type.Descending;
+            return Token.TokenType.Descending;
         }
         return null;
     }
@@ -366,32 +392,28 @@ public class Tokenizer implements Iterator<Token> {
         return tokenStr.length();
     }
 
-    @Override
-    public boolean hasNext() {
-        return !tokens.isEmpty();
-    }
-
-    @Override
-    public Token next() {
-        return tokens.poll();
-    }
-
+    //----------------------------------------------------------------------------------------------
+    // Token Class
+    //----------------------------------------------------------------------------------------------
+    /**
+     *
+     */
     public static class Token {
 
-        public final Type type;
+        public final TokenType type;
         public final String value;
 
-        public Token(Type type) {
+        public Token(TokenType type) {
             this.type = type;
             this.value = null;
         }
 
-        public Token(Type type, String value) {
+        public Token(TokenType type, String value) {
             this.type = type;
             this.value = value;
         }
 
-        public enum Type {
+        public enum TokenType {
 
             // Keywords:
             Add("add"),
@@ -482,11 +504,11 @@ public class Tokenizer implements Iterator<Token> {
 
             private final String string;
 
-            private Type() {
+            private TokenType() {
                 this.string = "";
             }
 
-            private Type(String string) {
+            private TokenType(String string) {
                 this.string = string;
             }
 
@@ -532,15 +554,30 @@ public class Tokenizer implements Iterator<Token> {
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Exception
+    //----------------------------------------------------------------------------------------------
+    /**
+     *
+     */
     public static class TokenizeException extends Exception {
 
         private final int index;
 
+        /**
+         *
+         * @param message
+         * @param index
+         */
         private TokenizeException(String message, int index) {
             super(message);
             this.index = index;
         }
 
+        /**
+         *
+         * @return
+         */
         public int getIndex() {
             return index;
         }

@@ -209,8 +209,8 @@ public class DB implements AutoCloseable {
         if (rowPointer == 0) {
             return null;
         }
-        int tableNameLength = pager.readInteger(tableFilePosition+16);
-        String tableName = pager.readString(tableFilePosition+20, tableNameLength);
+        int tableNameLength = pager.readInteger(tableFilePosition + 16);
+        String tableName = pager.readString(tableFilePosition + 20, tableNameLength);
         int schemaPointer = pager.readInteger(tableFilePosition + 4);
         Schema schema = schemaReader.read(schemaPointer);
         return new DBRow(pager, schema, tableName, rowPointer);
