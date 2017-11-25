@@ -310,9 +310,13 @@ public class Tokenizer implements Iterator<Token> {
 
     private boolean parseKeyword(String keyword) {
         int length = keyword.length();
-        if (index + length <= length()
-                && keyword.equalsIgnoreCase(tokenStr.substring(index, index + length))
-                && !isAZazDigitUnderscore(charAt(index + length))) {
+        if (index + length > length()) {
+            return false;
+        }
+        if (index + length < length() && isAZazDigitUnderscore(charAt(index + length))) {
+            return false;
+        }
+        if (keyword.equalsIgnoreCase(tokenStr.substring(index, index + length))) {
             tokens.add(new Token(tokenTypeFromKeyword(keyword)));
             index += keyword.length();
             return true;

@@ -6,14 +6,40 @@ import java.util.List;
 /**
  *
  */
-public class StatementList implements Statement{
+public class StatementList implements Statement {
+
     List<Statement> statements;
-    
-    public StatementList(){
+
+    /**
+     *
+     */
+    public StatementList() {
         statements = new ArrayList<>();
     }
-    
-    public void append(Statement s){
+
+    /**
+     *
+     * @param s
+     */
+    public void add(Statement s) {
         statements.add(s);
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("StatementList{\n");
+        for (Statement s : statements) {
+            String lines[] = s.toString().split("\\r\\n|\\n|\\r");
+            for (String line : lines) {
+                sb.append("  ").append(line).append("\n");
+            }
+        }
+        sb.append("}");
+        return sb.toString();
     }
 }

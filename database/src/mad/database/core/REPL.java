@@ -6,16 +6,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static mad.database.Config.MADVERSION;
-import mad.database.backend.old.Statement;
+import mad.database.sql.Parser;
+import mad.database.sql.Tokenizer;
+import mad.database.sql.Tokenizer.Token.Type;
+import mad.database.sql.ast.StatementList;
 
 /**
  *
  */
 public class REPL implements Runnable {
 
-    BufferedReader in;
-    PrintWriter out;
+    private final BufferedReader in;
+    private final PrintWriter out;
 
     public REPL(InputStream in, OutputStream out) {
         this.in = new BufferedReader(new InputStreamReader(in));
@@ -26,7 +31,7 @@ public class REPL implements Runnable {
         try {
             return in.readLine();
         } catch (IOException ex) {
-            System.err.printf(ex.getMessage());
+            out.printf(ex.getMessage());
             System.exit(1);
         }
         return null;
@@ -61,6 +66,34 @@ public class REPL implements Runnable {
         return MetaCommandResult.UnrecognizedCommand;
     }
 
+    private void runSqlStatement(String query) {
+        Tokenizer tokenizer = new Tokenizer();
+        Parser parser = new Parser(tokenizer);
+        try {
+            tokenizer.tokenize(query);
+            parser.readTokens();
+            while (parser.lastSymbol() != Type.Semicolon) {
+                while (parser.lastSymbol() != Type.Semicolon) {
+                    System.out.print("   ...>");
+                    query = readline();
+                    tokenizer.tokenize(query);
+                    parser.readTokens();
+                }
+            }
+            StatementList sl = new StatementList();
+            while (!parser.done()) {
+                sl.add(parser.parse());
+            }
+            System.out.println(sl.toString());
+        } catch (Tokenizer.TokenizeException ex) {
+            out.println("Error tokenizing input:" + ex.getMessage() + " (" + ex.getIndex() + ")");
+        } catch (Parser.ParseError ex) {
+            out.println(ex.getMessage());
+            ex.printStackTrace(out);
+        }
+
+    }
+
     @Override
     public void run() {
         repl:
@@ -69,9 +102,11 @@ public class REPL implements Runnable {
             out.flush();
             String query = readline();
             if (query.length() == 0 || firstNonWhitespace(query) == query.length()) {
+                // If line was empty when enter was pressed, do nothing.
                 continue repl;
             }
             if (query.charAt(firstNonWhitespace(query)) == '.') {
+                // If first non whitespace character was a '.' run metacommand.
                 switch (runMetaCommand(query)) {
                     case Success:
                         continue repl;
@@ -82,19 +117,7 @@ public class REPL implements Runnable {
                         continue repl;
                 }
             }
-
-            Statement statement = new Statement(query);
-            if (statement.statementIsOK()) {
-                switch (statement.execute()) {
-                    case Success:
-                        continue repl;
-                    case Error:
-                        out.printf("Error executing command: '%s'. Error: '%s'\n", query, "some error");
-                        break;
-                }
-            } else {
-                out.printf("Unrecognized command '%s'.\n", query);
-            }
+            runSqlStatement(query);
         }
         out.close();
     }
