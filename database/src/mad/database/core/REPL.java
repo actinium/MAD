@@ -89,7 +89,6 @@ public class REPL implements Runnable {
             out.println("Error tokenizing input:" + ex.getMessage() + " (" + ex.getIndex() + ")");
         } catch (Parser.ParseError ex) {
             out.println(ex.getMessage());
-            ex.printStackTrace(out);
         }
 
     }
