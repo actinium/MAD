@@ -214,12 +214,14 @@ public class Parser {
         Field.Type type = null;
         int length = 0;
         switch (value()) {
+            case "int":
             case "integer":
                 type = Field.Type.Integer;
                 break;
             case "float":
                 type = Field.Type.Float;
                 break;
+            case "bool":
             case "boolean":
                 type = Field.Type.Boolean;
                 break;
@@ -228,6 +230,8 @@ public class Parser {
                 expect(TokenType.LParen);
                 length = integer();
                 expect(TokenType.RParen);
+            default:
+                throw error("columnDefinition: '" + value() + "' is not a valid type!");
         }
         return new ColumnDefinition(name, type, length);
     }
