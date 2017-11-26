@@ -66,7 +66,7 @@ public class CreateTableStatement implements Statement {
         sb.append("  tablename = ").append(tableName).append(";\n");
         sb.append("  tableDefinition = {\n");
         for (ColumnDefinition cd : tableDefinition) {
-            sb.append("    ").append(cd.name).append(" ").append(cd.type);
+            sb.append("    ").append(cd.name).append(": ").append(cd.type);
             if (cd.type == Type.Varchar) {
                 sb.append("(").append(cd.length).append(")");
             }
