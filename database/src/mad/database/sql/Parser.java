@@ -230,6 +230,7 @@ public class Parser {
                 expect(TokenType.LParen);
                 length = integer();
                 expect(TokenType.RParen);
+                break;
             default:
                 throw error("columnDefinition: '" + value() + "' is not a valid type!");
         }
