@@ -34,7 +34,7 @@ public class Tokenizer implements Iterator<Token> {
         index = 0;
         while (index < length()) {
             char c = charAt(index);
-            if (c == ' ' || c == '\t' || c == '\n') {
+            if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
                 index++;
             } else if (c == '-' && index + 1 < length() && charAt(index + 1) == '-') {
                 parseComment();

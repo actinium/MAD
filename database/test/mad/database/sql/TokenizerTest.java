@@ -903,6 +903,30 @@ public class TokenizerTest {
                 new Token(Token.TokenType.Table)));
         testTokeniser(query, tokens);
     }
+    
+    /**
+     * Test of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer37() {
+        String query = "drop\r\ntable";
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
+                new Token(Token.TokenType.Drop),
+                new Token(Token.TokenType.Table)));
+        testTokeniser(query, tokens);
+    }
+    
+    /**
+     * Test of class Tokenizer.
+     */
+    @Test
+    public void testTokenizer38() {
+        String query = "drop\rtable\r";
+        ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
+                new Token(Token.TokenType.Drop),
+                new Token(Token.TokenType.Table)));
+        testTokeniser(query, tokens);
+    }
 
     private void testTokeniser(String query, List<Token> expTokens) {
         Tokenizer tokenizer = new Tokenizer();
