@@ -5,7 +5,7 @@ package mad.database.sql.ast;
  */
 public class DropTableStatement implements Statement {
 
-    public final String tableName;
+    private final String tableName;
 
     /**
      *
@@ -13,6 +13,14 @@ public class DropTableStatement implements Statement {
      */
     public DropTableStatement(String tableName) {
         this.tableName = tableName;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String tableName() {
+        return tableName;
     }
 
     /**

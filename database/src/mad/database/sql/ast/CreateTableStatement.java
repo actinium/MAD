@@ -9,55 +9,34 @@ import mad.database.backend.table.Schema.Field.Type;
  */
 public class CreateTableStatement implements Statement {
 
-    public final String tableName;
-    public final List<ColumnDefinition> tableDefinition;
+    private final String tableName;
+    private final List<ColumnDefinition> tableDefinition;
 
     /**
-     * 
+     *
      * @param tableName
-     * @param tableDefinition 
+     * @param tableDefinition
      */
     public CreateTableStatement(String tableName, List<ColumnDefinition> tableDefinition) {
         this.tableName = tableName;
-        this.tableDefinition = Collections.unmodifiableList(tableDefinition);
+        this.tableDefinition = tableDefinition;
     }
 
     /**
-     * 
+     *
+     * @return
      */
-    public static class ColumnDefinition {
+    public String tableName() {
+        return tableName;
+    }
 
-        public final String name;
-        public final Type type;
-        public final int length;
-
-        /**
-         * 
-         * @param name
-         * @param type 
-         */
-        public ColumnDefinition(String name, Type type) {
-            this.name = name;
-            this.type = type;
-            this.length = 0;
-        }
-
-        /**
-         * 
-         * @param name
-         * @param type
-         * @param length 
-         */
-        public ColumnDefinition(String name, Type type, int length) {
-            this.name = name;
-            this.type = type;
-            this.length = length;
-        }
+    public List<ColumnDefinition> tableDefinition() {
+        return Collections.unmodifiableList(tableDefinition);
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     @Override
     public String toString() {
@@ -74,5 +53,38 @@ public class CreateTableStatement implements Statement {
         }
         sb.append("}");
         return sb.toString();
+    }
+
+    /**
+     *
+     */
+    public static class ColumnDefinition {
+
+        public final String name;
+        public final Type type;
+        public final int length;
+
+        /**
+         *
+         * @param name
+         * @param type
+         */
+        public ColumnDefinition(String name, Type type) {
+            this.name = name;
+            this.type = type;
+            this.length = 0;
+        }
+
+        /**
+         *
+         * @param name
+         * @param type
+         * @param length
+         */
+        public ColumnDefinition(String name, Type type, int length) {
+            this.name = name;
+            this.type = type;
+            this.length = length;
+        }
     }
 }
