@@ -222,7 +222,7 @@ public class Parser {
      *
      * @return @throws Parser.ParseError
      */
-    private CreateTableStatement createTableStatement() throws ParseError {
+    private Statement createTableStatement() throws ParseError {
         if (accept(TokenType.Create)) {
             if (accept(TokenType.Table)) {
                 String tableName = identifier();
@@ -286,7 +286,7 @@ public class Parser {
      *
      * @return @throws Parser.ParseError
      */
-    DropTableStatement dropTableStatement() throws ParseError {
+    private Statement dropTableStatement() throws ParseError {
         if (accept(TokenType.Drop)) {
             if (accept(TokenType.Table)) {
                 String tableName = identifier();
@@ -297,7 +297,7 @@ public class Parser {
         return null;
     }
 
-    InsertStatement insertStatement() throws ParseError {
+    private Statement insertStatement() throws ParseError {
         if (accept(TokenType.Insert)) {
             expect(TokenType.Into);
             String tableName = identifier();
