@@ -9,6 +9,7 @@ import mad.database.sql.ast.DropTableStatement;
 import mad.database.sql.ast.InsertStatement;
 import mad.database.sql.ast.Statement;
 import mad.database.sql.ast.StatementList;
+import mad.database.sql.ast.TruncateTableStatement;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -105,6 +106,20 @@ public class ParserTest {
         iStatement.addValue(TokenType.Integer, "12");
         iStatement.addValue(TokenType.Text, "Department of Magic");
         testParser(query, new StatementList(iStatement));
+    }
+    
+    @Test
+    public void testParser7() {
+        String query = "TRUNCATE TABLE test;\n";
+        Statement statement = new TruncateTableStatement("test");
+        testParser(query, new StatementList(statement));
+    }
+    
+    @Test
+    public void testParser8() {
+        String query = "truncate table test;\n";
+        Statement statement = new TruncateTableStatement("test");
+        testParser(query, new StatementList(statement));
     }
 
     private void testParser(String query, Statement statement) {

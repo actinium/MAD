@@ -10,6 +10,7 @@ import mad.database.sql.ast.CreateTableStatement.ColumnDefinition;
 import mad.database.sql.ast.DropTableStatement;
 import mad.database.sql.ast.InsertStatement;
 import mad.database.sql.ast.Statement;
+import mad.database.sql.ast.TruncateTableStatement;
 
 /**
  *
@@ -131,11 +132,10 @@ public class Parser {
      */
     public Statement parse() throws ParseError {
         Statement statement;
-        if ((statement = createTableStatement()) != null) {
-            return statement;
-        } else if ((statement = dropTableStatement()) != null) {
-            return statement;
-        } else if ((statement = insertStatement()) != null) {
+        if ((statement = createTableStatement()) != null || 
+                (statement = dropTableStatement()) != null ||
+                (statement = truncateTableStatement()) != null ||
+                (statement = insertStatement()) != null) {
             return statement;
         }
         throw error("parse: Input didn't match a SQL Statement!");
@@ -292,6 +292,21 @@ public class Parser {
                 String tableName = identifier();
                 expect(TokenType.Semicolon);
                 return new DropTableStatement(tableName);
+            }
+        }
+        return null;
+    }
+    
+    /**
+     *
+     * @return @throws Parser.ParseError
+     */
+    private Statement truncateTableStatement() throws ParseError {
+        if (accept(TokenType.Truncate)) {
+            if (accept(TokenType.Table)) {
+                String tableName = identifier();
+                expect(TokenType.Semicolon);
+                return new TruncateTableStatement(tableName);
             }
         }
         return null;
