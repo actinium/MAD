@@ -35,7 +35,7 @@ public class InsertStatement implements Statement {
     /**
      *
      * @param columnName
-     * @return 
+     * @return
      */
     public InsertStatement addColumn(String columnName) {
         columns.add(columnName);
@@ -43,10 +43,10 @@ public class InsertStatement implements Statement {
     }
 
     /**
-     * 
+     *
      * @param type
-     * @param value 
-     * @return  
+     * @param value
+     * @return
      */
     public InsertStatement addValue(TokenType type, String value) {
         values.add(new Value(type, value));
@@ -79,7 +79,7 @@ public class InsertStatement implements Statement {
         sb.append("InsertStatement{\n");
         sb.append("  tablename = ").append(tableName).append(";\n");
         sb.append("  columns(").append(columns.size()).append(") = ");
-        if (columns.size() == 0) {
+        if (columns.isEmpty()) {
             sb.append("ALL;\n");
         } else {
             sb.append("{\n");
@@ -91,77 +91,43 @@ public class InsertStatement implements Statement {
         }
         sb.append("  values(").append(values.size()).append(") = {\n");
         for (Value v : values) {
-            sb.append("    ").append(v.value()).append(": ").append(v.type);
+            sb.append("    ").append(v.value()).append(": ").append(v.type());
             sb.append(";\n");
         }
         sb.append("  }\n");
         sb.append("}");
         return sb.toString();
     }
-    
+
     @Override
-    public boolean equals(Object obj){
-        if(!(obj instanceof InsertStatement)){
+    public boolean equals(Object obj) {
+        if (!(obj instanceof InsertStatement)) {
             return false;
         }
-        InsertStatement objIS = (InsertStatement)obj;
-        if(!objIS.tableName().equals(tableName())){
+        InsertStatement objIS = (InsertStatement) obj;
+        if (!objIS.tableName().equals(tableName())) {
             return false;
         }
-        if(objIS.columns().size() != columns().size()){
+        if (objIS.columns().size() != columns().size()) {
             return false;
         }
         for (int i = 0; i < columns().size(); i++) {
-            if(!columns().get(i).equals(objIS.columns().get(i))){
+            if (!columns().get(i).equals(objIS.columns().get(i))) {
                 return false;
             }
         }
-        if(objIS.values().size() != values().size()){
+        if (objIS.values().size() != values().size()) {
             return false;
         }
         for (int i = 0; i < values().size(); i++) {
-            if(values().get(i).type() != objIS.values().get(i).type()){
+            if (values().get(i).type() != objIS.values().get(i).type()) {
                 return false;
             }
-            if(!values().get(i).value().equals(objIS.values().get(i).value())){
+            if (!values().get(i).value().equals(objIS.values().get(i).value())) {
                 return false;
             }
         }
         return true;
     }
 
-    /**
-     *
-     */
-    public static class Value {
-
-        private final TokenType type;
-        private final String value;
-
-        /**
-         *
-         * @param type
-         * @param value
-         */
-        public Value(TokenType type, String value) {
-            this.type = type;
-            this.value = value;
-        }
-
-        /**
-         *
-         * @return
-         */
-        public TokenType type() {
-            return type;
-        }
-
-        /**
-         *
-         * @return
-         */
-        public String value() {
-            return value;
-        }
-    }
 }
