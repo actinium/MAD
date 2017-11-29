@@ -143,9 +143,7 @@ public class Parser {
      * @return @throws Parser.ParseError
      */
     private String identifier() throws ParseError {
-        if (accept(TokenType.ID)) {
-            return value();
-        } else if (accept(TokenType.StringID)) {
+        if (accept(TokenType.ID) || accept(TokenType.StringID)) {
             return value();
         } else {
             throw error("identifier: Not a valid identifier!");
