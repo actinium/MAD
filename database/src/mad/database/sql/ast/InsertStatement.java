@@ -35,13 +35,22 @@ public class InsertStatement implements Statement {
     /**
      *
      * @param columnName
+     * @return 
      */
-    public void addColumn(String columnName) {
+    public InsertStatement addColumn(String columnName) {
         columns.add(columnName);
+        return this;
     }
 
-    public void addValue(TokenType type, String value) {
+    /**
+     * 
+     * @param type
+     * @param value 
+     * @return  
+     */
+    public InsertStatement addValue(TokenType type, String value) {
         values.add(new Value(type, value));
+        return this;
     }
 
     /**
@@ -88,6 +97,37 @@ public class InsertStatement implements Statement {
         sb.append("  }\n");
         sb.append("}");
         return sb.toString();
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof InsertStatement)){
+            return false;
+        }
+        InsertStatement objIS = (InsertStatement)obj;
+        if(!objIS.tableName().equals(tableName())){
+            return false;
+        }
+        if(objIS.columns().size() != columns().size()){
+            return false;
+        }
+        for (int i = 0; i < columns().size(); i++) {
+            if(!columns().get(i).equals(objIS.columns().get(i))){
+                return false;
+            }
+        }
+        if(objIS.values().size() != values().size()){
+            return false;
+        }
+        for (int i = 0; i < values().size(); i++) {
+            if(values().get(i).type() != objIS.values().get(i).type()){
+                return false;
+            }
+            if(!values().get(i).value().equals(objIS.values().get(i).value())){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
