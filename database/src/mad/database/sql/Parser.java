@@ -8,6 +8,7 @@ import mad.database.sql.Tokenizer.Token.TokenType;
 import mad.database.sql.ast.CreateTableStatement;
 import mad.database.sql.ast.CreateTableStatement.ColumnDefinition;
 import mad.database.sql.ast.DropTableStatement;
+import mad.database.sql.ast.InsertStatement;
 import mad.database.sql.ast.Statement;
 
 /**
@@ -134,6 +135,8 @@ public class Parser {
             return statement;
         } else if ((statement = dropTableStatement()) != null) {
             return statement;
+        } else if ((statement = insertStatement()) != null) {
+            return statement;
         }
         throw error("parse: Input didn't match a SQL Statement!");
     }
@@ -152,19 +155,63 @@ public class Parser {
 
     /**
      *
-     * @return @throws mad.database.sql.Parser.ParseError
+     * @return @throws Parser.ParseError
      */
-    private int integer() throws ParseError {
+    private int integerValue() throws ParseError {
         if (accept(TokenType.Integer)) {
             int value = 0;
             try {
                 value = Integer.parseInt(value());
             } catch (NumberFormatException ex) {
-                throw error("integer: Not a valid Integer!");
+                throw error("integerValue: Not a valid Integer!");
             }
             return value;
         } else {
-            throw error("integer: Not a valid Integer!");
+            throw error("integerValue: Not a valid Integer!");
+        }
+    }
+
+    /**
+     *
+     * @return @throws Parser.ParseError
+     */
+    private float floatValue() throws ParseError {
+        if (accept(TokenType.Float)) {
+            float value = 0;
+            try {
+                value = Float.parseFloat(value());
+            } catch (NumberFormatException ex) {
+                throw error("flaotValue: Not a valid Float!");
+            }
+            return value;
+        } else {
+            throw error("floatValue: Not a valid Float!");
+        }
+    }
+
+    /**
+     *
+     * @return @throws Parser.ParseError
+     */
+    private boolean booleanValue() throws ParseError {
+        if (accept(TokenType.Boolean)) {
+            boolean value;
+            value = Boolean.parseBoolean(value());
+            return value;
+        } else {
+            throw error("booleanValue: Not a valid Boolean!");
+        }
+    }
+
+    /**
+     *
+     * @return @throws Parser.ParseError
+     */
+    private String textValue() throws ParseError {
+        if (accept(TokenType.Text) || accept(TokenType.StringID)) {
+            return value();
+        } else {
+            throw error("textValue: Not a valid Text Value!");
         }
     }
 
@@ -211,7 +258,7 @@ public class Parser {
         expect(TokenType.ID);
         Field.Type type = null;
         int length = 0;
-        switch (value()) {
+        switch (value().toLowerCase()) {
             case "int":
             case "integer":
                 type = Field.Type.Integer;
@@ -226,7 +273,7 @@ public class Parser {
             case "varchar":
                 type = Field.Type.Varchar;
                 expect(TokenType.LParen);
-                length = integer();
+                length = integerValue();
                 expect(TokenType.RParen);
                 break;
             default:
@@ -248,6 +295,67 @@ public class Parser {
             }
         }
         return null;
+    }
+
+    InsertStatement insertStatement() throws ParseError {
+        if (accept(TokenType.Insert)) {
+            expect(TokenType.Into);
+            String tableName = identifier();
+            InsertStatement iStatement = new InsertStatement(tableName);
+            
+            columnList(iStatement);
+            expect(TokenType.Values);
+            valueList(iStatement);
+            
+            expect(TokenType.Semicolon);
+            return iStatement;
+        }
+        return null;
+    }
+
+    private void columnList(InsertStatement istatement) throws ParseError {
+        if (accept(TokenType.LParen)) {
+            do {
+                String columnName = identifier();
+                istatement.addColumn(columnName);
+            } while (accept(TokenType.Comma));
+            expect(TokenType.RParen);
+        }
+    }
+
+    private void valueList(InsertStatement istatement) throws ParseError {
+        expect(TokenType.LParen);
+        if(accept(TokenType.RParen)){
+            return;
+        }
+        do {
+            switch (token().type) {
+                case Null:
+                    nextSymbol();
+                    istatement.addValue(TokenType.Null, "NULL");
+                    break;
+                case Integer:
+                    integerValue();
+                    istatement.addValue(TokenType.Integer, value());
+                    break;
+                case Float:
+                    floatValue();
+                    istatement.addValue(TokenType.Float, value());
+                    break;
+                case Boolean:
+                    booleanValue();
+                    istatement.addValue(TokenType.Boolean, value());
+                    break;
+                case StringID:
+                case Text:
+                    textValue();
+                    istatement.addValue(TokenType.Text, value());
+                    break;
+                default:
+                    throw error("valueList: Token(" + token().type + ") did not match any valid type.");
+            }
+        } while (accept(TokenType.Comma));
+        expect(TokenType.RParen);
     }
 
     //----------------------------------------------------------------------------------------------
