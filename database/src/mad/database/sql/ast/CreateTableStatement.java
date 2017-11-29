@@ -55,6 +55,32 @@ public class CreateTableStatement implements Statement {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof CreateTableStatement)) {
+            return false;
+        }
+        CreateTableStatement objS = (CreateTableStatement) obj;
+        if (!tableName.equals(objS.tableName)) {
+            return false;
+        }
+        if (tableDefinition.size() != objS.tableDefinition.size()) {
+            return false;
+        }
+        for (int i = 0; i < tableDefinition.size(); i++) {
+            if (!tableDefinition.get(i).name.equals(objS.tableDefinition.get(i).name)) {
+                return false;
+            }
+            if (tableDefinition.get(i).type != objS.tableDefinition.get(i).type) {
+                return false;
+            }
+            if (tableDefinition.get(i).length != objS.tableDefinition.get(i).length) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      *
      */

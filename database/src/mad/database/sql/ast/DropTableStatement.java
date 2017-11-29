@@ -35,4 +35,12 @@ public class DropTableStatement implements Statement {
         sb.append("}");
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof DropTableStatement)) {
+            return false;
+        }
+        return tableName.equals(((DropTableStatement) obj).tableName);
+    }
 }

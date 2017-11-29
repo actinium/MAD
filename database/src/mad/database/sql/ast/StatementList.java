@@ -19,6 +19,15 @@ public class StatementList implements Statement {
 
     /**
      *
+     * @param statement
+     */
+    public StatementList(Statement statement) {
+        statements = new ArrayList<>();
+        statements.add(statement);
+    }
+
+    /**
+     *
      * @param s
      */
     public void add(Statement s) {
@@ -41,5 +50,21 @@ public class StatementList implements Statement {
         }
         sb.append("}");
         return sb.toString();
+    }
+
+    public boolean equals(Object obj) {
+        if (!(obj instanceof StatementList)) {
+            return false;
+        }
+        StatementList objSL = (StatementList) obj;
+        if (objSL.statements.size() != statements.size()) {
+            return false;
+        }
+        for (int i = 0; i < statements.size(); i++) {
+            if (!objSL.statements.get(i).equals(statements.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
