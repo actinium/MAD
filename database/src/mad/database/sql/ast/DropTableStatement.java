@@ -41,6 +41,6 @@ public class DropTableStatement implements Statement {
         if (!(obj instanceof DropTableStatement)) {
             return false;
         }
-        return tableName.equals(((DropTableStatement) obj).tableName);
+        return tableName.equals(((DropTableStatement) obj).tableName());
     }
 }
