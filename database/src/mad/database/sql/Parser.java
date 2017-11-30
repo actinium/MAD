@@ -251,7 +251,7 @@ public class Parser {
 
     /**
      *
-     * @return @throws mad.database.sql.Parser.ParseError
+     * @return @throws Parser.ParseError
      */
     private ColumnDefinition columnDefinition() throws ParseError {
         String name = identifier();
@@ -328,6 +328,11 @@ public class Parser {
         return null;
     }
 
+    /**
+     * 
+     * @param istatement
+     * @throws Parser.ParseError 
+     */
     private void columnList(InsertStatement istatement) throws ParseError {
         if (accept(TokenType.LParen)) {
             do {
@@ -338,6 +343,11 @@ public class Parser {
         }
     }
 
+    /**
+     * 
+     * @param istatement
+     * @throws Parser.ParseError 
+     */
     private void valueList(InsertStatement istatement) throws ParseError {
         expect(TokenType.LParen);
         if(accept(TokenType.RParen)){
