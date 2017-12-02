@@ -17,6 +17,7 @@ public class Parser {
     private final Tokenizer tokenizer;
     private final CreateTableParser createTableParser;
     private final DropTableParser dropTableParser;
+    private final TruncateTableParser truncateTableParser;
     private final List<Token> tokens = new ArrayList<>();
     private int symbolIndex;
 
@@ -28,6 +29,7 @@ public class Parser {
         this.tokenizer = tokenizer;
         this.createTableParser = new CreateTableParser(this);
         this.dropTableParser = new DropTableParser(this);
+        this.truncateTableParser = new TruncateTableParser(this);
     }
 
     /**
@@ -135,7 +137,7 @@ public class Parser {
         Statement statement;
         if ((statement = createTableParser.parse()) != null
                 || (statement = dropTableParser.parse()) != null
-                || (statement = truncateTableStatement()) != null
+                || (statement = truncateTableParser.parse()) != null
                 || (statement = insertStatement()) != null) {
             return statement;
         }
@@ -219,22 +221,6 @@ public class Parser {
     //----------------------------------------------------------------------------------------------
     // Statements
     //----------------------------------------------------------------------------------------------
-
-    /**
-     *
-     * @return @throws Parser.ParseError
-     */
-    private Statement truncateTableStatement() throws ParseError {
-        if (accept(TokenType.Truncate)) {
-            if (accept(TokenType.Table)) {
-                String tableName = identifier();
-                expect(TokenType.Semicolon);
-                return new TruncateTableStatement(tableName);
-            }
-        }
-        return null;
-    }
-
     private Statement insertStatement() throws ParseError {
         if (accept(TokenType.Insert)) {
             expect(TokenType.Into);
