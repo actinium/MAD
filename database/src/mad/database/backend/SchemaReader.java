@@ -1,8 +1,8 @@
 package mad.database.backend;
 
-import mad.database.backend.table.Schema;
 import java.io.IOException;
 import java.util.ArrayList;
+import mad.database.backend.table.Schema;
 import mad.database.backend.table.Schema.Field;
 
 /**
@@ -10,7 +10,7 @@ import mad.database.backend.table.Schema.Field;
  */
 public class SchemaReader {
 
-    private Pager pager;
+    private final Pager pager;
 
     public SchemaReader(Pager pager) {
         this.pager = pager;
@@ -26,7 +26,7 @@ public class SchemaReader {
         ArrayList<Field> fields = new ArrayList<>();
         int fieldCount = pager.readInteger(filePosition);
         for (int i = 0; i < fieldCount; i++) {
-            int fieldSchemaOffset = pager.readInteger(filePosition + i * 4+4);
+            int fieldSchemaOffset = pager.readInteger(filePosition + i * 4 + 4);
 
             int fieldOffset = pager.readInteger(filePosition + fieldSchemaOffset);
             byte fieldTypeByte = pager.readByte(filePosition + fieldSchemaOffset + 4);

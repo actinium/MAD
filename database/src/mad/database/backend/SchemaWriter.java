@@ -1,7 +1,7 @@
 package mad.database.backend;
 
-import mad.database.backend.table.Schema;
 import java.io.IOException;
+import mad.database.backend.table.Schema;
 import mad.database.backend.table.Schema.Field;
 import mad.util.Bytes;
 
@@ -10,7 +10,7 @@ import mad.util.Bytes;
  */
 public class SchemaWriter {
 
-    private Pager pager;
+    private final Pager pager;
 
     public SchemaWriter(Pager pager) {
         this.pager = pager;
@@ -19,7 +19,7 @@ public class SchemaWriter {
     public void write(int filePosition, Schema schema) throws IOException {
         int fieldCount = schema.columns();
         pager.writeInteger(filePosition, fieldCount);
-        int currentOffset = fieldCount * 4+4;
+        int currentOffset = fieldCount * 4 + 4;
         int columnOffset = 16;
         for (int i = 0; i < fieldCount; i++) {
             pager.writeInteger(filePosition + i * 4 + 4, currentOffset);
