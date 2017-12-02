@@ -71,12 +71,10 @@ public class REPL implements Runnable {
             tokenizer.tokenize(query);
             parser.readTokens();
             while (parser.lastSymbol() != TokenType.Semicolon) {
-                while (parser.lastSymbol() != TokenType.Semicolon) {
-                    System.out.print("   ...>");
-                    query = readline();
-                    tokenizer.tokenize(query);
-                    parser.readTokens();
-                }
+                System.out.print("   ...>");
+                query = readline();
+                tokenizer.tokenize(query);
+                parser.readTokens();
             }
             StatementList sl = new StatementList();
             while (!parser.done()) {
