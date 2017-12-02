@@ -2,11 +2,8 @@ package mad.database.sql;
 
 import java.util.ArrayList;
 import java.util.List;
-import mad.database.backend.table.Schema.Field;
 import mad.database.sql.Tokenizer.Token;
 import mad.database.sql.Tokenizer.Token.TokenType;
-import mad.database.sql.ast.CreateTableStatement;
-import mad.database.sql.ast.CreateTableStatement.ColumnDefinition;
 import mad.database.sql.ast.DropTableStatement;
 import mad.database.sql.ast.InsertStatement;
 import mad.database.sql.ast.Statement;
@@ -17,9 +14,10 @@ import mad.database.sql.ast.TruncateTableStatement;
  */
 public class Parser {
 
-    Tokenizer tokenizer;
-    List<Token> tokens = new ArrayList<>();
-    int symbolIndex;
+    private final Tokenizer tokenizer;
+    private final CreateTableParser createTableParser;
+    private final List<Token> tokens = new ArrayList<>();
+    private int symbolIndex;
 
     /**
      *
@@ -27,6 +25,7 @@ public class Parser {
      */
     public Parser(Tokenizer tokenizer) {
         this.tokenizer = tokenizer;
+        this.createTableParser = new CreateTableParser(this);
     }
 
     /**
@@ -78,7 +77,7 @@ public class Parser {
      *
      * @return
      */
-    private String value() {
+    String value() {
         return tokens.get(symbolIndex - 1).value;
     }
 
@@ -93,7 +92,7 @@ public class Parser {
      *
      * @param message
      */
-    private ParseError error(String message) {
+    ParseError error(String message) {
         return new ParseError(message);
     }
 
@@ -102,7 +101,7 @@ public class Parser {
      * @param s
      * @return
      */
-    private boolean accept(Token.TokenType s) {
+    boolean accept(Token.TokenType s) {
         if (symbol() == s) {
             nextSymbol();
             return true;
@@ -116,7 +115,7 @@ public class Parser {
      * @return
      * @throws Parser.ParseError
      */
-    private boolean expect(Token.TokenType s) throws ParseError {
+    boolean expect(Token.TokenType s) throws ParseError {
         if (accept(s)) {
             return true;
         }
@@ -132,10 +131,10 @@ public class Parser {
      */
     public Statement parse() throws ParseError {
         Statement statement;
-        if ((statement = createTableStatement()) != null || 
-                (statement = dropTableStatement()) != null ||
-                (statement = truncateTableStatement()) != null ||
-                (statement = insertStatement()) != null) {
+        if ((statement = createTableParser.parse()) != null
+                || (statement = dropTableStatement()) != null
+                || (statement = truncateTableStatement()) != null
+                || (statement = insertStatement()) != null) {
             return statement;
         }
         throw error("parse: Input didn't match a SQL Statement!");
@@ -145,7 +144,7 @@ public class Parser {
      *
      * @return @throws Parser.ParseError
      */
-    private String identifier() throws ParseError {
+    String identifier() throws ParseError {
         if (accept(TokenType.ID) || accept(TokenType.StringID)) {
             return value();
         } else {
@@ -157,7 +156,7 @@ public class Parser {
      *
      * @return @throws Parser.ParseError
      */
-    private int integerValue() throws ParseError {
+    int integerValue() throws ParseError {
         if (accept(TokenType.Integer)) {
             int value = 0;
             try {
@@ -222,70 +221,6 @@ public class Parser {
      *
      * @return @throws Parser.ParseError
      */
-    private Statement createTableStatement() throws ParseError {
-        if (accept(TokenType.Create)) {
-            if (accept(TokenType.Table)) {
-                String tableName = identifier();
-                expect(TokenType.LParen);
-                List<ColumnDefinition> td = tableDefinition();
-                expect(TokenType.RParen);
-                expect(TokenType.Semicolon);
-                return new CreateTableStatement(tableName, td);
-            }
-        }
-        return null;
-    }
-
-    /**
-     *
-     * @return @throws Parser.ParseError
-     */
-    private List<ColumnDefinition> tableDefinition() throws ParseError {
-        List<ColumnDefinition> tableDefinition = new ArrayList<>();
-        do {
-            ColumnDefinition cd = columnDefinition();
-            tableDefinition.add(cd);
-        } while (accept(TokenType.Comma));
-        return tableDefinition;
-    }
-
-    /**
-     *
-     * @return @throws Parser.ParseError
-     */
-    private ColumnDefinition columnDefinition() throws ParseError {
-        String name = identifier();
-        expect(TokenType.ID);
-        Field.Type type = null;
-        int length = 0;
-        switch (value().toLowerCase()) {
-            case "int":
-            case "integer":
-                type = Field.Type.Integer;
-                break;
-            case "float":
-                type = Field.Type.Float;
-                break;
-            case "bool":
-            case "boolean":
-                type = Field.Type.Boolean;
-                break;
-            case "varchar":
-                type = Field.Type.Varchar;
-                expect(TokenType.LParen);
-                length = integerValue();
-                expect(TokenType.RParen);
-                break;
-            default:
-                throw error("columnDefinition: '" + value() + "' is not a valid type!");
-        }
-        return new ColumnDefinition(name, type, length);
-    }
-
-    /**
-     *
-     * @return @throws Parser.ParseError
-     */
     private Statement dropTableStatement() throws ParseError {
         if (accept(TokenType.Drop)) {
             if (accept(TokenType.Table)) {
@@ -296,7 +231,7 @@ public class Parser {
         }
         return null;
     }
-    
+
     /**
      *
      * @return @throws Parser.ParseError
@@ -317,11 +252,11 @@ public class Parser {
             expect(TokenType.Into);
             String tableName = identifier();
             InsertStatement iStatement = new InsertStatement(tableName);
-            
+
             columnList(iStatement);
             expect(TokenType.Values);
             valueList(iStatement);
-            
+
             expect(TokenType.Semicolon);
             return iStatement;
         }
@@ -329,9 +264,9 @@ public class Parser {
     }
 
     /**
-     * 
+     *
      * @param istatement
-     * @throws Parser.ParseError 
+     * @throws Parser.ParseError
      */
     private void columnList(InsertStatement istatement) throws ParseError {
         if (accept(TokenType.LParen)) {
@@ -344,13 +279,13 @@ public class Parser {
     }
 
     /**
-     * 
+     *
      * @param istatement
-     * @throws Parser.ParseError 
+     * @throws Parser.ParseError
      */
     private void valueList(InsertStatement istatement) throws ParseError {
         expect(TokenType.LParen);
-        if(accept(TokenType.RParen)){
+        if (accept(TokenType.RParen)) {
             return;
         }
         do {
