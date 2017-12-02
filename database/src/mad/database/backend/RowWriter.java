@@ -1,8 +1,8 @@
 package mad.database.backend;
 
-import mad.database.backend.table.Schema;
-import mad.database.backend.table.Row;
 import java.io.IOException;
+import mad.database.backend.table.Row;
+import mad.database.backend.table.Schema;
 import mad.util.Bytes;
 import mad.util.NullBitMap;
 
@@ -68,7 +68,7 @@ public class RowWriter {
                 throw new Row.TypeMismatchException("Row doesn't match schema!");
             }
         }
-        pager.writeBytes(filePosition+8, Bytes.fromNullBitMap(nullMap), 8);
+        pager.writeBytes(filePosition + 8, Bytes.fromNullBitMap(nullMap), 8);
     }
 
     public int getPreviousRowPointer(int filePosition) throws IOException {
