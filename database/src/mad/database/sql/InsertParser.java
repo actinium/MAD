@@ -7,12 +7,13 @@ import mad.database.sql.ast.Statement;
  *
  */
 public class InsertParser {
+
     private final Parser parser;
 
     public InsertParser(Parser parser) {
         this.parser = parser;
     }
-    
+
     public Statement parse() throws Parser.ParseError {
         if (parser.accept(Tokenizer.Token.TokenType.Insert)) {
             parser.expect(Tokenizer.Token.TokenType.Into);

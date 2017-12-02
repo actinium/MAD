@@ -10,11 +10,13 @@ import mad.database.sql.ast.Statement;
  *
  */
 public class CreateTableParser {
+
     private final Parser parser;
-    
-    CreateTableParser(Parser parser){
+
+    CreateTableParser(Parser parser) {
         this.parser = parser;
     }
+
     /**
      *
      * @return @throws Parser.ParseError
@@ -32,7 +34,7 @@ public class CreateTableParser {
         }
         return null;
     }
-    
+
     /**
      *
      * @return @throws Parser.ParseError
