@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import mad.database.sql.Tokenizer.Token;
 import mad.database.sql.Tokenizer.Token.TokenType;
-import mad.database.sql.ast.DropTableStatement;
-import mad.database.sql.ast.InsertStatement;
 import mad.database.sql.ast.Statement;
-import mad.database.sql.ast.TruncateTableStatement;
 
 /**
  *
@@ -18,6 +15,7 @@ public class Parser {
     private final CreateTableParser createTableParser;
     private final DropTableParser dropTableParser;
     private final TruncateTableParser truncateTableParser;
+    private final InsertParser insertParser;
     private final List<Token> tokens = new ArrayList<>();
     private int symbolIndex;
 
@@ -30,6 +28,7 @@ public class Parser {
         this.createTableParser = new CreateTableParser(this);
         this.dropTableParser = new DropTableParser(this);
         this.truncateTableParser = new TruncateTableParser(this);
+        this.insertParser = new InsertParser(this);
     }
 
     /**
@@ -73,7 +72,7 @@ public class Parser {
      *
      * @return
      */
-    private Token token() {
+    Token token() {
         return tokens.get(symbolIndex);
     }
 
@@ -88,7 +87,7 @@ public class Parser {
     /**
      *
      */
-    private void nextSymbol() {
+    void nextSymbol() {
         symbolIndex++;
     }
 
@@ -138,7 +137,7 @@ public class Parser {
         if ((statement = createTableParser.parse()) != null
                 || (statement = dropTableParser.parse()) != null
                 || (statement = truncateTableParser.parse()) != null
-                || (statement = insertStatement()) != null) {
+                || (statement = insertParser.parse()) != null) {
             return statement;
         }
         throw error("parse: Input didn't match a SQL Statement!");
@@ -178,7 +177,7 @@ public class Parser {
      *
      * @return @throws Parser.ParseError
      */
-    private float floatValue() throws ParseError {
+    float floatValue() throws ParseError {
         if (accept(TokenType.Float)) {
             float value = 0;
             try {
@@ -196,7 +195,7 @@ public class Parser {
      *
      * @return @throws Parser.ParseError
      */
-    private boolean booleanValue() throws ParseError {
+    boolean booleanValue() throws ParseError {
         if (accept(TokenType.Boolean)) {
             boolean value;
             value = Boolean.parseBoolean(value());
@@ -210,86 +209,12 @@ public class Parser {
      *
      * @return @throws Parser.ParseError
      */
-    private String textValue() throws ParseError {
+    String textValue() throws ParseError {
         if (accept(TokenType.Text) || accept(TokenType.StringID)) {
             return value();
         } else {
             throw error("textValue: Not a valid Text Value!");
         }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Statements
-    //----------------------------------------------------------------------------------------------
-    private Statement insertStatement() throws ParseError {
-        if (accept(TokenType.Insert)) {
-            expect(TokenType.Into);
-            String tableName = identifier();
-            InsertStatement iStatement = new InsertStatement(tableName);
-
-            columnList(iStatement);
-            expect(TokenType.Values);
-            valueList(iStatement);
-
-            expect(TokenType.Semicolon);
-            return iStatement;
-        }
-        return null;
-    }
-
-    /**
-     *
-     * @param istatement
-     * @throws Parser.ParseError
-     */
-    private void columnList(InsertStatement istatement) throws ParseError {
-        if (accept(TokenType.LParen)) {
-            do {
-                String columnName = identifier();
-                istatement.addColumn(columnName);
-            } while (accept(TokenType.Comma));
-            expect(TokenType.RParen);
-        }
-    }
-
-    /**
-     *
-     * @param istatement
-     * @throws Parser.ParseError
-     */
-    private void valueList(InsertStatement istatement) throws ParseError {
-        expect(TokenType.LParen);
-        if (accept(TokenType.RParen)) {
-            return;
-        }
-        do {
-            switch (token().type) {
-                case Null:
-                    nextSymbol();
-                    istatement.addValue(TokenType.Null, "NULL");
-                    break;
-                case Integer:
-                    integerValue();
-                    istatement.addValue(TokenType.Integer, value());
-                    break;
-                case Float:
-                    floatValue();
-                    istatement.addValue(TokenType.Float, value());
-                    break;
-                case Boolean:
-                    booleanValue();
-                    istatement.addValue(TokenType.Boolean, value());
-                    break;
-                case StringID:
-                case Text:
-                    textValue();
-                    istatement.addValue(TokenType.Text, value());
-                    break;
-                default:
-                    throw error("valueList: Token(" + token().type + ") did not match any valid type.");
-            }
-        } while (accept(TokenType.Comma));
-        expect(TokenType.RParen);
     }
 
     //----------------------------------------------------------------------------------------------
