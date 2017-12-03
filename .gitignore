@@ -21,6 +21,7 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+# Java build paths & netbeans folders
 /database/manifest.mf
 /database/build.xml
 /database/build/
@@ -30,3 +31,6 @@ hs_err_pid*
 /database/nbproject/project.xml
 /database/nbproject/project.properties
 /database/dist/
+
+# SCons files
+.scons*
