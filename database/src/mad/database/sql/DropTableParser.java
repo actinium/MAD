@@ -21,11 +21,21 @@ public class DropTableParser {
     public Statement parse() throws Parser.ParseError {
         if (parser.accept(Tokenizer.Token.TokenType.Drop)) {
             if (parser.accept(Tokenizer.Token.TokenType.Table)) {
+                boolean ifExists = ifExists();
                 String tableName = parser.identifier();
                 parser.expect(Tokenizer.Token.TokenType.Semicolon);
-                return new DropTableStatement(tableName);
+                return new DropTableStatement(tableName,ifExists);
             }
         }
         return null;
+    }
+
+    private boolean ifExists() throws Parser.ParseError{
+        if(parser.accept(Tokenizer.Token.TokenType.If)){
+            parser.expect(Tokenizer.Token.TokenType.Exists);
+            return true;
+        }else{
+            return false;
+        }
     }
 }

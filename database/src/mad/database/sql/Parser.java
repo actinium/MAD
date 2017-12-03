@@ -86,6 +86,18 @@ public class Parser {
 
     /**
      *
+     * @return
+     */
+    String current_value() {
+        String vStr = tokens.get(symbolIndex).value;
+        if(vStr == null){
+            vStr = symbol().stringValue();
+        }
+        return vStr;
+    }
+
+    /**
+     *
      */
     void nextSymbol() {
         symbolIndex++;
@@ -122,7 +134,8 @@ public class Parser {
         if (accept(s)) {
             return true;
         }
-        throw error("expect: unexpected symbol");
+        throw error("Parser-expect: unexpected symbol '" + current_value() + "'. Expected '"+
+                s.stringValue() + "'.");
     }
 
     //----------------------------------------------------------------------------------------------
@@ -140,7 +153,7 @@ public class Parser {
                 || (statement = insertParser.parse()) != null) {
             return statement;
         }
-        throw error("parse: Input didn't match a SQL Statement!");
+        throw error("Parser-parse: Input didn't match a SQL Statement!");
     }
 
     /**
@@ -151,7 +164,7 @@ public class Parser {
         if (accept(TokenType.ID) || accept(TokenType.StringID)) {
             return value();
         } else {
-            throw error("identifier: Not a valid identifier!");
+            throw error("Parser-identifier: '"+ current_value() +"' is not a valid identifier!");
         }
     }
 
@@ -165,11 +178,11 @@ public class Parser {
             try {
                 value = Integer.parseInt(value());
             } catch (NumberFormatException ex) {
-                throw error("integerValue: Not a valid Integer!");
+                throw error("Parser-integerValue: Not a valid Integer!");
             }
             return value;
         } else {
-            throw error("integerValue: Not a valid Integer!");
+            throw error("Parser-integerValue: Not a valid Integer!");
         }
     }
 
@@ -183,11 +196,11 @@ public class Parser {
             try {
                 value = Float.parseFloat(value());
             } catch (NumberFormatException ex) {
-                throw error("flaotValue: Not a valid Float!");
+                throw error("Parser-flaotValue: Not a valid Float!");
             }
             return value;
         } else {
-            throw error("floatValue: Not a valid Float!");
+            throw error("Parser-floatValue: Not a valid Float!");
         }
     }
 
@@ -201,7 +214,7 @@ public class Parser {
             value = Boolean.parseBoolean(value());
             return value;
         } else {
-            throw error("booleanValue: Not a valid Boolean!");
+            throw error("Parser-booleanValue: Not a valid Boolean!");
         }
     }
 
@@ -213,7 +226,7 @@ public class Parser {
         if (accept(TokenType.Text) || accept(TokenType.StringID)) {
             return value();
         } else {
-            throw error("textValue: Not a valid Text Value!");
+            throw error("Parser-textValue: Not a valid Text Value!");
         }
     }
 
