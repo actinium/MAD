@@ -1,11 +1,13 @@
 package mad.database.core;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import static mad.database.Config.MADVERSION;
 import mad.database.sql.Parser;
 import mad.database.sql.Tokenizer;
@@ -20,9 +22,12 @@ public class REPL implements Runnable {
     private final BufferedReader in;
     private final PrintWriter out;
 
+    private File pwd;
+
     public REPL(InputStream in, OutputStream out) {
         this.in = new BufferedReader(new InputStreamReader(in));
         this.out = new PrintWriter(out, true);
+        this.pwd = Paths.get("").toFile();
     }
 
     private String readline() {
@@ -54,7 +59,12 @@ public class REPL implements Runnable {
         if (query.equals(".help")) {
             out.print(".exit    Exit this program.\n");
             out.print(".help    Show available commands.\n");
+            out.print(".pwd     Print working directory.\n");
             out.print(".version Show version number.\n");
+            return MetaCommandResult.Success;
+        }
+        if (query.equals(".pwd")) {
+            out.printf(pwd.getAbsolutePath()+ "%n");
             return MetaCommandResult.Success;
         }
         if (query.equals(".version")) {
