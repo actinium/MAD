@@ -12,10 +12,11 @@ import mad.database.sql.ast.StatementList;
 import mad.database.sql.ast.TruncateTableStatement;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -57,7 +58,7 @@ public class ParserTest {
                 ));
         testParser(query, new StatementList(statement));
     }
-    
+
     @Test
     public void testParser2() {
         String query
@@ -81,14 +82,14 @@ public class ParserTest {
         Statement statement = new DropTableStatement("test");
         testParser(query, new StatementList(statement));
     }
-    
+
     @Test
     public void testParser4() {
         String query = "drop table test;\n";
         Statement statement = new DropTableStatement("test");
         testParser(query, new StatementList(statement));
     }
-    
+
     @Test
     public void testParser5() {
         String query = "INSERT INTO department(id,name) VALUES(12,\"Department of Magic\");\n";
@@ -98,7 +99,7 @@ public class ParserTest {
         iStatement.addValue(TokenType.Text, "Department of Magic");
         testParser(query, new StatementList(iStatement));
     }
-    
+
     @Test
     public void testParser6() {
         String query = "insert into department values(12,\"Department of Magic\");\n";
@@ -107,14 +108,14 @@ public class ParserTest {
         iStatement.addValue(TokenType.Text, "Department of Magic");
         testParser(query, new StatementList(iStatement));
     }
-    
+
     @Test
     public void testParser7() {
         String query = "TRUNCATE TABLE test;\n";
         Statement statement = new TruncateTableStatement("test");
         testParser(query, new StatementList(statement));
     }
-    
+
     @Test
     public void testParser8() {
         String query = "truncate table test;\n";
