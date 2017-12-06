@@ -51,23 +51,37 @@ public class REPL implements Runnable {
         return index;
     }
 
+    private boolean matchesCommand(String query, String command){
+        if(query.length() < command.length()){
+            return false;
+        }
+        if(!query.substring(0, command.length()).equals(command)){
+            return false;
+        }
+        if(query.length() >command.length()){
+            return query.charAt(command.length()) == ' ' || query.charAt(command.length()) == '\t';
+        }else{
+            return true;
+        }
+    }
+
     private MetaCommandResult runMetaCommand(String query) {
         query = query.substring(firstNonWhitespace(query));
-        if (query.equals(".exit")) {
+        if (matchesCommand(query,".exit")) {
             return MetaCommandResult.Exit;
         }
-        if (query.equals(".help")) {
+        if (matchesCommand(query,".help")) {
             out.print(".exit    Exit this program.\n");
             out.print(".help    Show available commands.\n");
             out.print(".pwd     Print working directory.\n");
             out.print(".version Show version number.\n");
             return MetaCommandResult.Success;
         }
-        if (query.equals(".pwd")) {
+        if (matchesCommand(query,".pwd")) {
             out.printf(pwd.getAbsolutePath()+ "%n");
             return MetaCommandResult.Success;
         }
-        if (query.equals(".version")) {
+        if (matchesCommand(query,".version")) {
             out.printf("MAD version %s\n", MADVERSION);
             return MetaCommandResult.Success;
         }
