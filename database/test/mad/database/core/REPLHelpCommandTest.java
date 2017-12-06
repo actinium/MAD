@@ -1,7 +1,7 @@
 package mad.database.core;
 
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -22,6 +22,7 @@ public class REPLHelpCommandTest extends REPLTestBase {
                 = "dbname>"
                 + ".exit    Exit this program.\n"
                 + ".help    Show available commands.\n"
+                + ".pwd     Print working directory.\n"
                 + ".version Show version number.\n"
                 + "dbname>";
 
