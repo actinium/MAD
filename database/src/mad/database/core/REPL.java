@@ -51,6 +51,16 @@ public class REPL implements Runnable {
         return index;
     }
 
+    private int lastNonWhitespace(String str) {
+        char[] strArray = str.toCharArray();
+        for (int i=strArray.length-1; i >0;i--) {
+            if (strArray[i] != ' ' && strArray[i] != '\t' && strArray[i] != '\n') {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     private boolean matchesCommand(String query, String command){
         if(query.length() < command.length()){
             return false;
@@ -65,25 +75,77 @@ public class REPL implements Runnable {
         }
     }
 
+    private void cd(String query){
+        query = query.substring(3);
+        if(query.length()==0){
+            return;
+        }
+        query = query.substring(firstNonWhitespace(query));
+        query = query.substring(0,lastNonWhitespace(query)+1);
+        if(query.charAt(0) == '"' && query.charAt(query.length()-1) == '"'){
+            query = query.substring(1, query.length()-1);
+        }
+        if(query.equals("..")){
+            pwd = pwd.getAbsoluteFile().getParentFile();
+            return;
+        }
+        if(query.equals("~")){
+            pwd = new File(System.getProperty("user.home"));
+            return;
+        }
+        File[] files = pwd.getAbsoluteFile().listFiles();
+        for(File file: files){
+            if(file.getName().equals(query)){
+                if(file.isDirectory()){
+                    pwd = file;
+                    return;
+                }else{
+                    out.println("'" + query + "' is not a directory.");
+                    return;
+                }
+            }
+        }
+        out.println("No directory with name '" + query + "'.");
+    }
+
+    private void ls(){
+        File[] files = pwd.getAbsoluteFile().listFiles();
+        for(File file: files){
+            if(!file.isHidden()){
+                out.println(file.getName());
+            }
+        }
+    }
+
     private MetaCommandResult runMetaCommand(String query) {
         query = query.substring(firstNonWhitespace(query));
+        if (matchesCommand(query,".cd")) {
+            cd(query);
+            return MetaCommandResult.Correct;
+        }
         if (matchesCommand(query,".exit")) {
             return MetaCommandResult.Exit;
         }
         if (matchesCommand(query,".help")) {
+            out.print(".cd      Change working directory.\n");
             out.print(".exit    Exit this program.\n");
             out.print(".help    Show available commands.\n");
+            out.print(".ls      List files in directory.\n");
             out.print(".pwd     Print working directory.\n");
             out.print(".version Show version number.\n");
-            return MetaCommandResult.Success;
+            return MetaCommandResult.Correct;
+        }
+        if (matchesCommand(query,".ls")) {
+            ls();
+            return MetaCommandResult.Correct;
         }
         if (matchesCommand(query,".pwd")) {
             out.printf(pwd.getAbsolutePath()+ "%n");
-            return MetaCommandResult.Success;
+            return MetaCommandResult.Correct;
         }
         if (matchesCommand(query,".version")) {
             out.printf("MAD version %s\n", MADVERSION);
-            return MetaCommandResult.Success;
+            return MetaCommandResult.Correct;
         }
         return MetaCommandResult.UnrecognizedCommand;
     }
@@ -127,7 +189,7 @@ public class REPL implements Runnable {
             if (query.charAt(firstNonWhitespace(query)) == '.') {
                 // If first non whitespace character was a '.' run metacommand.
                 switch (runMetaCommand(query)) {
-                    case Success:
+                    case Correct:
                         continue repl;
                     case Exit:
                         break repl;
@@ -152,7 +214,7 @@ public class REPL implements Runnable {
 
     private enum MetaCommandResult {
 
-        Success,
+        Correct,
         Exit,
         UnrecognizedCommand
     }
