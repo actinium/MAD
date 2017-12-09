@@ -169,6 +169,12 @@ public class Tokenizer implements Iterator<Token> {
             case '%':
                 tokens.add(new Token(Token.TokenType.Modulo));
                 return true;
+            case '~':
+                tokens.add(new Token(Token.TokenType.Tilde));
+                return true;
+            case '!':
+                tokens.add(new Token(Token.TokenType.Exclamation));
+                return true;
             default:
                 return false;
         }
@@ -502,6 +508,8 @@ public class Tokenizer implements Iterator<Token> {
             Plus("+"),
             Minus("-"),
             Modulo("%"),
+            Tilde("~"),
+            Exclamation("!"),
             LeftShift("<<"),
             RightShift(">>"),
             Concat("||");

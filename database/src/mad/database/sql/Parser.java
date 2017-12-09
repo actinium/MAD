@@ -90,7 +90,7 @@ public class Parser {
      */
     String current_value() {
         String vStr = tokens.get(symbolIndex).value;
-        if(vStr == null){
+        if (vStr == null) {
             vStr = symbol().stringValue();
         }
         return vStr;
@@ -101,6 +101,22 @@ public class Parser {
      */
     void nextSymbol() {
         symbolIndex++;
+    }
+
+    /**
+     *
+     * @return
+     */
+    int getIndex() {
+        return symbolIndex;
+    }
+
+    /**
+     *
+     * @param i
+     */
+    void setIndex(int i) {
+        symbolIndex = i;
     }
 
     /**
@@ -134,8 +150,8 @@ public class Parser {
         if (accept(s)) {
             return true;
         }
-        throw error("Parser-expect: unexpected symbol '" + current_value() + "'. Expected '"+
-                s.stringValue() + "'.");
+        throw error("Parser-expect: unexpected symbol '" + current_value() + "'. Expected '"
+                + s.stringValue() + "'.");
     }
 
     //----------------------------------------------------------------------------------------------
@@ -164,7 +180,7 @@ public class Parser {
         if (accept(TokenType.ID) || accept(TokenType.StringID)) {
             return value();
         } else {
-            throw error("Parser-identifier: '"+ current_value() +"' is not a valid identifier!");
+            throw error("Parser-identifier: '" + current_value() + "' is not a valid identifier!");
         }
     }
 
