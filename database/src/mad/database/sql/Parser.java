@@ -133,7 +133,7 @@ public class Parser {
      * @return
      */
     boolean accept(Token.TokenType s) {
-        if (symbol() == s) {
+        if (!done() && symbol() == s) {
             nextSymbol();
             return true;
         }
