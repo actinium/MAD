@@ -14,7 +14,7 @@ public class NotExpression implements Expression {
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append("{not:");
+        sb.append("{Not:");
         sb.append(expression);
         sb.append("}");
         return sb.toString();

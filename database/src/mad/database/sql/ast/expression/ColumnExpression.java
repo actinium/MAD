@@ -20,7 +20,7 @@ public class ColumnExpression implements Expression {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("{column:");
+        sb.append("{Column:");
         if (!tableName.isEmpty()) {
             sb.append(tableName).append('.');
         }

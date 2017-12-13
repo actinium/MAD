@@ -3,6 +3,7 @@ package mad.database.sql;
 import java.util.ArrayList;
 import java.util.List;
 import mad.database.sql.Tokenizer.Token.TokenType;
+import mad.database.sql.ast.expression.BetweenExpression;
 import mad.database.sql.ast.expression.BinaryExpression;
 import mad.database.sql.ast.expression.ColumnExpression;
 import mad.database.sql.ast.expression.ConcatExpression;
@@ -54,17 +55,21 @@ public class ExpressionParser {
         if (expression != null) {
             savedIndex = parser.getIndex();
             Expression combinedExpression = concatOperation(expression);
-            if (combinedExpression == null && expression != null) {
+            if (combinedExpression == null) {
                 parser.setIndex(savedIndex);
                 combinedExpression = binaryOperation(expression);
             }
-            if (combinedExpression == null && expression != null) {
+            if (combinedExpression == null) {
                 parser.setIndex(savedIndex);
                 combinedExpression = isNull(expression);
             }
-            if (combinedExpression == null && expression != null) {
+            if (combinedExpression == null) {
                 parser.setIndex(savedIndex);
                 combinedExpression = isNotNull(expression);
+            }
+            if (combinedExpression == null) {
+                parser.setIndex(savedIndex);
+                combinedExpression = between(expression);
             }
             if (combinedExpression != null) {
                 expression = combinedExpression;
@@ -74,6 +79,10 @@ public class ExpressionParser {
         return expression;
     }
 
+    private void adjustOperatorPrecedence(Expression expression){
+
+    }
+
     private ValueExpression litteralValue() {
         if (parser.accept(TokenType.Integer)) {
             return new ValueExpression(Value.Type.Integer, parser.value());
@@ -81,7 +90,7 @@ public class ExpressionParser {
             return new ValueExpression(Value.Type.Float, parser.value());
         } else if (parser.accept(TokenType.Boolean)) {
             return new ValueExpression(Value.Type.Boolean, parser.value());
-        } else if (parser.accept(TokenType.StringID) || parser.accept(TokenType.Text)) {
+        } else if (parser.accept(TokenType.Text)) {
             return new ValueExpression(Value.Type.Text, parser.value());
         } else if (parser.accept(TokenType.Null)) {
             return ValueExpression.nullValue();
@@ -107,12 +116,15 @@ public class ExpressionParser {
     }
 
     private ColumnExpression column() throws Parser.ParseError {
-        if (parser.accept(TokenType.ID)) {
+        if (parser.accept(TokenType.StringID) || parser.accept(TokenType.ID)) {
             String firstArg = parser.value();
             if (parser.accept(TokenType.Dot)) {
-                parser.expect(TokenType.ID);
+                if (parser.accept(TokenType.StringID) || parser.accept(TokenType.ID)) {
                 String secondArg = parser.value();
                 return new ColumnExpression(firstArg, secondArg);
+                }else{
+                    throw parser.error("expression.column: Could not parse column name.");
+                }
             }
             return new ColumnExpression(firstArg);
         }
@@ -213,6 +225,25 @@ public class ExpressionParser {
         if (parser.accept(TokenType.IsNot)) {
             if (parser.accept(TokenType.Null)) {
                 return new NotExpression(new IsNullExpression(expression));
+            }
+        }
+        return null;
+    }
+
+    private Expression between(Expression expression) throws Parser.ParseError {
+        if (parser.accept(TokenType.Between)) {
+            Expression subExp = parse();
+            if(subExp == null){
+                throw parser.error("expression.between: Could not parse subexpression.");
+            }
+            if(subExp instanceof BinaryExpression){
+                BinaryExpression biExp = (BinaryExpression) subExp;
+                if(biExp.operator() != BinaryExpression.Operator.And){
+                    throw parser.error("expression.between: Invalid subexpression.");
+                }
+                Expression lower = biExp.left();
+                Expression upper = biExp.right();
+                return new BetweenExpression(expression, lower, upper);
             }
         }
         return null;

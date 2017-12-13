@@ -15,7 +15,7 @@ public class IsNullExpression implements Expression {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        sb.append("is null:");
+        sb.append("Is Null:");
         sb.append(expression);
         sb.append("}");
         return sb.toString();

@@ -16,7 +16,7 @@ public class UnaryExpression implements Expression {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("( ").append(operator.stringValue()).append(" ").append(expression.toString()).append(" )");
+        sb.append("{").append(operator.stringValue()).append(expression.toString()).append("}");
         return sb.toString();
     }
 
