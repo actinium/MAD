@@ -27,4 +27,12 @@ public class ColumnExpression implements Expression {
         sb.append(columnName).append("}");
         return sb.toString();
     }
+
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ColumnExpression)) {
+            return false;
+        }
+        ColumnExpression columnObj = (ColumnExpression) obj;
+        return columnObj.tableName.equals(tableName) && columnObj.columnName.equals(columnName);
+    }
 }

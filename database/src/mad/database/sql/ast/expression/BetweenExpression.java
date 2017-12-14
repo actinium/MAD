@@ -16,7 +16,7 @@ public class BetweenExpression implements Expression {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append(lowerBound).append("<");
@@ -24,5 +24,16 @@ public class BetweenExpression implements Expression {
         sb.append("<").append(upperBound);
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof BetweenExpression)) {
+            return false;
+        }
+        BetweenExpression betweenObj = (BetweenExpression) obj;
+        return betweenObj.expression.equals(expression)
+                && betweenObj.lowerBound.equals(lowerBound)
+                && betweenObj.upperBound.equals(upperBound);
     }
 }

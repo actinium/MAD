@@ -31,4 +31,14 @@ public class FunctionExpression implements Expression {
         sb.append("}");
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof FunctionExpression)) {
+            return false;
+        }
+        FunctionExpression functionObj = (FunctionExpression) obj;
+        return functionObj.functionName.equals(functionName)
+                && functionObj.arguments.equals(arguments);
+    }
 }

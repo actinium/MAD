@@ -15,15 +15,15 @@ public class BinaryExpression implements Expression {
         this.rightExpression = rightExpression;
     }
 
-    public Expression left(){
+    public Expression left() {
         return leftExpression;
     }
 
-    public Expression right(){
+    public Expression right() {
         return rightExpression;
     }
 
-    public Operator operator(){
+    public Operator operator() {
         return operator;
     }
 
@@ -36,6 +36,17 @@ public class BinaryExpression implements Expression {
         sb.append(rightExpression);
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof BinaryExpression)) {
+            return false;
+        }
+        BinaryExpression binaryObj = (BinaryExpression) obj;
+        return binaryObj.operator.equals(operator)
+                && binaryObj.leftExpression.equals(leftExpression)
+                && binaryObj.rightExpression.equals(rightExpression);
     }
 
     public enum Operator {

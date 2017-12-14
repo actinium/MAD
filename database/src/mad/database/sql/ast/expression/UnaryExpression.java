@@ -20,6 +20,15 @@ public class UnaryExpression implements Expression {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof UnaryExpression)) {
+            return false;
+        }
+        UnaryExpression unaryObj = (UnaryExpression) obj;
+        return unaryObj.operator.equals(operator) && unaryObj.expression.equals(expression);
+    }
+
     public enum Operator {
 
         Minus("-"),

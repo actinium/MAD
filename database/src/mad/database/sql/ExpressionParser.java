@@ -10,7 +10,9 @@ import mad.database.sql.ast.expression.ConcatExpression;
 import mad.database.sql.ast.expression.Expression;
 import mad.database.sql.ast.expression.FunctionExpression;
 import mad.database.sql.ast.expression.IsNullExpression;
+import mad.database.sql.ast.expression.LikeExpression;
 import mad.database.sql.ast.expression.NotExpression;
+import mad.database.sql.ast.expression.RegexpExpression;
 import mad.database.sql.ast.expression.SubExpression;
 import mad.database.sql.ast.expression.UnaryExpression;
 import mad.database.sql.ast.expression.ValueExpression;
@@ -71,6 +73,14 @@ public class ExpressionParser {
                 parser.setIndex(savedIndex);
                 combinedExpression = between(expression);
             }
+            if (combinedExpression == null) {
+                parser.setIndex(savedIndex);
+                combinedExpression = like(expression);
+            }
+            if (combinedExpression == null) {
+                parser.setIndex(savedIndex);
+                combinedExpression = regexp(expression);
+            }
             if (combinedExpression != null) {
                 expression = combinedExpression;
             }
@@ -79,7 +89,7 @@ public class ExpressionParser {
         return expression;
     }
 
-    private void adjustOperatorPrecedence(Expression expression){
+    private void adjustOperatorPrecedence(Expression expression) {
 
     }
 
@@ -120,9 +130,9 @@ public class ExpressionParser {
             String firstArg = parser.value();
             if (parser.accept(TokenType.Dot)) {
                 if (parser.accept(TokenType.StringID) || parser.accept(TokenType.ID)) {
-                String secondArg = parser.value();
-                return new ColumnExpression(firstArg, secondArg);
-                }else{
+                    String secondArg = parser.value();
+                    return new ColumnExpression(firstArg, secondArg);
+                } else {
                     throw parser.error("expression.column: Could not parse column name.");
                 }
             }
@@ -231,19 +241,63 @@ public class ExpressionParser {
     }
 
     private Expression between(Expression expression) throws Parser.ParseError {
+        boolean not = false;
+        if (parser.accept(TokenType.Not)) {
+            not = true;
+        }
         if (parser.accept(TokenType.Between)) {
             Expression subExp = parse();
-            if(subExp == null){
+            if (subExp == null) {
                 throw parser.error("expression.between: Could not parse subexpression.");
             }
-            if(subExp instanceof BinaryExpression){
+            if (subExp instanceof BinaryExpression) {
                 BinaryExpression biExp = (BinaryExpression) subExp;
-                if(biExp.operator() != BinaryExpression.Operator.And){
+                if (biExp.operator() != BinaryExpression.Operator.And) {
                     throw parser.error("expression.between: Invalid subexpression.");
                 }
                 Expression lower = biExp.left();
                 Expression upper = biExp.right();
-                return new BetweenExpression(expression, lower, upper);
+                if (not) {
+                    return new NotExpression(new BetweenExpression(expression, lower, upper));
+                } else {
+                    return new BetweenExpression(expression, lower, upper);
+                }
+            }
+        }
+        return null;
+    }
+
+    private Expression like(Expression expression) throws Parser.ParseError {
+        boolean not = false;
+        if (parser.accept(TokenType.Not)) {
+            not = true;
+        }
+        if (parser.accept(TokenType.Like)) {
+            Expression pattern = parse();
+            Expression except = null;
+            if (parser.accept(TokenType.Except)) {
+                except = parse();
+            }
+            if (not) {
+                return new NotExpression(new LikeExpression(expression, pattern, except));
+            } else {
+                return new LikeExpression(expression, pattern, except);
+            }
+        }
+        return null;
+    }
+
+    private Expression regexp(Expression expression) throws Parser.ParseError {
+        boolean not = false;
+        if (parser.accept(TokenType.Not)) {
+            not = true;
+        }
+        if (parser.accept(TokenType.Regexp)) {
+            Expression pattern = parse();
+            if (not) {
+                return new NotExpression(new RegexpExpression(expression, pattern));
+            } else {
+                return new RegexpExpression(expression, pattern);
             }
         }
         return null;

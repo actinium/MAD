@@ -20,4 +20,13 @@ public class IsNullExpression implements Expression {
         sb.append("}");
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof IsNullExpression)) {
+            return false;
+        }
+        IsNullExpression isNullObj = (IsNullExpression) obj;
+        return isNullObj.expression.equals(expression);
+    }
 }

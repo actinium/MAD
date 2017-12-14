@@ -23,4 +23,14 @@ public class ConcatExpression implements Expression {
         sb.append("}");
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ConcatExpression)) {
+            return false;
+        }
+        ConcatExpression concatObj = (ConcatExpression) obj;
+        return concatObj.leftExpression.equals(leftExpression)
+                && concatObj.rightExpression.equals(rightExpression);
+    }
 }

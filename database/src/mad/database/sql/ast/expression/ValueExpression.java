@@ -28,12 +28,21 @@ public class ValueExpression implements Expression {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ValueExpression)) {
+            return false;
+        }
+        ValueExpression valueObj = (ValueExpression) obj;
+        return valueObj.value.equals(value);
+    }
+
     public static class Value {
 
         private final Type type;
         private final String value;
 
-        public Value(Type type, String value) {
+        private Value(Type type, String value) {
             this.type = type;
             this.value = value;
         }
@@ -43,12 +52,21 @@ public class ValueExpression implements Expression {
             this.value = "null";
         }
 
-        private Type type() {
+        public Type type() {
             return type;
         }
 
-        private String value() {
+        public String value() {
             return value;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Value)) {
+                return false;
+            }
+            Value valueObj = (Value) obj;
+            return valueObj.type.equals(type) && valueObj.value.equals(value);
         }
 
         public enum Type {
