@@ -35,7 +35,15 @@ public class LikeExpression implements Expression {
             return false;
         }
         LikeExpression likeObj = (LikeExpression) obj;
-        return likeObj.text.equals(text) && likeObj.pattern.equals(pattern)
-                && likeObj.escape.equals(escape);
+        if (likeObj.escape != null && escape != null && !likeObj.escape.equals(escape)) {
+            return false;
+        }
+        if(likeObj.escape == null && escape != null){
+            return false;
+        }
+        if(likeObj.escape != null && escape == null){
+            return false;
+        }
+        return likeObj.text.equals(text) && likeObj.pattern.equals(pattern);
     }
 }
