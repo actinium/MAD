@@ -5,6 +5,7 @@ import java.util.List;
 import mad.database.sql.Tokenizer.Token.TokenType;
 import mad.database.sql.ast.expression.BetweenExpression;
 import mad.database.sql.ast.expression.BinaryExpression;
+import mad.database.sql.ast.expression.CaseExpression;
 import mad.database.sql.ast.expression.ColumnExpression;
 import mad.database.sql.ast.expression.ConcatExpression;
 import mad.database.sql.ast.expression.Expression;
@@ -53,13 +54,21 @@ public class ExpressionParser {
             parser.setIndex(savedIndex);
             expression = unaryOperation();
         }
+        if (expression == null) {
+            parser.setIndex(savedIndex);
+            expression = cases();
+        }
 
         if (expression != null) {
             savedIndex = parser.getIndex();
             Expression combinedExpression = concatOperation(expression);
             if (combinedExpression == null) {
                 parser.setIndex(savedIndex);
-                combinedExpression = binaryOperation(expression);
+                BinaryExpression binexp = binaryOperation(expression);
+                if (binexp != null) {
+                    binexp.adjustForPrecedence();
+                    combinedExpression = binexp;
+                }
             }
             if (combinedExpression == null) {
                 parser.setIndex(savedIndex);
@@ -159,6 +168,30 @@ public class ExpressionParser {
         return null;
     }
 
+    private Expression cases() throws Parser.ParseError {
+        if (parser.accept(TokenType.Case)) {
+            Expression expression = null;
+            if (!parser.accept(TokenType.When)) {
+                expression = parse();
+                parser.expect(TokenType.When);
+            }
+            List<CaseExpression.Case> cases = new ArrayList<>();
+            do {
+                Expression condition = parse();
+                parser.expect(TokenType.Then);
+                Expression then = parse();
+                cases.add(new CaseExpression.Case(condition, then));
+            } while (parser.accept(TokenType.When));
+            Expression defaultCase = null;
+            if (parser.accept(TokenType.Else)) {
+                defaultCase = parse();
+            }
+            parser.expect(TokenType.End);
+            return new CaseExpression(expression, cases, defaultCase);
+        }
+        return null;
+    }
+
     private Expression concatOperation(Expression leftExpression) throws Parser.ParseError {
         if (parser.accept(TokenType.Concat)) {
             Expression returnExpression;
@@ -178,7 +211,7 @@ public class ExpressionParser {
         return null;
     }
 
-    private Expression binaryOperation(Expression leftExpression) throws Parser.ParseError {
+    private BinaryExpression binaryOperation(Expression leftExpression) throws Parser.ParseError {
         BinaryExpression.Operator op = null;
         if (parser.accept(TokenType.Star)) {
             op = BinaryExpression.Operator.Multiply;
