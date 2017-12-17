@@ -7,7 +7,6 @@ import mad.database.sql.ast.expression.BetweenExpression;
 import mad.database.sql.ast.expression.BinaryExpression;
 import mad.database.sql.ast.expression.CaseExpression;
 import mad.database.sql.ast.expression.ColumnExpression;
-import mad.database.sql.ast.expression.ConcatExpression;
 import mad.database.sql.ast.expression.Expression;
 import mad.database.sql.ast.expression.FunctionExpression;
 import mad.database.sql.ast.expression.IsNullExpression;
@@ -66,7 +65,7 @@ public class ExpressionParser {
                 parser.setIndex(savedIndex);
                 BinaryExpression binexp = binaryOperation(expression);
                 if (binexp != null) {
-                    binexp.adjustForPrecedence();
+                    binexp = binexp.adjustedForPrecedence();
                     combinedExpression = binexp;
                 }
             }
@@ -194,19 +193,8 @@ public class ExpressionParser {
 
     private Expression concatOperation(Expression leftExpression) throws Parser.ParseError {
         if (parser.accept(TokenType.Concat)) {
-            Expression returnExpression;
             Expression rightExpression = this.parse();
-            if (rightExpression instanceof BinaryExpression) {
-                BinaryExpression bExp = (BinaryExpression) rightExpression;
-                returnExpression = new BinaryExpression(
-                        new ConcatExpression(
-                                leftExpression,
-                                bExp.left()),
-                        bExp.operator(), bExp.right());
-            } else {
-                returnExpression = new ConcatExpression(leftExpression, rightExpression);
-            }
-            return returnExpression;
+            return new BinaryExpression(leftExpression, BinaryExpression.Operator.Concat, rightExpression);
         }
         return null;
     }
