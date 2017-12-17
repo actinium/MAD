@@ -1,7 +1,9 @@
 package mad.database.sql;
 
+import java.util.Arrays;
 import mad.database.sql.ast.expression.BetweenExpression;
 import mad.database.sql.ast.expression.BinaryExpression;
+import mad.database.sql.ast.expression.CaseExpression;
 import mad.database.sql.ast.expression.ColumnExpression;
 import mad.database.sql.ast.expression.Expression;
 import mad.database.sql.ast.expression.LikeExpression;
@@ -109,14 +111,101 @@ public class ExpressionParserTest {
         String query = "(col1+col2)*(col3+col4)";
         Expression expected = new BinaryExpression(
                 new SubExpression(new BinaryExpression(
-                        new ColumnExpression("col1"),
-                        BinaryExpression.Operator.Plus,
-                        new ColumnExpression("col2"))),
+                                new ColumnExpression("col1"),
+                                BinaryExpression.Operator.Plus,
+                                new ColumnExpression("col2"))),
                 BinaryExpression.Operator.Multiply,
                 new SubExpression(new BinaryExpression(
-                        new ColumnExpression("col3"),
-                        BinaryExpression.Operator.Plus,
-                        new ColumnExpression("col4")))
+                                new ColumnExpression("col3"),
+                                BinaryExpression.Operator.Plus,
+                                new ColumnExpression("col4")))
+        );
+        testExpression(query, expected);
+    }
+
+    @Test
+    public void testExpressionParser7() throws Tokenizer.TokenizeException, Parser.ParseError {
+        String query = "name <> 'Tom' and name != 'Fiona'";
+        Expression expected = new BinaryExpression(
+                new BinaryExpression(
+                        new ColumnExpression("name"),
+                        BinaryExpression.Operator.NotEquals,
+                        new ValueExpression(Value.Type.Text, "Tom")
+                ),
+                BinaryExpression.Operator.And,
+                new BinaryExpression(
+                        new ColumnExpression("name"),
+                        BinaryExpression.Operator.NotEquals,
+                        new ValueExpression(Value.Type.Text, "Fiona")
+                )
+        );
+        testExpression(query, expected);
+    }
+
+    @Test
+    public void testExpressionParser8() throws Tokenizer.TokenizeException, Parser.ParseError {
+        String query = "col1 * col2 - col3 <= 100";
+        Expression expected = new BinaryExpression(
+                new BinaryExpression(
+                        new BinaryExpression(
+                                new ColumnExpression("col1"),
+                                BinaryExpression.Operator.Multiply,
+                                new ColumnExpression("col2")
+                        ),
+                        BinaryExpression.Operator.Minus,
+                        new ColumnExpression("col3")
+                ),
+                BinaryExpression.Operator.LessThanOrEquals,
+                new ValueExpression(Value.Type.Integer, "100")
+        );
+        testExpression(query, expected);
+    }
+
+    @Test
+    public void testExpressionParser9() throws Tokenizer.TokenizeException, Parser.ParseError {
+        String query = "5-2-1";
+        Expression expected = new BinaryExpression(
+                new BinaryExpression(
+                        new ValueExpression(Value.Type.Integer, "5"),
+                        BinaryExpression.Operator.Minus,
+                        new ValueExpression(Value.Type.Integer, "2")
+                ),
+                BinaryExpression.Operator.Minus,
+                new ValueExpression(Value.Type.Integer, "1")
+        );
+        testExpression(query, expected);
+    }
+
+    @Test
+    public void testExpressionParser10() throws Tokenizer.TokenizeException, Parser.ParseError {
+        String query
+                = "case col1"
+                + "  when 0 then '00'"
+                + "  when 1 then '01'"
+                + "  when 2 then '10'"
+                + "  when 3 then '11'"
+                + "end";
+        Expression expected = new CaseExpression(
+                new ColumnExpression("col1"),
+                Arrays.asList(
+                        new CaseExpression.Case(
+                                new ValueExpression(Value.Type.Integer, "0"),
+                                new ValueExpression(Value.Type.Text, "00")
+                        ),
+                        new CaseExpression.Case(
+                                new ValueExpression(Value.Type.Integer, "1"),
+                                new ValueExpression(Value.Type.Text, "01")
+                        ),
+                        new CaseExpression.Case(
+                                new ValueExpression(Value.Type.Integer, "2"),
+                                new ValueExpression(Value.Type.Text, "10")
+                        ),
+                        new CaseExpression.Case(
+                                new ValueExpression(Value.Type.Integer, "3"),
+                                new ValueExpression(Value.Type.Text, "11")
+                        )
+                ),
+                null
         );
         testExpression(query, expected);
     }
