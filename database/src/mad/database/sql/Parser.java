@@ -5,6 +5,7 @@ import java.util.List;
 import mad.database.sql.Tokenizer.Token;
 import mad.database.sql.Tokenizer.Token.TokenType;
 import mad.database.sql.ast.Statement;
+import mad.database.sql.ast.expression.Expression;
 
 /**
  *
@@ -13,9 +14,11 @@ public class Parser {
 
     private final Tokenizer tokenizer;
     private final CreateTableParser createTableParser;
+    private final DeleteParser deleteParser;
     private final DropTableParser dropTableParser;
     private final TruncateTableParser truncateTableParser;
     private final InsertParser insertParser;
+    private final ExpressionParser expressionParser;
     private final List<Token> tokens = new ArrayList<>();
     private int symbolIndex;
 
@@ -26,9 +29,11 @@ public class Parser {
     public Parser(Tokenizer tokenizer) {
         this.tokenizer = tokenizer;
         this.createTableParser = new CreateTableParser(this);
+        this.deleteParser = new DeleteParser(this);
         this.dropTableParser = new DropTableParser(this);
         this.truncateTableParser = new TruncateTableParser(this);
         this.insertParser = new InsertParser(this);
+        this.expressionParser = new ExpressionParser(this);
     }
 
     /**
@@ -159,11 +164,13 @@ public class Parser {
     //----------------------------------------------------------------------------------------------
     /**
      *
-     * @return @throws Parser.ParseError
+     * @return
+     * @throws Parser.ParseError
      */
     public Statement parse() throws ParseError {
         Statement statement;
         if ((statement = createTableParser.parse()) != null
+                || (statement = deleteParser.parse()) != null
                 || (statement = dropTableParser.parse()) != null
                 || (statement = truncateTableParser.parse()) != null
                 || (statement = insertParser.parse()) != null) {
@@ -174,7 +181,17 @@ public class Parser {
 
     /**
      *
-     * @return @throws Parser.ParseError
+     * @return
+     * @throws Parser.ParseError
+     */
+    public Expression parseExpression() throws ParseError {
+        return expressionParser.parse();
+    }
+
+    /**
+     *
+     * @return
+     * @throws Parser.ParseError
      */
     String identifier() throws ParseError {
         if (accept(TokenType.ID) || accept(TokenType.StringID)) {

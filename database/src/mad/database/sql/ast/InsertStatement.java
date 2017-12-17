@@ -26,14 +26,6 @@ public class InsertStatement implements Statement {
 
     /**
      *
-     * @return
-     */
-    public String tableName() {
-        return tableName;
-    }
-
-    /**
-     *
      * @param columnName
      * @return
      */
@@ -53,6 +45,14 @@ public class InsertStatement implements Statement {
         return this;
     }
 
+    /**
+     *
+     * @return
+     */
+    public String tableName() {
+        return tableName;
+    }
+    
     /**
      *
      * @return

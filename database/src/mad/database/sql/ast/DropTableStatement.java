@@ -11,6 +11,7 @@ public class DropTableStatement implements Statement {
     /**
      *
      * @param tableName
+     * @param ifExists
      */
     public DropTableStatement(String tableName, boolean ifExists) {
         this.tableName = tableName;
