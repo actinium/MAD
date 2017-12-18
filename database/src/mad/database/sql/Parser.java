@@ -18,7 +18,10 @@ public class Parser {
     private final DropTableParser dropTableParser;
     private final TruncateTableParser truncateTableParser;
     private final InsertParser insertParser;
+    private final UpdateParser updateParser;
+
     private final ExpressionParser expressionParser;
+
     private final List<Token> tokens = new ArrayList<>();
     private int symbolIndex;
 
@@ -33,6 +36,7 @@ public class Parser {
         this.dropTableParser = new DropTableParser(this);
         this.truncateTableParser = new TruncateTableParser(this);
         this.insertParser = new InsertParser(this);
+        this.updateParser = new UpdateParser(this);
         this.expressionParser = new ExpressionParser(this);
     }
 
@@ -78,7 +82,7 @@ public class Parser {
      * @return
      */
     Token token() {
-        return tokens.get(symbolIndex-1);
+        return tokens.get(symbolIndex - 1);
     }
 
     /**
@@ -181,7 +185,8 @@ public class Parser {
                 || (statement = deleteParser.parse()) != null
                 || (statement = dropTableParser.parse()) != null
                 || (statement = truncateTableParser.parse()) != null
-                || (statement = insertParser.parse()) != null) {
+                || (statement = insertParser.parse()) != null
+                || (statement = updateParser.parse()) != null) {
             return statement;
         }
         throw error("Parser-parse: Input didn't match a SQL Statement!");
