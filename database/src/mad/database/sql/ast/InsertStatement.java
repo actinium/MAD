@@ -102,23 +102,23 @@ public class InsertStatement implements Statement {
         if (!(obj instanceof InsertStatement)) {
             return false;
         }
-        InsertStatement objIS = (InsertStatement) obj;
-        if (!objIS.tableName().equals(tableName())) {
+        InsertStatement insertObj = (InsertStatement) obj;
+        if (!insertObj.tableName().equals(tableName())) {
             return false;
         }
-        if (objIS.columns().size() != columns().size()) {
+        if (insertObj.columns().size() != columns().size()) {
             return false;
         }
         for (int i = 0; i < columns().size(); i++) {
-            if (!columns().get(i).equals(objIS.columns().get(i))) {
+            if (!columns().get(i).equals(insertObj.columns().get(i))) {
                 return false;
             }
         }
-        if (objIS.values().size() != values().size()) {
+        if (insertObj.values().size() != values().size()) {
             return false;
         }
         for (int i = 0; i < values().size(); i++) {
-            if (!values().get(i).equals(objIS.values().get(i))) {
+            if (!values().get(i).equals(insertObj.values().get(i))) {
                 return false;
             }
         }
