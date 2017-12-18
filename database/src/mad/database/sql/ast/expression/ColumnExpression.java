@@ -7,24 +7,39 @@ public class ColumnExpression implements Expression {
 
     private final String tableName;
     private final String columnName;
+    private final boolean stringConvertable;
 
-    public ColumnExpression(String tableName, String columnName) {
+    private ColumnExpression(String tableName, String columnName, boolean stringConvertable) {
         this.tableName = tableName;
         this.columnName = columnName;
+        this.stringConvertable = stringConvertable;
+    }
+
+    public ColumnExpression(String tableName, String columnName) {
+        this(tableName, columnName, false);
+    }
+
+    public ColumnExpression(String columnName, boolean stringConvertable) {
+        this("", columnName, stringConvertable);
     }
 
     public ColumnExpression(String columnName) {
-        this("", columnName);
+        this("", columnName, false);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("{Column:");
+        sb.append("{Column");
+        if (stringConvertable) {
+            sb.append("(text)");
+        }
+        sb.append(":");
         if (!tableName.isEmpty()) {
             sb.append(tableName).append('.');
         }
-        sb.append(columnName).append("}");
+        sb.append(columnName);
+        sb.append("}");
         return sb.toString();
     }
 
@@ -33,6 +48,8 @@ public class ColumnExpression implements Expression {
             return false;
         }
         ColumnExpression columnObj = (ColumnExpression) obj;
-        return columnObj.tableName.equals(tableName) && columnObj.columnName.equals(columnName);
+        return columnObj.tableName.equals(tableName) &&
+                columnObj.columnName.equals(columnName) &&
+                columnObj.stringConvertable == stringConvertable;
     }
 }

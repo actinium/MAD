@@ -56,31 +56,7 @@ public class InsertParser {
             return;
         }
         do {
-            switch (parser.token().type) {
-                case Null:
-                    parser.nextSymbol();
-                    istatement.addValue(Tokenizer.Token.TokenType.Null, "NULL");
-                    break;
-                case Integer:
-                    parser.integerValue();
-                    istatement.addValue(Tokenizer.Token.TokenType.Integer, parser.value());
-                    break;
-                case Float:
-                    parser.floatValue();
-                    istatement.addValue(Tokenizer.Token.TokenType.Float, parser.value());
-                    break;
-                case Boolean:
-                    parser.booleanValue();
-                    istatement.addValue(Tokenizer.Token.TokenType.Boolean, parser.value());
-                    break;
-                case StringID:
-                case Text:
-                    parser.textValue();
-                    istatement.addValue(Tokenizer.Token.TokenType.Text, parser.value());
-                    break;
-                default:
-                    throw parser.error("valueList: Token(" + parser.token().type + ") did not match any valid type.");
-            }
+            istatement.addValue(parser.parseExpression());
         } while (parser.accept(Tokenizer.Token.TokenType.Comma));
         parser.expect(Tokenizer.Token.TokenType.RParen);
     }

@@ -144,6 +144,9 @@ public class ExpressionParser {
                     throw parser.error("expression.column: Could not parse column name.");
                 }
             }
+            if(parser.token().type==TokenType.StringID){
+                return new ColumnExpression(firstArg, true);
+            }
             return new ColumnExpression(firstArg);
         }
         return null;

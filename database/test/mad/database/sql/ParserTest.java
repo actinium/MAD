@@ -2,7 +2,6 @@ package mad.database.sql;
 
 import java.util.Arrays;
 import mad.database.backend.table.Schema;
-import mad.database.sql.Tokenizer.Token.TokenType;
 import mad.database.sql.ast.CreateTableStatement;
 import mad.database.sql.ast.CreateTableStatement.ColumnDefinition;
 import mad.database.sql.ast.DropTableStatement;
@@ -10,6 +9,8 @@ import mad.database.sql.ast.InsertStatement;
 import mad.database.sql.ast.Statement;
 import mad.database.sql.ast.StatementList;
 import mad.database.sql.ast.TruncateTableStatement;
+import mad.database.sql.ast.expression.ColumnExpression;
+import mad.database.sql.ast.expression.ValueExpression;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
@@ -92,20 +93,20 @@ public class ParserTest {
 
     @Test
     public void testParser5() {
-        String query = "INSERT INTO department(id,name) VALUES(12,\"Department of Magic\");\n";
+        String query = "INSERT INTO department(id,name) VALUES(12,'Department of Magic');\n";
         InsertStatement iStatement = new InsertStatement("department");
         iStatement.addColumn("id").addColumn("name");
-        iStatement.addValue(TokenType.Integer, "12");
-        iStatement.addValue(TokenType.Text, "Department of Magic");
+        iStatement.addValue(new ValueExpression(ValueExpression.Value.Type.Integer, "12"));
+        iStatement.addValue(new ValueExpression(ValueExpression.Value.Type.Text, "Department of Magic"));
         testParser(query, new StatementList(iStatement));
     }
 
     @Test
     public void testParser6() {
-        String query = "insert into department values(12,\"Department of Magic\");\n";
+        String query = "insert into department values(12,'Department of Magic');\n";
         InsertStatement iStatement = new InsertStatement("department");
-        iStatement.addValue(TokenType.Integer, "12");
-        iStatement.addValue(TokenType.Text, "Department of Magic");
+        iStatement.addValue(new ValueExpression(ValueExpression.Value.Type.Integer, "12"));
+        iStatement.addValue(new ValueExpression(ValueExpression.Value.Type.Text, "Department of Magic"));
         testParser(query, new StatementList(iStatement));
     }
 
@@ -120,6 +121,28 @@ public class ParserTest {
     public void testParser8() {
         String query = "truncate table test;\n";
         Statement statement = new TruncateTableStatement("test");
+        testParser(query, new StatementList(statement));
+    }
+
+    @Test
+    public void testParser9() {
+        String query = "insert into people(name,age) values(\"Tom\",34);\n";
+        InsertStatement statement = new InsertStatement("people");
+        statement.addColumn("name");
+        statement.addValue(new ColumnExpression("Tom", true));
+        statement.addColumn("age");
+        statement.addValue(new ValueExpression(ValueExpression.Value.Type.Integer, "34"));
+        testParser(query, new StatementList(statement));
+    }
+
+    @Test
+    public void testParser10() {
+        String query = "insert into people(name,age) values('Tom',34);\n";
+        InsertStatement statement = new InsertStatement("people");
+        statement.addColumn("name");
+        statement.addValue(new ValueExpression(ValueExpression.Value.Type.Text, "Tom"));
+        statement.addColumn("age");
+        statement.addValue(new ValueExpression(ValueExpression.Value.Type.Integer, "34"));
         testParser(query, new StatementList(statement));
     }
 

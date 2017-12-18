@@ -3,7 +3,7 @@ package mad.database.sql.ast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import mad.database.sql.Tokenizer.Token.TokenType;
+import mad.database.sql.ast.expression.Expression;
 
 /**
  *
@@ -12,7 +12,7 @@ public class InsertStatement implements Statement {
 
     private final String tableName;
     private final List<String> columns;
-    private final List<Value> values;
+    private final List<Expression> values;
 
     /**
      *
@@ -36,12 +36,11 @@ public class InsertStatement implements Statement {
 
     /**
      *
-     * @param type
-     * @param value
+     * @param expression
      * @return
      */
-    public InsertStatement addValue(TokenType type, String value) {
-        values.add(new Value(type, value));
+    public InsertStatement addValue(Expression expression) {
+        values.add(expression);
         return this;
     }
 
@@ -52,7 +51,7 @@ public class InsertStatement implements Statement {
     public String tableName() {
         return tableName;
     }
-    
+
     /**
      *
      * @return
@@ -65,7 +64,7 @@ public class InsertStatement implements Statement {
      *
      * @return
      */
-    public List<Value> values() {
+    public List<Expression> values() {
         return Collections.unmodifiableList(values);
     }
 
@@ -90,9 +89,8 @@ public class InsertStatement implements Statement {
             sb.append("  }\n");
         }
         sb.append("  values(").append(values.size()).append(") = {\n");
-        for (Value v : values) {
-            sb.append("    ").append(v.value()).append(": ").append(v.type());
-            sb.append(";\n");
+        for (Expression exp : values) {
+            sb.append("    ").append(exp).append(";\n");
         }
         sb.append("  }\n");
         sb.append("}");
@@ -120,10 +118,7 @@ public class InsertStatement implements Statement {
             return false;
         }
         for (int i = 0; i < values().size(); i++) {
-            if (values().get(i).type() != objIS.values().get(i).type()) {
-                return false;
-            }
-            if (!values().get(i).value().equals(objIS.values().get(i).value())) {
+            if (!values().get(i).equals(objIS.values().get(i))) {
                 return false;
             }
         }
