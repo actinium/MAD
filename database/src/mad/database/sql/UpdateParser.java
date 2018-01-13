@@ -17,12 +17,12 @@ public class UpdateParser {
     }
 
     public Statement parse() throws Parser.ParseError {
-        if(parser.accept(TokenType.Update)){
+        if (parser.accept(TokenType.Update)) {
             String tableName = parser.identifier();
             parser.expect(TokenType.Set);
             UpdateStatement statement = new UpdateStatement(tableName);
             assignment(statement);
-            if(parser.accept(TokenType.Where)){
+            if (parser.accept(TokenType.Where)) {
                 Expression condition = parser.parseExpression();
                 statement = new UpdateStatement(statement, condition);
             }
@@ -32,12 +32,12 @@ public class UpdateParser {
         return null;
     }
 
-    private void assignment(UpdateStatement statement) throws Parser.ParseError{
-        do{
+    private void assignment(UpdateStatement statement) throws Parser.ParseError {
+        do {
             String columnName = parser.identifier();
             parser.expect(TokenType.Equals);
             Expression value = parser.parseExpression();
             statement.addUpdate(columnName, value);
-        }while(parser.accept(TokenType.Comma));
+        } while (parser.accept(TokenType.Comma));
     }
 }
