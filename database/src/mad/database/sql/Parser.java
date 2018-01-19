@@ -55,15 +55,7 @@ public class Parser {
     //----------------------------------------------------------------------------------------------
     /**
      *
-     * @return
-     */
-    public TokenType lastSymbol() {
-        return tokens.get(tokens.size() - 1).type;
-    }
-
-    /**
-     *
-     * @return
+     * @return symbolIndex == tokens.size()
      */
     public boolean done() {
         return symbolIndex == tokens.size();
@@ -71,7 +63,15 @@ public class Parser {
 
     /**
      *
-     * @return
+     * @return tokens.get(tokens.size() - 1).type
+     */
+    public TokenType lastSymbol() {
+        return tokens.get(tokens.size() - 1).type;
+    }
+
+    /**
+     *
+     * @return tokens.get(symbolIndex).type
      */
     private TokenType symbol() {
         return tokens.get(symbolIndex).type;
@@ -79,7 +79,7 @@ public class Parser {
 
     /**
      *
-     * @return
+     * @return tokens.get(symbolIndex - 1)
      */
     Token token() {
         return tokens.get(symbolIndex - 1);
@@ -87,7 +87,7 @@ public class Parser {
 
     /**
      *
-     * @return
+     * @return tokens.get(symbolIndex)
      */
     Token currentToken() {
         return tokens.get(symbolIndex);
