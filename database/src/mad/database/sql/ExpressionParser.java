@@ -93,7 +93,9 @@ public class ExpressionParser {
                 expression = combinedExpression;
             }
         }
-
+        if(expression == null){
+            throw parser.error("ExpressionParser.parse: Couldn't parse Expression");
+        }
         return expression;
     }
 
