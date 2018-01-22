@@ -264,18 +264,6 @@ public class Parser {
         }
     }
 
-    /**
-     *
-     * @return @throws Parser.ParseError
-     */
-    String textValue() throws ParseError {
-        if (accept(TokenType.Text) || accept(TokenType.StringID)) {
-            return value();
-        } else {
-            throw error("Parser-textValue: Not a valid Text Value!");
-        }
-    }
-
     //----------------------------------------------------------------------------------------------
     // Exception
     //----------------------------------------------------------------------------------------------
