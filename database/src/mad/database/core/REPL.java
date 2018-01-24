@@ -112,6 +112,13 @@ public class REPL implements Runnable {
         File[] files = pwd.getAbsoluteFile().listFiles();
         for(File file: files){
             if(!file.isHidden()){
+                if(file.isFile()){
+                    out.print("F - ");
+                }else if(file.isDirectory()){
+                    out.print("D - ");
+                }else{
+                    out.print("? - ");
+                }
                 out.println(file.getName());
             }
         }
