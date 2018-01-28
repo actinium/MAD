@@ -19,6 +19,7 @@ public class Parser {
     private final TruncateTableParser truncateTableParser;
     private final InsertParser insertParser;
     private final UpdateParser updateParser;
+    private final SelectParser selectParser;
 
     private final ExpressionParser expressionParser;
 
@@ -38,6 +39,7 @@ public class Parser {
         this.insertParser = new InsertParser(this);
         this.updateParser = new UpdateParser(this);
         this.expressionParser = new ExpressionParser(this);
+        this.selectParser = new SelectParser(this);
     }
 
     /**
@@ -186,7 +188,8 @@ public class Parser {
                 || (statement = dropTableParser.parse()) != null
                 || (statement = truncateTableParser.parse()) != null
                 || (statement = insertParser.parse()) != null
-                || (statement = updateParser.parse()) != null) {
+                || (statement = updateParser.parse()) != null
+                || (statement = selectParser.parse()) != null) {
             return statement;
         }
         throw error("Parser-parse: Input didn't match a SQL Statement!");
