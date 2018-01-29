@@ -167,7 +167,7 @@ public class SelectParser {
         parser.setIndex(savedIndex);
         Expression columExpression = parser.parseExpression();
         if (parser.accept(TokenType.As)) {
-            return new ExprColumn(columExpression, parser.identifier());
+            return new ExprColumn(columExpression, parser.parseIdentifier());
         } else {
             return new ExprColumn(columExpression);
         }
@@ -274,7 +274,7 @@ public class SelectParser {
             if (parser.currentToken().type == TokenType.Select) {
                 SelectStatement statement = parse(TokenType.RParen);
                 if (parser.accept(TokenType.As)) {
-                    table = new SubSelect(statement, parser.identifier());
+                    table = new SubSelect(statement, parser.parseIdentifier());
                 } else {
                     table = new SubSelect(statement);
                 }
@@ -282,13 +282,13 @@ public class SelectParser {
                 table = parseTables();
                 parser.expect(TokenType.RParen);
                 if (parser.accept(TokenType.As)) {
-                    table = new SubTable(table, parser.identifier());
+                    table = new SubTable(table, parser.parseIdentifier());
                 }
             }
         } else {
-            String tableName = parser.identifier();
+            String tableName = parser.parseIdentifier();
             if (parser.accept(TokenType.As)) {
-                String as = parser.identifier();
+                String as = parser.parseIdentifier();
                 table = new SingleTable(tableName, as);
             } else {
                 table = new SingleTable(tableName);
@@ -301,7 +301,7 @@ public class SelectParser {
         parser.accept(TokenType.LParen);
         List<String> using = new ArrayList<>();
         do {
-            using.add(parser.identifier());
+            using.add(parser.parseIdentifier());
         } while (parser.accept(TokenType.Comma));
         parser.accept(TokenType.RParen);
         return using;

@@ -53,6 +53,100 @@ public class Parser {
     }
 
     //----------------------------------------------------------------------------------------------
+    // Parsing
+    //----------------------------------------------------------------------------------------------
+    /**
+     *
+     * @return
+     * @throws Parser.ParseError
+     */
+    public Statement parse() throws ParseError {
+        Statement statement;
+        if ((statement = createTableParser.parse()) != null
+                || (statement = deleteParser.parse()) != null
+                || (statement = dropTableParser.parse()) != null
+                || (statement = truncateTableParser.parse()) != null
+                || (statement = insertParser.parse()) != null
+                || (statement = updateParser.parse()) != null
+                || (statement = selectParser.parse()) != null) {
+            return statement;
+        }
+        throw error("Parser-parse: Input didn't match a SQL Statement!");
+    }
+
+    /**
+     *
+     * @return
+     * @throws Parser.ParseError
+     */
+    public Expression parseExpression() throws ParseError {
+        return expressionParser.parse();
+    }
+
+    /**
+     *
+     * @return
+     * @throws Parser.ParseError
+     */
+    String parseIdentifier() throws ParseError {
+        if (accept(TokenType.ID) || accept(TokenType.StringID)) {
+            return value();
+        } else {
+            throw error("Parser.parseIdentifier: '" + currentValue() + "' is not a valid identifier!");
+        }
+    }
+
+    /**
+     *
+     * @return @throws Parser.ParseError
+     */
+    int parseInteger() throws ParseError {
+        if (accept(TokenType.Integer)) {
+            int value = 0;
+            try {
+                value = Integer.parseInt(value());
+            } catch (NumberFormatException ex) {
+                throw error("Parser.parseInteger: Not a valid Integer!");
+            }
+            return value;
+        } else {
+            throw error("Parser.Integer: Not a valid Integer!");
+        }
+    }
+
+    /**
+     *
+     * @return @throws Parser.ParseError
+     */
+    float parseFloat() throws ParseError {
+        if (accept(TokenType.Float)) {
+            float value = 0;
+            try {
+                value = Float.parseFloat(value());
+            } catch (NumberFormatException ex) {
+                throw error("Parser.parseFlaot: Not a valid Float!");
+            }
+            return value;
+        } else {
+            throw error("Parser.parseFloat: Not a valid Float!");
+        }
+    }
+
+    /**
+     *
+     * @return @throws Parser.ParseError
+     */
+    boolean parseBoolean() throws ParseError {
+        if (accept(TokenType.Boolean)) {
+            boolean value;
+            value = Boolean.parseBoolean(value());
+            return value;
+        } else {
+            throw error("Parser.parseBoolean: Not a valid Boolean!");
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------
     // Parser helper functions
     //----------------------------------------------------------------------------------------------
     /**
@@ -97,7 +191,7 @@ public class Parser {
 
     /**
      *
-     * @return
+     * @return tokens.get(symbolIndex - 1).value
      */
     String value() {
         return tokens.get(symbolIndex - 1).value;
@@ -171,100 +265,6 @@ public class Parser {
         }
         throw error("Parser-expect: unexpected symbol '" + currentValue() + "'. Expected '"
                 + s.stringValue() + "'.");
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Parsing
-    //----------------------------------------------------------------------------------------------
-    /**
-     *
-     * @return
-     * @throws Parser.ParseError
-     */
-    public Statement parse() throws ParseError {
-        Statement statement;
-        if ((statement = createTableParser.parse()) != null
-                || (statement = deleteParser.parse()) != null
-                || (statement = dropTableParser.parse()) != null
-                || (statement = truncateTableParser.parse()) != null
-                || (statement = insertParser.parse()) != null
-                || (statement = updateParser.parse()) != null
-                || (statement = selectParser.parse()) != null) {
-            return statement;
-        }
-        throw error("Parser-parse: Input didn't match a SQL Statement!");
-    }
-
-    /**
-     *
-     * @return
-     * @throws Parser.ParseError
-     */
-    public Expression parseExpression() throws ParseError {
-        return expressionParser.parse();
-    }
-
-    /**
-     *
-     * @return
-     * @throws Parser.ParseError
-     */
-    String identifier() throws ParseError {
-        if (accept(TokenType.ID) || accept(TokenType.StringID)) {
-            return value();
-        } else {
-            throw error("Parser-identifier: '" + currentValue() + "' is not a valid identifier!");
-        }
-    }
-
-    /**
-     *
-     * @return @throws Parser.ParseError
-     */
-    int integerValue() throws ParseError {
-        if (accept(TokenType.Integer)) {
-            int value = 0;
-            try {
-                value = Integer.parseInt(value());
-            } catch (NumberFormatException ex) {
-                throw error("Parser-integerValue: Not a valid Integer!");
-            }
-            return value;
-        } else {
-            throw error("Parser-integerValue: Not a valid Integer!");
-        }
-    }
-
-    /**
-     *
-     * @return @throws Parser.ParseError
-     */
-    float floatValue() throws ParseError {
-        if (accept(TokenType.Float)) {
-            float value = 0;
-            try {
-                value = Float.parseFloat(value());
-            } catch (NumberFormatException ex) {
-                throw error("Parser-flaotValue: Not a valid Float!");
-            }
-            return value;
-        } else {
-            throw error("Parser-floatValue: Not a valid Float!");
-        }
-    }
-
-    /**
-     *
-     * @return @throws Parser.ParseError
-     */
-    boolean booleanValue() throws ParseError {
-        if (accept(TokenType.Boolean)) {
-            boolean value;
-            value = Boolean.parseBoolean(value());
-            return value;
-        } else {
-            throw error("Parser-booleanValue: Not a valid Boolean!");
-        }
     }
 
     //----------------------------------------------------------------------------------------------

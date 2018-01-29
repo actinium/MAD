@@ -17,7 +17,7 @@ public class InsertParser {
     public Statement parse() throws Parser.ParseError {
         if (parser.accept(Tokenizer.Token.TokenType.Insert)) {
             parser.expect(Tokenizer.Token.TokenType.Into);
-            String tableName = parser.identifier();
+            String tableName = parser.parseIdentifier();
             InsertStatement iStatement = new InsertStatement(tableName);
 
             columnList(iStatement);
@@ -38,7 +38,7 @@ public class InsertParser {
     private void columnList(InsertStatement istatement) throws Parser.ParseError {
         if (parser.accept(Tokenizer.Token.TokenType.LParen)) {
             do {
-                String columnName = parser.identifier();
+                String columnName = parser.parseIdentifier();
                 istatement.addColumn(columnName);
             } while (parser.accept(Tokenizer.Token.TokenType.Comma));
             parser.expect(Tokenizer.Token.TokenType.RParen);

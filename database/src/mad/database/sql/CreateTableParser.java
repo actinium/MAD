@@ -24,7 +24,7 @@ public class CreateTableParser {
     Statement parse() throws Parser.ParseError {
         if (parser.accept(Tokenizer.Token.TokenType.Create)) {
             if (parser.accept(Tokenizer.Token.TokenType.Table)) {
-                String tableName = parser.identifier();
+                String tableName = parser.parseIdentifier();
                 parser.expect(Tokenizer.Token.TokenType.LParen);
                 List<CreateTableStatement.ColumnDefinition> td = tableDefinition();
                 parser.expect(Tokenizer.Token.TokenType.RParen);
@@ -53,7 +53,7 @@ public class CreateTableParser {
      * @return @throws Parser.ParseError
      */
     private CreateTableStatement.ColumnDefinition columnDefinition() throws Parser.ParseError {
-        String name = parser.identifier();
+        String name = parser.parseIdentifier();
         parser.expect(Tokenizer.Token.TokenType.ID);
         Schema.Field.Type type = null;
         int length = 0;
@@ -72,7 +72,7 @@ public class CreateTableParser {
             case "varchar":
                 type = Schema.Field.Type.Varchar;
                 parser.expect(Tokenizer.Token.TokenType.LParen);
-                length = parser.integerValue();
+                length = parser.parseInteger();
                 parser.expect(Tokenizer.Token.TokenType.RParen);
                 break;
             default:

@@ -22,7 +22,7 @@ public class DropTableParser {
         if (parser.accept(Tokenizer.Token.TokenType.Drop)) {
             if (parser.accept(Tokenizer.Token.TokenType.Table)) {
                 boolean ifExists = ifExists();
-                String tableName = parser.identifier();
+                String tableName = parser.parseIdentifier();
                 parser.expect(Tokenizer.Token.TokenType.Semicolon);
                 return new DropTableStatement(tableName,ifExists);
             }

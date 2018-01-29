@@ -18,7 +18,7 @@ public class UpdateParser {
 
     public Statement parse() throws Parser.ParseError {
         if (parser.accept(TokenType.Update)) {
-            String tableName = parser.identifier();
+            String tableName = parser.parseIdentifier();
             parser.expect(TokenType.Set);
             UpdateStatement statement = new UpdateStatement(tableName);
             assignment(statement);
@@ -34,7 +34,7 @@ public class UpdateParser {
 
     private void assignment(UpdateStatement statement) throws Parser.ParseError {
         do {
-            String columnName = parser.identifier();
+            String columnName = parser.parseIdentifier();
             parser.expect(TokenType.Equals);
             Expression value = parser.parseExpression();
             statement.addUpdate(columnName, value);

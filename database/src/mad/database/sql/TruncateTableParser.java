@@ -21,7 +21,7 @@ public class TruncateTableParser {
     public Statement parse() throws Parser.ParseError {
         if (parser.accept(Tokenizer.Token.TokenType.Truncate)) {
             if (parser.accept(Tokenizer.Token.TokenType.Table)) {
-                String tableName = parser.identifier();
+                String tableName = parser.parseIdentifier();
                 parser.expect(Tokenizer.Token.TokenType.Semicolon);
                 return new TruncateTableStatement(tableName);
             }

@@ -18,7 +18,7 @@ public class DeleteParser {
     public Statement parse() throws Parser.ParseError {
         if (parser.accept(Tokenizer.Token.TokenType.Delete)) {
             parser.expect(Tokenizer.Token.TokenType.From);
-            String tableName = parser.identifier();
+            String tableName = parser.parseIdentifier();
             Expression condition = null;
             if (parser.accept(Tokenizer.Token.TokenType.Where)) {
                 condition = parser.parseExpression();
