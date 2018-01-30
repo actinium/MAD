@@ -59,7 +59,11 @@ public class SelectParser {
                         op = CompundSelectStatement.Operator.Intersect;
                     }
                 } else if (parser.accept(TokenType.Except)) {
-                    op = CompundSelectStatement.Operator.Except;
+                    if (parser.accept(TokenType.All)) {
+                        op = CompundSelectStatement.Operator.ExceptAll;
+                    }else{
+                        op = CompundSelectStatement.Operator.Except;
+                    }
                 } else {
                     throw parser.error("SelectParser.parse: Expected Set Operator");
                 }

@@ -21,7 +21,8 @@ public class CompundSelectStatement implements SelectStatement {
         UnionAll,
         Intersect,
         IntersectAll,
-        Except
+        Except,
+        ExceptAll
     }
 
     public String toString() {
