@@ -1,9 +1,6 @@
 package mad.database.backend.table;
 
 import java.io.IOException;
-import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -14,13 +11,13 @@ public class SelectionRow implements Row {
     RowPredicate filter;
 
     /**
-     * 
+     *
      * @param row
      * @param filter
      * @throws SelectionRow.EmptySelection
      * @throws Row.NoSuchColumnException
      * @throws Row.TypeMismatchException
-     * @throws IOException 
+     * @throws IOException
      */
     private SelectionRow(Row row, RowPredicate filter) throws EmptySelection, NoSuchColumnException,
             TypeMismatchException, IOException {
