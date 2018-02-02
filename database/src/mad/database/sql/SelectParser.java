@@ -3,7 +3,6 @@ package mad.database.sql;
 import java.util.ArrayList;
 import java.util.List;
 import mad.database.sql.Tokenizer.Token.TokenType;
-import mad.database.sql.ast.Statement;
 import mad.database.sql.ast.Tables.JoinedTables;
 import mad.database.sql.ast.Tables.SingleTable;
 import mad.database.sql.ast.Tables.SubSelect;
@@ -31,11 +30,11 @@ public class SelectParser {
         this.parser = parser;
     }
 
-    public Statement parse() throws Parser.ParseError {
+    public SelectStatement parse() throws Parser.ParseError {
         return parse(TokenType.Semicolon);
     }
 
-    private SelectStatement parse(TokenType endToken) throws Parser.ParseError {
+    public SelectStatement parse(TokenType endToken) throws Parser.ParseError {
         SelectStatement statement = null;
         do {
             if (statement == null) {
@@ -61,11 +60,11 @@ public class SelectParser {
                 } else if (parser.accept(TokenType.Except)) {
                     if (parser.accept(TokenType.All)) {
                         op = CompundSelectStatement.Operator.ExceptAll;
-                    }else{
+                    } else {
                         op = CompundSelectStatement.Operator.Except;
                     }
                 } else {
-                    throw parser.error("SelectParser.parse: Expected Set Operator");
+                    throw parser.error("SelectParser.parse: Expected Set Operator or Terminator Token");
                 }
                 SelectStatement secondStatement = parseSelect();
                 if (secondStatement == null) {

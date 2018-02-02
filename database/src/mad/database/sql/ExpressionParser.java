@@ -9,6 +9,8 @@ import mad.database.sql.ast.expression.CaseExpression;
 import mad.database.sql.ast.expression.ColumnExpression;
 import mad.database.sql.ast.expression.Expression;
 import mad.database.sql.ast.expression.FunctionExpression;
+import mad.database.sql.ast.expression.InSelectExpression;
+import mad.database.sql.ast.expression.InValuesExpression;
 import mad.database.sql.ast.expression.IsNullExpression;
 import mad.database.sql.ast.expression.LikeExpression;
 import mad.database.sql.ast.expression.NotExpression;
@@ -17,6 +19,7 @@ import mad.database.sql.ast.expression.SubExpression;
 import mad.database.sql.ast.expression.UnaryExpression;
 import mad.database.sql.ast.expression.ValueExpression;
 import mad.database.sql.ast.expression.ValueExpression.Value;
+import mad.database.sql.ast.selection.SelectStatement;
 
 /**
  *
@@ -24,9 +27,11 @@ import mad.database.sql.ast.expression.ValueExpression.Value;
 public class ExpressionParser {
 
     private final Parser parser;
+    private final SelectParser selectParser;
 
-    public ExpressionParser(Parser parser) {
+    public ExpressionParser(Parser parser, SelectParser selectParser) {
         this.parser = parser;
+        this.selectParser = selectParser;
     }
 
     public Expression parse() throws Parser.ParseError {
@@ -89,11 +94,19 @@ public class ExpressionParser {
                 parser.setIndex(savedIndex);
                 combinedExpression = regexp(expression);
             }
+            if (combinedExpression == null) {
+                parser.setIndex(savedIndex);
+                combinedExpression = inValue(expression);
+            }
+            if (combinedExpression == null) {
+                parser.setIndex(savedIndex);
+                combinedExpression = inSelect(expression);
+            }
             if (combinedExpression != null) {
                 expression = combinedExpression;
             }
         }
-        if(expression == null){
+        if (expression == null) {
             throw parser.error("ExpressionParser.parse: Couldn't parse Expression");
         }
         return expression;
@@ -146,7 +159,7 @@ public class ExpressionParser {
                     throw parser.error("expression.column: Could not parse column name.");
                 }
             }
-            if(parser.token().type==TokenType.StringID){
+            if (parser.token().type == TokenType.StringID) {
                 return new ColumnExpression(firstArg, true);
             }
             return new ColumnExpression(firstArg);
@@ -238,8 +251,6 @@ public class ExpressionParser {
             op = BinaryExpression.Operator.Equals;
         } else if (parser.accept(TokenType.NotEquals)) {
             op = BinaryExpression.Operator.NotEquals;
-        } else if (parser.accept(TokenType.In)) {
-            op = BinaryExpression.Operator.In;
         }
         if (op != null) {
             Expression rightExpression = this.parse();
@@ -326,6 +337,59 @@ public class ExpressionParser {
                 return new RegexpExpression(expression, pattern);
             }
         }
+        return null;
+    }
+
+    private Expression inValue(Expression expression) throws Parser.ParseError {
+        boolean not = false;
+        if (parser.accept(TokenType.Not)) {
+            not = true;
+        }
+        if (parser.accept(TokenType.In)) {
+            parser.expect(TokenType.LParen);
+            if (parser.accept(TokenType.Select)) {
+                return null;
+            }
+            List<Expression> values = new ArrayList<>();
+            do {
+                values.add(this.parse());
+            } while (parser.accept(TokenType.Comma));
+            parser.expect(TokenType.RParen);
+            if (not) {
+                return new NotExpression(new InValuesExpression(expression, values));
+            } else {
+                return new InValuesExpression(expression, values);
+            }
+        }
+        return null;
+    }
+
+    private Expression inSelect(Expression expression) throws Parser.ParseError {
+        boolean not = false;
+        if (parser.accept(TokenType.Not)) {
+            not = true;
+        }
+        if (parser.accept(TokenType.In)) {
+            parser.expect(TokenType.LParen);
+            if (!parser.accept(TokenType.Select)) {
+                return null;
+            }
+            parser.setIndex(parser.getIndex() - 1);
+            SelectStatement statement = selectParser.parse(TokenType.RParen);
+            if (statement == null) {
+                return null;
+            }
+            if (not) {
+                return new NotExpression(new InSelectExpression(expression, statement));
+            } else {
+                return new InSelectExpression(expression, statement);
+            }
+        }
+        return null;
+    }
+
+    private Expression select(Expression expression) throws Parser.ParseError {
+
         return null;
     }
 }

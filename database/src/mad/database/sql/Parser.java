@@ -38,8 +38,8 @@ public class Parser {
         this.truncateTableParser = new TruncateTableParser(this);
         this.insertParser = new InsertParser(this);
         this.updateParser = new UpdateParser(this);
-        this.expressionParser = new ExpressionParser(this);
         this.selectParser = new SelectParser(this);
+        this.expressionParser = new ExpressionParser(this, selectParser);
     }
 
     /**
