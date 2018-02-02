@@ -146,7 +146,7 @@ public class ParserTest {
         testParser(query, new StatementList(statement));
     }
 
-    private void testParser(String query, Statement statement) {
+    private void testParser(String query, StatementList statements) {
         Tokenizer tokenizer = new Tokenizer();
         Parser parser = new Parser(tokenizer);
         try {
@@ -156,7 +156,7 @@ public class ParserTest {
             while (!parser.done()) {
                 sl.add(parser.parse());
             }
-            assertEquals(statement, sl);
+            assertEquals(statements, sl);
         } catch (Tokenizer.TokenizeException ex) {
             fail("Error tokenizing input:" + ex.getMessage() + " (" + ex.getIndex() + ")");
         } catch (Parser.ParseError ex) {
