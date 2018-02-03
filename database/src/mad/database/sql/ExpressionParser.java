@@ -311,14 +311,14 @@ public class ExpressionParser {
         }
         if (parser.accept(TokenType.Like)) {
             Expression pattern = parse();
-            Expression except = null;
-            if (parser.accept(TokenType.Except)) {
-                except = parse();
+            Expression escape = null;
+            if (parser.accept(TokenType.Escape)) {
+                escape = parse();
             }
             if (not) {
-                return new NotExpression(new LikeExpression(expression, pattern, except));
+                return new NotExpression(new LikeExpression(expression, pattern, escape));
             } else {
-                return new LikeExpression(expression, pattern, except);
+                return new LikeExpression(expression, pattern, escape);
             }
         }
         return null;
