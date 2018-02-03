@@ -216,7 +216,7 @@ public class ExpressionParserTest {
         tokenizer.tokenize(expString);
         Parser parser = new Parser(tokenizer);
         parser.readTokens();
-        ExpressionParser expParser = new ExpressionParser(parser);
+        ExpressionParser expParser = new ExpressionParser(parser,new SelectParser(parser));
         Expression exp = expParser.parse();
         assertEquals(expression, exp);
     }
