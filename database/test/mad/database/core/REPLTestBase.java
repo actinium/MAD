@@ -1,13 +1,14 @@
 package mad.database.core;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import mad.util.Pipe;
 import org.junit.After;
+import static org.junit.Assert.fail;
 import org.junit.Before;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -19,12 +20,14 @@ public class REPLTestBase {
     Thread replThread;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         Pipe inPipe = initPipe();
         Pipe outPipe = initPipe();
         writer = new PrintWriter(inPipe.out, true);
         reader = new BufferedReader(new InputStreamReader(outPipe.in));
-        REPL repl = new REPL(inPipe.in, outPipe.out);
+        File testFile = File.createTempFile("madtest-", Long.toString(System.nanoTime()));
+        testFile.deleteOnExit();
+        REPL repl = new REPL(testFile.getAbsolutePath(),inPipe.in, outPipe.out);
         replThread = new Thread(repl);
         replThread.start();
     }

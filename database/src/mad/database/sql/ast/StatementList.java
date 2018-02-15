@@ -1,6 +1,7 @@
 package mad.database.sql.ast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,6 +33,10 @@ public class StatementList{
      */
     public void add(Statement s) {
         statements.add(s);
+    }
+
+    public List<Statement> getList(){
+        return Collections.unmodifiableList(statements);
     }
 
     /**

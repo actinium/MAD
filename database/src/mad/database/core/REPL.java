@@ -9,10 +9,17 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 import static mad.database.Config.MADVERSION;
+import mad.database.backend.DB;
+import mad.database.backend.StatementProcessor;
+import mad.database.backend.table.Row;
+import mad.database.backend.table.Schema;
+import mad.database.backend.table.Schema.Field;
 import mad.database.sql.Parser;
 import mad.database.sql.Tokenizer;
 import mad.database.sql.Tokenizer.Token.TokenType;
+import mad.database.sql.ast.Statement;
 import mad.database.sql.ast.StatementList;
+import mad.database.sql.ast.selection.SelectStatement;
 
 /**
  *
@@ -24,10 +31,16 @@ public class REPL implements Runnable {
 
     private File pwd;
 
-    public REPL(InputStream in, OutputStream out) {
+    private final DB db;
+    private final StatementProcessor processor;
+
+    public REPL(String dbFilename, InputStream in, OutputStream out) throws IOException {
         this.in = new BufferedReader(new InputStreamReader(in));
         this.out = new PrintWriter(out, true);
         this.pwd = Paths.get("").toFile();
+        db = DB.open(dbFilename);
+        processor = new StatementProcessor(db);
+
     }
 
     private String readline() {
@@ -124,6 +137,50 @@ public class REPL implements Runnable {
         }
     }
 
+    private void schema(String query){
+        String tableName = query.substring(7);
+        if(tableName.length()==0){
+            return;
+        }
+        tableName = tableName.substring(firstNonWhitespace(tableName));
+        tableName = tableName.substring(0,lastNonWhitespace(tableName)+1);
+        if(tableName.charAt(0) == '"' && tableName.charAt(tableName.length()-1) == '"'){
+            tableName = tableName.substring(1, tableName.length()-1);
+        }
+        try {
+            Schema schema = db.getSchema(tableName);
+            if(schema != null){
+                out.println(tableName + "(");
+                for(Field f:schema){
+                    out.print("    ");
+                    out.print(f.name);
+                    out.print(" ");
+                    out.print(f.type);
+                    if(f.type == Field.Type.Varchar){
+                        out.print("(" + f.length + ")");
+                    }
+                    out.print(",\n");
+                }
+                out.println(");");
+            }else{
+                out.println("Error: Could not find table!");
+            }
+        } catch (IOException ex) {
+            out.println("Error: Could not read schema!");
+        }
+
+    }
+
+    private void tables(){
+        try {
+            for(String tablename: db.getTableNames()){
+                out.println(tablename);
+            }
+        } catch (IOException ex) {
+            out.println(ex.getMessage());
+        }
+    }
+
     private MetaCommandResult runMetaCommand(String query) {
         query = query.substring(firstNonWhitespace(query));
         if (matchesCommand(query,".cd")) {
@@ -134,12 +191,14 @@ public class REPL implements Runnable {
             return MetaCommandResult.Exit;
         }
         if (matchesCommand(query,".help")) {
-            out.print(".cd      Change working directory.\n");
-            out.print(".exit    Exit this program.\n");
-            out.print(".help    Show available commands.\n");
-            out.print(".ls      List files in directory.\n");
-            out.print(".pwd     Print working directory.\n");
-            out.print(".version Show version number.\n");
+            out.println(".cd     DIRECTORY     Change working directory.");
+            out.println(".exit                 Exit this program.");
+            out.println(".help                 Show available commands.");
+            out.println(".ls                   List files in directory.");
+            out.println(".pwd                  Print working directory.");
+            out.println(".schema TABLENAME     Show schema for table.");
+            out.println(".tables               List tables in database.");
+            out.println(".version              Show version number.");
             return MetaCommandResult.Correct;
         }
         if (matchesCommand(query,".ls")) {
@@ -148,6 +207,14 @@ public class REPL implements Runnable {
         }
         if (matchesCommand(query,".pwd")) {
             out.printf(pwd.getAbsolutePath()+ "%n");
+            return MetaCommandResult.Correct;
+        }
+        if (matchesCommand(query,".schema")) {
+            schema(query);
+            return MetaCommandResult.Correct;
+        }
+        if (matchesCommand(query,".tables")) {
+            tables();
             return MetaCommandResult.Correct;
         }
         if (matchesCommand(query,".version")) {
@@ -174,6 +241,17 @@ public class REPL implements Runnable {
                 sl.add(parser.parse());
             }
             System.out.println(sl.toString());
+            for(Statement statement: sl.getList()){
+                if(statement instanceof SelectStatement){
+                    Row row = processor.executeQuery((SelectStatement)statement);
+                }else{
+                    try {
+                        processor.executeUpdate(statement);
+                    } catch (IOException | StatementProcessor.CreateTableError ex) {
+                        out.println(ex.getMessage());
+                    }
+                }
+            }
         } catch (Tokenizer.TokenizeException ex) {
             out.println("Error tokenizing input:" + ex.getMessage() + " (" + ex.getIndex() + ")");
         } catch (Parser.ParseError ex) {
@@ -214,9 +292,18 @@ public class REPL implements Runnable {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        if(args.length != 1){
+            System.err.println("Missing db filename argument!");
+            System.exit(1);
+        }
         System.out.printf("MAD version %s\n", MADVERSION);
-        REPL repl = new REPL(System.in, System.out);
-        repl.run();
+        try{
+            REPL repl = new REPL(args[0],System.in, System.out);
+            repl.run();
+        }catch(IOException ex){
+            System.err.println(ex.getMessage());
+            System.exit(1);
+        }
     }
 
     private enum MetaCommandResult {
