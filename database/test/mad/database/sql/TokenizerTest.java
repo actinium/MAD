@@ -7,10 +7,12 @@ import java.util.List;
 import mad.database.sql.Tokenizer.Token;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -647,7 +649,7 @@ public class TokenizerTest {
         String query
                 = "select *\n"
                 + "   from tablename\n"
-                + "   where 0 <= col1 & col1 < 100;";
+                + "   where col1 & 1 == 1;";
 
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.TokenType.Select),
@@ -655,13 +657,11 @@ public class TokenizerTest {
                 new Token(Token.TokenType.From),
                 new Token(Token.TokenType.ID, "tablename"),
                 new Token(Token.TokenType.Where),
-                new Token(Token.TokenType.Integer, "0"),
-                new Token(Token.TokenType.LessThanOrEquals),
                 new Token(Token.TokenType.ID, "col1"),
-                new Token(Token.TokenType.And),
-                new Token(Token.TokenType.ID, "col1"),
-                new Token(Token.TokenType.LessThan),
-                new Token(Token.TokenType.Integer, "100"),
+                new Token(Token.TokenType.BitwiseAnd),
+                new Token(Token.TokenType.Integer, "1"),
+                new Token(Token.TokenType.DoubleEquals),
+                new Token(Token.TokenType.Integer, "1"),
                 new Token(Token.TokenType.Semicolon)));
 
         testTokeniser(query, tokens);
@@ -703,7 +703,7 @@ public class TokenizerTest {
         String query
                 = "select *\n"
                 + "   from tablename\n"
-                + "   where col1==col2 | col1==col3;";
+                + "   where col1 | col2 == 1;";
 
         ArrayList<Token> tokens = new ArrayList<>(Arrays.asList(
                 new Token(Token.TokenType.Select),
@@ -712,12 +712,10 @@ public class TokenizerTest {
                 new Token(Token.TokenType.ID, "tablename"),
                 new Token(Token.TokenType.Where),
                 new Token(Token.TokenType.ID, "col1"),
-                new Token(Token.TokenType.DoubleEquals),
+                new Token(Token.TokenType.BitwiseOr),
                 new Token(Token.TokenType.ID, "col2"),
-                new Token(Token.TokenType.Or),
-                new Token(Token.TokenType.ID, "col1"),
                 new Token(Token.TokenType.DoubleEquals),
-                new Token(Token.TokenType.ID, "col3"),
+                new Token(Token.TokenType.Integer, "1"),
                 new Token(Token.TokenType.Semicolon)));
 
         testTokeniser(query, tokens);
@@ -877,7 +875,7 @@ public class TokenizerTest {
 
         testTokeniser(query, tokens);
     }
-    
+
     /**
      * Test of class Tokenizer.
      */
@@ -891,7 +889,7 @@ public class TokenizerTest {
                 new Token(Token.TokenType.Semicolon)));
         testTokeniser(query, tokens);
     }
-    
+
     /**
      * Test of class Tokenizer.
      */
@@ -903,7 +901,7 @@ public class TokenizerTest {
                 new Token(Token.TokenType.Table)));
         testTokeniser(query, tokens);
     }
-    
+
     /**
      * Test of class Tokenizer.
      */
@@ -915,7 +913,7 @@ public class TokenizerTest {
                 new Token(Token.TokenType.Table)));
         testTokeniser(query, tokens);
     }
-    
+
     /**
      * Test of class Tokenizer.
      */

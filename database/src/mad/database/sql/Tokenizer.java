@@ -143,10 +143,10 @@ public class Tokenizer implements Iterator<Token> {
                 tokens.add(new Token(Token.TokenType.LessThan));
                 return true;
             case '&':
-                tokens.add(new Token(Token.TokenType.And));
+                tokens.add(new Token(Token.TokenType.BitwiseAnd));
                 return true;
             case '|':
-                tokens.add(new Token(Token.TokenType.Or));
+                tokens.add(new Token(Token.TokenType.BitwiseOr));
                 return true;
             case ',':
                 tokens.add(new Token(Token.TokenType.Comma));
@@ -427,6 +427,9 @@ public class Tokenizer implements Iterator<Token> {
         public enum TokenType {
 
             // Keywords:
+// Keywords:
+// Keywords:
+// Keywords:
             Add("add"),
             All("all"),
             Alter("alter"),
@@ -516,6 +519,8 @@ public class Tokenizer implements Iterator<Token> {
             Modulo("%"),
             Tilde("~"),
             Exclamation("!"),
+            BitwiseAnd("&"),
+            BitwiseOr("|"),
             LeftShift("<<"),
             RightShift(">>"),
             Concat("||");

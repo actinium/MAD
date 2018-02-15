@@ -233,6 +233,10 @@ public class ExpressionParser {
             op = BinaryExpression.Operator.LeftShift;
         } else if (parser.accept(TokenType.RightShift)) {
             op = BinaryExpression.Operator.RightShift;
+        } else if (parser.accept(TokenType.BitwiseAnd)) {
+            op = BinaryExpression.Operator.BitwiseAnd;
+        } else if (parser.accept(TokenType.BitwiseOr)) {
+            op = BinaryExpression.Operator.BitwiseOr;
         } else if (parser.accept(TokenType.And)) {
             op = BinaryExpression.Operator.And;
         } else if (parser.accept(TokenType.Or)) {
