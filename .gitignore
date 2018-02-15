@@ -34,3 +34,6 @@ hs_err_pid*
 
 # SCons files
 .scons*
+
+# DB files
+*.mad
