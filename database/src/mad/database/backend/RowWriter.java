@@ -31,7 +31,7 @@ public class RowWriter {
                     throw new Row.TypeMismatchException("Row doesn't match schema!");
                 }
 
-                if (schema.get(i).type == Schema.Field.Type.Varchar) {
+                if (schema.get(i).type == Schema.Field.Type.Varchar && !row.isNull(i)) {
                     byte[] byteStr = Bytes.fromString(row.getString(i));
                     int varcharLength = schema.get(i).length;
                     if (byteStr.length > varcharLength) {

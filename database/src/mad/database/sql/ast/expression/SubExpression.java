@@ -11,6 +11,10 @@ public class SubExpression implements Expression {
         this.expression = expression;
     }
 
+    public Expression getSubExpression(){
+        return expression;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

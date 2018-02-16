@@ -19,6 +19,10 @@ public class ValueExpression implements Expression {
         return new ValueExpression(new Value());
     }
 
+    public Value getValue(){
+        return value;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

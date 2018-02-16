@@ -44,6 +44,10 @@ public class SimpleSelectStatement implements SelectStatement {
         this.tables = tables;
     }
 
+    public Table getTables(){
+        return tables;
+    }
+
     public void setWhere(Expression where) {
         this.whereCondition = where;
     }

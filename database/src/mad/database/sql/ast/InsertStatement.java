@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import mad.database.sql.ast.expression.Expression;
+import mad.database.sql.ast.expression.ValueExpression;
 
 /**
  *
@@ -66,6 +67,20 @@ public class InsertStatement implements Statement {
      */
     public List<Expression> values() {
         return Collections.unmodifiableList(values);
+    }
+
+    /**
+     *
+     * @param columnName
+     * @return
+     */
+    public Expression getValue(String columnName) {
+        int i = columns.indexOf(columnName);
+        if (i == -1) {
+            return ValueExpression.nullValue();
+        } else {
+            return values.get(i);
+        }
     }
 
     /**

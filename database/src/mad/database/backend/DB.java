@@ -1,8 +1,5 @@
 package mad.database.backend;
 
-import mad.database.backend.table.DBRow;
-import mad.database.backend.table.Schema;
-import mad.database.backend.table.Row;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,6 +7,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import mad.database.backend.table.DBRow;
+import mad.database.backend.table.Row;
+import mad.database.backend.table.Schema;
 import mad.util.Bytes;
 
 /**
@@ -89,7 +89,8 @@ public class DB implements AutoCloseable {
 
     /**
      *
-     * @return @throws IOException
+     * @return
+     * @throws IOException
      */
     public List<String> getTableNames() throws IOException {
         List<String> tables = new ArrayList<>();
@@ -100,6 +101,22 @@ public class DB implements AutoCloseable {
             tables.add(name);
         }
         return tables;
+    }
+
+    /**
+     *
+     * @param tableName
+     * @return
+     * @throws IOException
+     */
+    public boolean hasTable(String tableName) throws IOException{
+        List<String> tables = getTableNames();
+        for(String t: tables){
+            if(t.equals(tableName)){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -218,7 +235,7 @@ public class DB implements AutoCloseable {
 
     // - Update Row/Rows
     // - Delete Row/Rows
-    // 
+    //
     // - Select
     /**
      *

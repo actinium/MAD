@@ -30,6 +30,10 @@ public class Tables {
         public SingleTable(String tableName) {
             this(tableName, null);
         }
+
+        public String getTableName(){
+            return tableName;
+        }
     }
 
     public static class SubSelect extends Table {

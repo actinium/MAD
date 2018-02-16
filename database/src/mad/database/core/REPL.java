@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import static mad.database.Config.MADVERSION;
 import mad.database.backend.DB;
 import mad.database.backend.StatementProcessor;
+import mad.database.backend.expression.StaticExpressionProcessor;
 import mad.database.backend.table.Row;
 import mad.database.backend.table.Schema;
 import mad.database.backend.table.Schema.Field;
@@ -231,7 +232,8 @@ public class REPL implements Runnable {
             tokenizer.tokenize(query);
             parser.readTokens();
             while (parser.lastSymbol() != TokenType.Semicolon) {
-                System.out.print("   ...>");
+                out.print("   ...>");
+                out.flush();
                 query = readline();
                 tokenizer.tokenize(query);
                 parser.readTokens();
@@ -240,14 +242,17 @@ public class REPL implements Runnable {
             while (!parser.done()) {
                 sl.add(parser.parse());
             }
-            System.out.println(sl.toString());
+            //System.out.println(sl.toString());
             for (Statement statement : sl.getList()) {
                 if (statement instanceof SelectStatement) {
-                    Row row = processor.executeQuery((SelectStatement) statement);
+                    runSelectStatement(statement);
                 } else {
                     try {
                         processor.executeUpdate(statement);
-                    } catch (IOException | StatementProcessor.CreateTableError ex) {
+                    } catch (IOException | StatementProcessor.CreateTableException |
+                            Row.TypeMismatchException |
+                            StaticExpressionProcessor.NonStaticVariableException |
+                            StatementProcessor.NoSuchTableException ex) {
                         out.println(ex.getMessage());
                     }
                 }
@@ -258,6 +263,56 @@ public class REPL implements Runnable {
             out.println(ex.getMessage());
         }
 
+    }
+
+    /**
+     *
+     * @param statement
+     */
+    public void runSelectStatement(Statement statement) {
+        try {
+            Row row = processor.executeQuery((SelectStatement) statement);
+            if (row == null) {
+                return;
+            }
+            while (true) {
+                for (int i = 0; i < row.columns(); i++) {
+                    try {
+                        if (row.isNull(i)) {
+                            out.print("NULL");
+                        } else {
+                            switch (row.getType(i)) {
+                                case Boolean:
+                                    out.print(row.getBoolean(i));
+                                    break;
+                                case Float:
+                                    out.print(row.getFloat(i));
+                                    break;
+                                case Integer:
+                                    out.print(row.getInteger(i));
+                                    break;
+                                case Varchar:
+                                    out.print(row.getString(i));
+                                    break;
+                            }
+                        }
+                        if (i != row.columns() - 1) {
+                            out.print(", ");
+                        }
+                    } catch (Row.NoSuchColumnException | Row.TypeMismatchException ex) {
+                        out.print(ex.getMessage());
+                    }
+                }
+                out.print("\n");
+                if (row.hasNext()) {
+                    row = row.next();
+                } else {
+                    break;
+                }
+            }
+        } catch (IOException ex) {
+            out.println(ex.getMessage());
+        }
     }
 
     @Override
