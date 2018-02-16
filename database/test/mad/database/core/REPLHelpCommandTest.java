@@ -20,12 +20,14 @@ public class REPLHelpCommandTest extends REPLTestBase {
         String result = read(reader);
         String expResult
                 = "dbname>"
-                + ".cd      Change working directory.\n"
-                + ".exit    Exit this program.\n"
-                + ".help    Show available commands.\n"
-                + ".ls      List files in directory.\n"
-                + ".pwd     Print working directory.\n"
-                + ".version Show version number.\n"
+                + ".cd     DIRECTORY     Change working directory.\n"
+                + ".exit                 Exit this program.\n"
+                + ".help                 Show available commands.\n"
+                + ".ls                   List files in directory.\n"
+                + ".pwd                  Print working directory.\n"
+                + ".schema TABLENAME     Show schema for table.\n"
+                + ".tables               List tables in database.\n"
+                + ".version              Show version number.\n"
                 + "dbname>";
 
         assertEquals(expResult, result);
