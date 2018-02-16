@@ -7,8 +7,8 @@ import mad.database.sql.ast.expression.Expression;
  */
 public class Order {
 
-    private boolean ascending;
-    private Expression expression;
+    private final boolean ascending;
+    private final Expression expression;
 
     public Order(Expression expression) {
         this.expression = expression;
@@ -20,6 +20,7 @@ public class Order {
         this.ascending = ascending;
     }
 
+    @Override
     public String toString() {
         String order;
         if (ascending) {
