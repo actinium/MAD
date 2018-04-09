@@ -1,6 +1,5 @@
 package mad.database.backend.table;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -29,7 +28,7 @@ public class ArrayRow implements Row {
         row.add(new StringCell(columnName, value));
         return this;
     }
-    
+
     public ArrayRow addNullIntegerColumn(String columnName) {
         row.add(new IntegerCell(columnName));
         return this;
@@ -132,26 +131,13 @@ public class ArrayRow implements Row {
         throw new NoSuchColumnException();
     }
 
-    /**
-     * 
-     * @param columnNumber
-     * @return
-     * @throws mad.database.backend.table.Row.NoSuchColumnException 
-     */
     @Override
     public boolean isNull(int columnNumber) throws NoSuchColumnException {
         return row.get(columnNumber).isNull();
     }
 
-    /**
-     * 
-     * @param columnName
-     * @return
-     * @throws mad.database.backend.table.Row.NoSuchColumnException
-     * @throws IOException 
-     */
     @Override
-    public boolean isNull(String columnName) throws NoSuchColumnException, IOException {
+    public boolean isNull(String columnName) throws NoSuchColumnException {
         for (Cell c : row) {
             if (c.getColumnName().equals(columnName)) {
                 return c.isNull();
@@ -159,13 +145,7 @@ public class ArrayRow implements Row {
         }
         throw new NoSuchColumnException();
     }
-    
-    /**
-     * 
-     * @param columnNumber
-     * @return
-     * @throws mad.database.backend.table.Row.NoSuchColumnException 
-     */
+
     @Override
     public String getName(int columnNumber) throws NoSuchColumnException {
         if (columnNumber < 0 || columnNumber >= row.size()) {
@@ -174,12 +154,6 @@ public class ArrayRow implements Row {
         return row.get(columnNumber).columnName;
     }
 
-    /**
-     * 
-     * @param columnNumber
-     * @return
-     * @throws mad.database.backend.table.Row.NoSuchColumnException 
-     */
     @Override
     public Schema.Field.Type getType(int columnNumber) throws NoSuchColumnException {
         if (columnNumber < 0 || columnNumber >= row.size()) {
@@ -188,22 +162,29 @@ public class ArrayRow implements Row {
         return row.get(columnNumber).getType();
     }
 
-    /**
-     * 
-     * @return the number of columns in this row.
-     */
+    @Override
+    public Schema.Field.Type getType(String columnName) throws NoSuchColumnException {
+        for (Cell c : row) {
+            if (c.getColumnName().equals(columnName)) {
+                return c.getType();
+            }
+        }
+        throw new NoSuchColumnException();
+    }
+
+    @Override
+    public String getTableName(int columnNumber){
+        return "";
+    }
+
+    @Override
+    public String getTableName(String columnName){
+        return "";
+    }
+
     @Override
     public int columns() {
         return row.size();
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    @Override
-    public String getTableName(){
-        return "";
     }
 
     private static abstract class Cell {

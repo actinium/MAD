@@ -85,14 +85,6 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
         return false;
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @return
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public int getInteger(int columnNumber) throws NoSuchColumnException,
             TypeMismatchException, IOException {
@@ -104,28 +96,12 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
         }
     }
 
-    /**
-     *
-     * @param columnName
-     * @return
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public int getInteger(String columnName) throws NoSuchColumnException,
             TypeMismatchException, IOException {
         return getInteger(tableSchema.get(columnName).columnNumber);
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @return
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public float getFloat(int columnNumber) throws NoSuchColumnException,
             TypeMismatchException, IOException {
@@ -137,28 +113,12 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
         }
     }
 
-    /**
-     *
-     * @param columnName
-     * @return
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public float getFloat(String columnName) throws NoSuchColumnException,
             TypeMismatchException, IOException {
         return getFloat(tableSchema.get(columnName).columnNumber);
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @return
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public boolean getBoolean(int columnNumber) throws NoSuchColumnException,
             TypeMismatchException, IOException {
@@ -170,28 +130,12 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
         }
     }
 
-    /**
-     *
-     * @param columnName
-     * @return
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public boolean getBoolean(String columnName) throws NoSuchColumnException,
             TypeMismatchException, IOException {
         return getBoolean(tableSchema.get(columnName).columnNumber);
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @return
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public String getString(int columnNumber) throws NoSuchColumnException,
             TypeMismatchException, IOException {
@@ -203,27 +147,12 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
         }
     }
 
-    /**
-     *
-     * @param columnName
-     * @return
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public String getString(String columnName) throws NoSuchColumnException,
             TypeMismatchException, IOException {
         return getString(tableSchema.get(columnName).columnNumber);
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @return
-     * @throws Row.NoSuchColumnException
-     * @throws IOException
-     */
     @Override
     public boolean isNull(int columnNumber) throws NoSuchColumnException,
             IOException {
@@ -231,27 +160,12 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
                 .isNull(columnNumber);
     }
 
-    /**
-     *
-     * @param columnName
-     * @return
-     * @throws Row.NoSuchColumnException
-     * @throws IOException
-     */
     @Override
     public boolean isNull(String columnName) throws NoSuchColumnException,
             IOException {
         return isNull(tableSchema.get(columnName).columnNumber);
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @param value
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public void setInteger(int columnNumber, int value) throws
             NoSuchColumnException, TypeMismatchException, IOException {
@@ -263,28 +177,12 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
         }
     }
 
-    /**
-     *
-     * @param columnName
-     * @param value
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public void setInteger(String columnName, int value) throws
             NoSuchColumnException, TypeMismatchException, IOException {
         setInteger(tableSchema.get(columnName).columnNumber, value);
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @param value
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public void setFloat(int columnNumber, float value) throws
             NoSuchColumnException, TypeMismatchException, IOException {
@@ -296,28 +194,12 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
         }
     }
 
-    /**
-     *
-     * @param columnName
-     * @param value
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public void setFloat(String columnName, float value) throws
             NoSuchColumnException, TypeMismatchException, IOException {
         setFloat(tableSchema.get(columnName).columnNumber, value);
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @param value
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public void setBoolean(int columnNumber, boolean value) throws
             NoSuchColumnException, TypeMismatchException, IOException {
@@ -329,28 +211,12 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
         }
     }
 
-    /**
-     *
-     * @param columnName
-     * @param value
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public void setBoolean(String columnName, boolean value) throws
             NoSuchColumnException, TypeMismatchException, IOException {
         setBoolean(tableSchema.get(columnName).columnNumber, value);
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @param value
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public void setString(int columnNumber, String value) throws
             NoSuchColumnException, TypeMismatchException, IOException {
@@ -366,26 +232,12 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
         }
     }
 
-    /**
-     *
-     * @param columnName
-     * @param value
-     * @throws Row.NoSuchColumnException
-     * @throws Row.TypeMismatchException
-     * @throws IOException
-     */
     @Override
     public void setString(String columnName, String value) throws
             NoSuchColumnException, TypeMismatchException, IOException {
         setString(tableSchema.get(columnName).columnNumber, value);
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @throws Row.NoSuchColumnException
-     * @throws IOException
-     */
     @Override
     public void setNull(int columnNumber) throws NoSuchColumnException,
             IOException {
@@ -396,24 +248,12 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
         pager.writeBytes(filePosition + 8, nullMapBytes, 8);
     }
 
-    /**
-     *
-     * @param columnName
-     * @throws Row.NoSuchColumnException
-     * @throws IOException
-     */
     @Override
     public void setNull(String columnName) throws NoSuchColumnException,
             IOException {
         setNull(tableSchema.get(columnName).columnNumber);
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @throws Row.NoSuchColumnException
-     * @throws IOException
-     */
     @Override
     public void setNotNull(int columnNumber) throws NoSuchColumnException,
             IOException {
@@ -424,60 +264,42 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
         pager.writeBytes(filePosition + 8, nullMapBytes, 8);
     }
 
-    /**
-     *
-     * @param columnName
-     * @throws Row.NoSuchColumnException
-     * @throws IOException
-     */
     @Override
     public void setNotNull(String columnName) throws NoSuchColumnException,
             IOException {
         setNotNull(tableSchema.get(columnName).columnNumber);
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @return
-     * @throws Row.NoSuchColumnException
-     * @throws IOException
-     */
     @Override
     public String getName(int columnNumber) throws NoSuchColumnException,
             IOException {
         return tableSchema.get(columnNumber).name;
     }
 
-    /**
-     *
-     * @param columnNumber
-     * @return
-     * @throws Row.NoSuchColumnException
-     * @throws IOException
-     */
     @Override
     public Schema.Field.Type getType(int columnNumber) throws
             NoSuchColumnException, IOException {
         return tableSchema.get(columnNumber).type;
     }
 
-    /**
-     *
-     * @return
-     */
+    @Override
+    public Schema.Field.Type getType(String columnName) throws NoSuchColumnException, IOException {
+        return tableSchema.get(columnName).type;
+    }
+
+    @Override
+    public String getTableName(int columnNumber){
+        return tableName;
+    }
+
+    @Override
+    public String getTableName(String columnName){
+        return tableName;
+    }
+
     @Override
     public int columns() {
         return tableSchema.columns();
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String getTableName() {
-        return tableName;
     }
 
 }

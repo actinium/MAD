@@ -1,8 +1,5 @@
 package mad.database.backend;
 
-import mad.database.backend.table.ArrayRow;
-import mad.database.backend.table.Row;
-import mad.database.backend.table.Schema;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,12 +7,18 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import mad.database.Config;
 import static mad.database.Config.PAGESIZE;
+import mad.database.backend.table.ArrayRow;
+import mad.database.backend.table.Row;
+import mad.database.backend.table.Schema;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -204,7 +207,7 @@ public class DBinsertRowTest {
             assertEquals(1, row.getInteger("id"));
             assertEquals("RnD", row.getString(1));
             assertEquals("RnD", row.getString("name"));
-            assertEquals("Department", row.getTableName());
+            assertEquals("Department", row.getTableName(0));
             assertTrue(row.hasNext());
 
             Row row2 = row.next();
@@ -213,7 +216,7 @@ public class DBinsertRowTest {
             assertEquals(2, row2.getInteger("id"));
             assertEquals("Finance", row2.getString(1));
             assertEquals("Finance", row2.getString("name"));
-            assertEquals("Department", row2.getTableName());
+            assertEquals("Department", row2.getTableName(0));
             assertFalse(row2.hasNext());
 
             Row row3 = row2.next();
@@ -231,7 +234,7 @@ public class DBinsertRowTest {
             assertEquals(true, row.getBoolean("boss"));
             assertEquals(100000, row.getInteger(3));
             assertEquals(100000, row.getInteger("salary"));
-            assertEquals("Employee", row.getTableName());
+            assertEquals("Employee", row.getTableName(0));
             assertTrue(row.hasNext());
 
             Row row2 = row.next();
@@ -244,7 +247,7 @@ public class DBinsertRowTest {
             assertEquals(false, row2.getBoolean("boss"));
             assertEquals(35000, row2.getInteger(3));
             assertEquals(35000, row2.getInteger("salary"));
-            assertEquals("Employee", row2.getTableName());
+            assertEquals("Employee", row2.getTableName(0));
             assertTrue(row.hasNext());
 
             Row row3 = row2.next();
@@ -257,7 +260,7 @@ public class DBinsertRowTest {
             assertEquals(false, row3.getBoolean("boss"));
             assertEquals(32000, row3.getInteger(3));
             assertEquals(32000, row3.getInteger("salary"));
-            assertEquals("Employee", row3.getTableName());
+            assertEquals("Employee", row3.getTableName(0));
             assertTrue(row.hasNext());
 
             Row row4 = row3.next();
@@ -270,7 +273,7 @@ public class DBinsertRowTest {
             assertEquals(false, row4.getBoolean("boss"));
             assertEquals(36000, row4.getInteger(3));
             assertEquals(36000, row4.getInteger("salary"));
-            assertEquals("Employee", row4.getTableName());
+            assertEquals("Employee", row4.getTableName(0));
             assertFalse(row4.hasNext());
             Row row5 = row4.next();
             assertNull(row5);

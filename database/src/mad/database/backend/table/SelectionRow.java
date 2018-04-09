@@ -127,13 +127,23 @@ public class SelectionRow implements Row {
     }
 
     @Override
-    public int columns() {
-        return row.columns();
+    public Schema.Field.Type getType(String columnName) throws NoSuchColumnException, IOException {
+        return row.getType(columnName);
     }
 
     @Override
-    public String getTableName() throws IOException {
-        return row.getTableName();
+    public String getTableName(int columnNumber) throws NoSuchColumnException, IOException {
+        return row.getTableName(columnNumber);
+    }
+
+    @Override
+    public String getTableName(String columnName) throws NoSuchColumnException, IOException {
+        return row.getTableName(columnName);
+    }
+
+    @Override
+    public int columns() {
+        return row.columns();
     }
 
     /**

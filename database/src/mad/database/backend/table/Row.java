@@ -145,15 +145,37 @@ public interface Row {
 
     /**
      *
+     * @param columnName
      * @return
+     * @throws Row.NoSuchColumnException
+     * @throws IOException
      */
-    int columns();
+    Schema.Field.Type getType(String columnName) throws NoSuchColumnException, IOException;
+
 
     /**
      *
-     * @return @throws IOException
+     * @param columnNumber
+     * @return
+     * @throws Row.NoSuchColumnException
+     * @throws IOException
      */
-    String getTableName() throws IOException;
+    String getTableName(int columnNumber) throws NoSuchColumnException, IOException;
+
+    /**
+     *
+     * @param columnName
+     * @return
+     * @throws Row.NoSuchColumnException
+     * @throws IOException
+     */
+    String getTableName(String columnName) throws NoSuchColumnException, IOException;
+
+    /**
+     *
+     * @return
+     */
+    int columns();
 
     /**
      *

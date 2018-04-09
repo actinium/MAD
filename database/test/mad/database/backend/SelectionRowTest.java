@@ -9,10 +9,13 @@ import mad.database.backend.table.Schema;
 import mad.database.backend.table.SelectionRow;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -115,14 +118,14 @@ public class SelectionRowTest {
             assertNotNull(row);
             assertEquals(0, row.getInteger("id"));
             assertEquals("RnD", row.getString("name"));
-            assertEquals("Department", row.getTableName());
+            assertEquals("Department", row.getTableName(0));
             assertTrue(row.hasNext());
 
             Row row2 = row.next();
             assertNotNull(row2);
             assertEquals(1, row2.getInteger("id"));
             assertEquals("Finance", row2.getString("name"));
-            assertEquals("Department", row2.getTableName());
+            assertEquals("Department", row2.getTableName(0));
             assertFalse(row2.hasNext());
 
             Row row3 = row2.next();
@@ -140,7 +143,7 @@ public class SelectionRowTest {
             assertEquals("Alice", row.getString("name"));
             assertEquals(0, row.getInteger("department_id"));
             assertEquals(35000, row.getInteger("salary"));
-            assertEquals("Employee", row.getTableName());
+            assertEquals("Employee", row.getTableName(0));
             assertTrue(row.hasNext());
 
             Row row2 = row.next();
@@ -149,7 +152,7 @@ public class SelectionRowTest {
             assertEquals("Charlie", row2.getString("name"));
             assertEquals(0, row2.getInteger("department_id"));
             assertEquals(32000, row2.getInteger("salary"));
-            assertEquals("Employee", row2.getTableName());
+            assertEquals("Employee", row2.getTableName(0));
             assertTrue(row2.hasNext());
 
             Row row3 = row2.next();
@@ -158,7 +161,7 @@ public class SelectionRowTest {
             assertEquals("Lara", row3.getString("name"));
             assertEquals(0, row3.getInteger("department_id"));
             assertEquals(37000, row3.getInteger("salary"));
-            assertEquals("Employee", row3.getTableName());
+            assertEquals("Employee", row3.getTableName(0));
             assertFalse(row3.hasNext());
             Row row4 = row3.next();
             assertNull(row4);
