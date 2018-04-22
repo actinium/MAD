@@ -5,19 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 import mad.database.backend.expression.StaticExpressionProcessor;
 import mad.database.backend.table.ArrayRow;
-import mad.database.backend.table.DBRow;
-import mad.database.backend.table.NestedLoopJoinRow;
 import mad.database.backend.table.Row;
 import mad.database.backend.table.Schema;
 import mad.database.backend.table.Schema.Field;
 import mad.database.sql.ast.CreateTableStatement;
 import mad.database.sql.ast.InsertStatement;
 import mad.database.sql.ast.Statement;
-import mad.database.sql.ast.Tables;
 import mad.database.sql.ast.expression.ValueExpression;
 import mad.database.sql.ast.expression.ValueExpression.Value;
 import mad.database.sql.ast.selection.SelectStatement;
-import mad.database.sql.ast.selection.SimpleSelectStatement;
 
 /**
  *
@@ -25,9 +21,11 @@ import mad.database.sql.ast.selection.SimpleSelectStatement;
 public class StatementProcessor {
 
     private final DB db;
+    private final SelectStatementProcessor selectStatementProcessor;
 
     public StatementProcessor(DB db) {
         this.db = db;
+        this.selectStatementProcessor = new SelectStatementProcessor(db);
     }
 
     /**
@@ -52,40 +50,10 @@ public class StatementProcessor {
      *
      * @param statement
      * @return
+     * @throws IOException
      */
     public Row executeQuery(SelectStatement statement) throws IOException {
-        if (statement instanceof SimpleSelectStatement) {
-            SimpleSelectStatement simpleSelect = (SimpleSelectStatement) statement;
-            if (simpleSelect.getTables() instanceof Tables.SingleTable) {
-
-                Tables.SingleTable table = (Tables.SingleTable) simpleSelect.getTables();
-                String tableName = table.getTableName();
-
-                if (db.hasTable(tableName)) {
-                    return db.getFirstRow(db.getTablePointer(tableName));
-                }
-            }
-            if (simpleSelect.getTables() instanceof Tables.JoinedTables) {
-                Tables.JoinedTables table = (Tables.JoinedTables) simpleSelect.getTables();
-                if(table.getLeftTable() instanceof Tables.SingleTable &&
-                        table.getRightTable() instanceof Tables.SingleTable){
-
-                    Tables.SingleTable leftTable = (Tables.SingleTable) table.getLeftTable();
-                    Tables.SingleTable rightTable = (Tables.SingleTable) table.getRightTable();
-
-                    String leftTableName = leftTable.getTableName();
-                    String rightTableName = rightTable.getTableName();
-                    if(db.hasTable(leftTableName) && db.hasTable(rightTableName)){
-                        DBRow leftRow = db.getFirstRow(db.getTablePointer(leftTableName));
-                        DBRow rightRow = db.getFirstRow(db.getTablePointer(rightTableName));
-                        DBRow rightRowFirst = db.getFirstRow(db.getTablePointer(rightTableName));
-
-                        return new NestedLoopJoinRow(leftRow, rightRow, rightRowFirst);
-                    }
-                }
-            }
-        }
-        return null;
+        return selectStatementProcessor.executeQuery(statement);
     }
 
     /**

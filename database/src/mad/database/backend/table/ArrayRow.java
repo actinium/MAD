@@ -2,13 +2,22 @@ package mad.database.backend.table;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  *
  */
 public class ArrayRow implements Row {
 
-    ArrayList<Cell> row = new ArrayList<>();
+    ArrayList<Cell> row;
+
+    public ArrayRow(){
+        this.row = new ArrayList<>();
+    }
+
+    private ArrayRow(ArrayList<Cell> row){
+        this.row = row;
+    }
 
     public ArrayRow addIntegerColumn(String columnName, int value) {
         row.add(new IntegerCell(columnName, value));
@@ -48,6 +57,13 @@ public class ArrayRow implements Row {
     public ArrayRow addNullStringColumn(String columnName) {
         row.add(new StringCell(columnName));
         return this;
+    }
+
+    @Override
+    public ArrayRow copy(){
+        ArrayList<Cell> newRow = new ArrayList<>();
+        Collections.copy(newRow, row);
+        return new ArrayRow(newRow);
     }
 
     @Override

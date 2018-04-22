@@ -7,6 +7,7 @@ import java.io.IOException;
  */
 public interface Row {
 
+    Row copy();
     /**
      *
      * @return

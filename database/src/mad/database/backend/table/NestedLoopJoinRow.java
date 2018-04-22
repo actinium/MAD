@@ -17,6 +17,12 @@ public class NestedLoopJoinRow implements Row {
         this.rightRowFirst = rightRowFirst;
     }
 
+    public NestedLoopJoinRow copy(){
+        Row newLeftRow = leftRow.copy();
+        Row newRightRow = rightRow.copy();
+        return new NestedLoopJoinRow(newLeftRow, newRightRow, newRightRow.copy());
+    }
+
     @Override
     public Row next() {
         if (rightRow.hasNext()) {

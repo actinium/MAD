@@ -30,6 +30,11 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
         this.filePosition = filePosition;
     }
 
+    @Override
+    public DBRow copy(){
+        return new DBRow(pager, tableSchema, tableName, filePosition);
+    }
+
     /**
      *
      * @return
