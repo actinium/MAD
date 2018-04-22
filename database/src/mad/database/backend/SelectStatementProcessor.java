@@ -1,6 +1,7 @@
 package mad.database.backend;
 
 import java.io.IOException;
+import mad.database.backend.table.NamedRow;
 import mad.database.backend.table.NestedLoopJoinRow;
 import mad.database.backend.table.Row;
 import mad.database.sql.ast.Tables;
@@ -40,7 +41,12 @@ public class SelectStatementProcessor {
             String tableName = st.getTableName();
 
             if (db.hasTable(tableName)) {
-                return db.getFirstRow(db.getTablePointer(tableName));
+                Row row = db.getFirstRow(db.getTablePointer(tableName));
+                String alias = st.getAlias();
+                if( alias != null){
+                    row = new NamedRow(row, alias);
+                }
+                return row;
             }
         } else if (table instanceof Tables.JoinedTables) {
             Tables.JoinedTables jts = (Tables.JoinedTables) table;

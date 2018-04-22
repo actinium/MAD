@@ -16,6 +16,10 @@ public class Tables {
         protected Table(String as) {
             this.as = as;
         }
+
+        public String getAlias(){
+            return as;
+        }
     }
 
     public static class SingleTable extends Table {
