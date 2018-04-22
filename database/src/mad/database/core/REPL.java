@@ -35,6 +35,8 @@ public class REPL implements Runnable {
     private final DB db;
     private final StatementProcessor processor;
 
+    private boolean printHeaders = false;
+
     public REPL(String dbFilename, InputStream in, OutputStream out) throws IOException {
         this.in = new BufferedReader(new InputStreamReader(in));
         this.out = new PrintWriter(out, true);
@@ -91,10 +93,11 @@ public class REPL implements Runnable {
 
     private void cd(String query) {
         query = query.substring(3);
+        query = query.substring(firstNonWhitespace(query));
         if (query.length() == 0) {
+            pwd = new File(System.getProperty("user.home"));
             return;
         }
-        query = query.substring(firstNonWhitespace(query));
         query = query.substring(0, lastNonWhitespace(query) + 1);
         if (query.charAt(0) == '"' && query.charAt(query.length() - 1) == '"') {
             query = query.substring(1, query.length() - 1);
@@ -122,6 +125,23 @@ public class REPL implements Runnable {
         out.print("No directory with name '" + query + "'.\n");
     }
 
+    private void headers(String query) {
+        query = query.substring(8);
+        query = query.substring(firstNonWhitespace(query));
+        if (query.length() == 0) {
+            out.print("Error: Missing argument!\n");
+            return;
+        }
+        query = query.substring(0, lastNonWhitespace(query) + 1);
+        if (query.toLowerCase().equals("on")) {
+            printHeaders = true;
+        } else if (query.toLowerCase().equals("off")) {
+            printHeaders = false;
+        } else {
+            out.print("Error: Invalid argument!\n");
+        }
+    }
+
     private void ls() {
         File[] files = pwd.getAbsoluteFile().listFiles();
         for (File file : files) {
@@ -140,10 +160,11 @@ public class REPL implements Runnable {
 
     private void schema(String query) {
         String tableName = query.substring(7);
+        tableName = tableName.substring(firstNonWhitespace(tableName));
         if (tableName.length() == 0) {
+            out.print("Error: Missing table argument!\n");
             return;
         }
-        tableName = tableName.substring(firstNonWhitespace(tableName));
         tableName = tableName.substring(0, lastNonWhitespace(tableName) + 1);
         if (tableName.charAt(0) == '"' && tableName.charAt(tableName.length() - 1) == '"') {
             tableName = tableName.substring(1, tableName.length() - 1);
@@ -191,10 +212,15 @@ public class REPL implements Runnable {
         if (matchesCommand(query, ".exit")) {
             return MetaCommandResult.Exit;
         }
+        if (matchesCommand(query, ".headers")) {
+            headers(query);
+            return MetaCommandResult.Correct;
+        }
         if (matchesCommand(query, ".help")) {
             out.print(".cd     DIRECTORY     Change working directory.\n");
             out.print(".exit                 Exit this program.\n");
             out.print(".help                 Show available commands.\n");
+            out.print(".headers on|off       Turn printing of headers on or off.\n");
             out.print(".ls                   List files in directory.\n");
             out.print(".pwd                  Print working directory.\n");
             out.print(".schema TABLENAME     Show schema for table.\n");
@@ -275,9 +301,23 @@ public class REPL implements Runnable {
             if (row == null) {
                 return;
             }
+            if (printHeaders) {
+                try {
+                    for (int i = 0; i < row.columns(); i++) {
+                        out.print(row.getTableName(i));
+                        out.print(".");
+                        out.print(row.getName(i));
+                        if (i != row.columns() - 1) {
+                            out.print(", ");
+                        }
+                    }
+                    out.print("\n");
+                } catch (Row.NoSuchColumnException ex) {
+                    out.print(ex.getMessage());
+                }
+            }
             while (true) {
-                int columns = row.columns();
-                for (int i = 0; i < columns; i++) {
+                for (int i = 0; i < row.columns(); i++) {
                     try {
                         if (row.isNull(i)) {
                             out.print("NULL");
