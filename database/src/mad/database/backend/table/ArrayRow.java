@@ -1,5 +1,6 @@
 package mad.database.backend.table;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -185,6 +186,16 @@ public class ArrayRow implements Row {
     @Override
     public int columns() {
         return row.size();
+    }
+
+    @Override
+    public boolean hasColumn(String columnName) throws IOException {
+        for (Cell c : row) {
+            if (c.getColumnName().equals(columnName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static abstract class Cell {

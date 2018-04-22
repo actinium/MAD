@@ -127,6 +127,14 @@ public interface Row {
 
     /**
      *
+     * @param columnName
+     * @return
+     * @throws IOException
+     */
+    boolean hasColumn(String columnName) throws IOException;
+
+    /**
+     *
      * @param columnNumber
      * @return
      * @throws Row.NoSuchColumnException

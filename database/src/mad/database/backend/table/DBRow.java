@@ -2,6 +2,7 @@ package mad.database.backend.table;
 
 import java.io.IOException;
 import mad.database.backend.Pager;
+import mad.database.backend.table.Schema.Field;
 import mad.util.Bytes;
 import mad.util.NullBitMap;
 
@@ -300,6 +301,16 @@ public class DBRow implements Row, WritableRow, DeleteableRow {
     @Override
     public int columns() {
         return tableSchema.columns();
+    }
+
+    @Override
+    public boolean hasColumn(String columnName) throws IOException {
+        for( Field field: tableSchema){
+            if( field.name.equals(columnName)){
+                return true;
+            }
+        }
+        return false;
     }
 
 }

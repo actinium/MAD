@@ -146,6 +146,11 @@ public class SelectionRow implements Row {
         return row.columns();
     }
 
+    @Override
+    public boolean hasColumn(String columnName) throws IOException {
+        return row.hasColumn(columnName);
+    }
+
     /**
      *
      */

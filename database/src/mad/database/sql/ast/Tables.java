@@ -95,6 +95,14 @@ public class Tables {
             this.joinUsing = null;
         }
 
+        public Table getLeftTable(){
+            return leftTable;
+        }
+
+        public Table getRightTable(){
+            return rightTable;
+        }
+
         public enum Join {
 
             NatrualJoin,

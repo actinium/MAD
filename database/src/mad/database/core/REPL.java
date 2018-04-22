@@ -276,7 +276,8 @@ public class REPL implements Runnable {
                 return;
             }
             while (true) {
-                for (int i = 0; i < row.columns(); i++) {
+                int columns = row.columns();
+                for (int i = 0; i < columns; i++) {
                     try {
                         if (row.isNull(i)) {
                             out.print("NULL");
@@ -304,6 +305,7 @@ public class REPL implements Runnable {
                     }
                 }
                 out.print("\n");
+                out.flush();
                 if (row.hasNext()) {
                     row = row.next();
                 } else {
