@@ -55,6 +55,14 @@ public class SelectStatementProcessor {
             if (left != null && right != null) {
                 return new NestedLoopJoinRow(left, right, right.copy());
             }
+        } else if (table instanceof Tables.SubTable) {
+            Tables.SubTable st = (Tables.SubTable) table;
+            Row row = getRow(st.getTable());
+            String alias = st.getAlias();
+            if(alias != null){
+                row = new NamedRow(row, alias);
+            }
+            return row;
         }
         return null;
     }

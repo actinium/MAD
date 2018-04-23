@@ -62,6 +62,10 @@ public class Tables {
             super(as);
             this.table = table;
         }
+
+        public Table getTable(){
+            return table;
+        }
     }
 
     public static class JoinedTables extends Table {
