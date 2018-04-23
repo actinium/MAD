@@ -2,6 +2,8 @@ package mad.database.core;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -133,12 +135,16 @@ public class REPL implements Runnable {
             return;
         }
         query = query.substring(0, lastNonWhitespace(query) + 1);
-        if (query.toLowerCase().equals("on")) {
-            printHeaders = true;
-        } else if (query.toLowerCase().equals("off")) {
-            printHeaders = false;
-        } else {
-            out.print("Error: Invalid argument!\n");
+        switch (query.toLowerCase()) {
+            case "on":
+                printHeaders = true;
+                break;
+            case "off":
+                printHeaders = false;
+                break;
+            default:
+                out.print("Error: Invalid argument!\n");
+                break;
         }
     }
 
@@ -154,6 +160,59 @@ public class REPL implements Runnable {
                     out.print("? - ");
                 }
                 out.println(file.getName());
+            }
+        }
+    }
+
+    private void read(String query) {
+        String filename = query.substring(5);
+        filename = filename.substring(firstNonWhitespace(filename));
+        if (filename.length() == 0) {
+            out.print("Error: Missing filename!\n");
+            return;
+        }
+        filename = filename.substring(0, lastNonWhitespace(filename) + 1);
+        InputStreamReader isr = null;
+        try {
+            File file = new File(pwd.getAbsoluteFile(), filename);
+            isr = new InputStreamReader(new FileInputStream(file));
+            BufferedReader reader = new BufferedReader(isr);
+            Tokenizer tokenizer = new Tokenizer();
+            Parser parser = new Parser(tokenizer);
+            String line;
+            while ((line = reader.readLine()) != null) {
+                tokenizer.tokenize(line);
+                parser.readTokens();
+            }
+            if(parser.lastSymbol() != TokenType.Semicolon){
+                out.print("Error: End of file is not end of statement!\n");
+            }
+            StatementList sl = new StatementList();
+            while (!parser.done()) {
+                sl.add(parser.parse());
+            }
+            for (Statement statement : sl.getList()) {
+                if (statement instanceof SelectStatement) {
+                    runSelectStatement(statement);
+                } else {
+                    runUpdateStatement(statement);
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            out.print("Error: File not found!\n");
+        } catch (IOException ex) {
+            out.print("Error: Could not read file!\n");
+        } catch (Tokenizer.TokenizeException ex) {
+            out.println("Error tokenizing input:" + ex.getMessage() + " (" + ex.getIndex() + ")");
+        } catch (Parser.ParseError ex) {
+            out.print(ex.getMessage());
+        } finally {
+            if (isr != null) {
+                try {
+                    isr.close();
+                } catch (IOException ex) {
+                    out.print("Error: Could not close file!\n");
+                }
             }
         }
     }
@@ -208,43 +267,39 @@ public class REPL implements Runnable {
         if (matchesCommand(query, ".cd")) {
             cd(query);
             return MetaCommandResult.Correct;
-        }
-        if (matchesCommand(query, ".exit")) {
+        } else if (matchesCommand(query, ".exit")) {
             return MetaCommandResult.Exit;
-        }
-        if (matchesCommand(query, ".headers")) {
+        } else if (matchesCommand(query, ".headers")) {
             headers(query);
             return MetaCommandResult.Correct;
-        }
-        if (matchesCommand(query, ".help")) {
+        } else if (matchesCommand(query, ".help")) {
             out.print(".cd     DIRECTORY     Change working directory.\n");
             out.print(".exit                 Exit this program.\n");
             out.print(".help                 Show available commands.\n");
             out.print(".headers on|off       Turn printing of headers on or off.\n");
             out.print(".ls                   List files in directory.\n");
             out.print(".pwd                  Print working directory.\n");
+            out.print(".read FILENAME        Execute the Sql-statements in FILENAME.\n");
             out.print(".schema TABLENAME     Show schema for table.\n");
             out.print(".tables               List tables in database.\n");
             out.print(".version              Show version number.\n");
             return MetaCommandResult.Correct;
-        }
-        if (matchesCommand(query, ".ls")) {
+        } else if (matchesCommand(query, ".ls")) {
             ls();
             return MetaCommandResult.Correct;
-        }
-        if (matchesCommand(query, ".pwd")) {
+        } else if (matchesCommand(query, ".pwd")) {
             out.printf(pwd.getAbsolutePath() + "%n");
             return MetaCommandResult.Correct;
-        }
-        if (matchesCommand(query, ".schema")) {
+        } else if (matchesCommand(query, ".read")) {
+            read(query);
+            return MetaCommandResult.Correct;
+        } else if (matchesCommand(query, ".schema")) {
             schema(query);
             return MetaCommandResult.Correct;
-        }
-        if (matchesCommand(query, ".tables")) {
+        } else if (matchesCommand(query, ".tables")) {
             tables();
             return MetaCommandResult.Correct;
-        }
-        if (matchesCommand(query, ".version")) {
+        } else if (matchesCommand(query, ".version")) {
             out.printf("MAD version %s\n", MADVERSION);
             return MetaCommandResult.Correct;
         }
@@ -273,14 +328,7 @@ public class REPL implements Runnable {
                 if (statement instanceof SelectStatement) {
                     runSelectStatement(statement);
                 } else {
-                    try {
-                        processor.executeUpdate(statement);
-                    } catch (IOException | StatementProcessor.CreateTableException |
-                            Row.TypeMismatchException |
-                            StaticExpressionProcessor.NonStaticVariableException |
-                            StatementProcessor.NoSuchTableException ex) {
-                        out.println(ex.getMessage());
-                    }
+                    runUpdateStatement(statement);
                 }
             }
         } catch (Tokenizer.TokenizeException ex) {
@@ -353,6 +401,17 @@ public class REPL implements Runnable {
                 }
             }
         } catch (IOException ex) {
+            out.println(ex.getMessage());
+        }
+    }
+
+    public void runUpdateStatement(Statement statement) {
+        try {
+            processor.executeUpdate(statement);
+        } catch (IOException | StatementProcessor.CreateTableException |
+                Row.TypeMismatchException |
+                StaticExpressionProcessor.NonStaticVariableException |
+                StatementProcessor.NoSuchTableException ex) {
             out.println(ex.getMessage());
         }
     }
