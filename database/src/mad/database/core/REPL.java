@@ -343,7 +343,7 @@ public class REPL implements Runnable {
      *
      * @param statement
      */
-    public void runSelectStatement(Statement statement) {
+    private void runSelectStatement(Statement statement) {
         try {
             Row row = processor.executeQuery((SelectStatement) statement);
             if (row == null) {
@@ -405,7 +405,7 @@ public class REPL implements Runnable {
         }
     }
 
-    public void runUpdateStatement(Statement statement) {
+    private void runUpdateStatement(Statement statement) {
         try {
             processor.executeUpdate(statement);
         } catch (IOException | StatementProcessor.CreateTableException |
