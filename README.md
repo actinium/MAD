@@ -1,1 +1,1 @@
-# MAD - Mattias & Andreas Database
+# MAD
